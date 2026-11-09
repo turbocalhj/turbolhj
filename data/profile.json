@@ -12,10 +12,6 @@
     "handle": "turbocalhj",
     "role": "制造业 PLM（Teamcenter / AWC）方向后端开发",
     "location": "成都",
-    "bio": [
-      "2026 届，现在做 Teamcenter 二次开发：AWC 前端模块 + Java SOA/Spring Boot 服务。",
-      "写代码之外维护一套 Obsidian 知识库，把学过的前端、后端、语言、数据库、大数据、Agent 都收敛成可检索的笔记，并让每个项目都能回溯到对应的技术底座。"
-    ],
     "stack": ["Java", "Go", "Python", "TypeScript", "Spring Boot", "Kafka", "Flink", "React", "Docker"]
   },
   "categories": ["个人项目", "工作项目", "学习项目"],

@@ -86,24 +86,13 @@ export function homePage(ctx) {
   const content = `
 <section class="hero">
   <div class="hero-text">
-    <p class="hero-kicker">$ whoami</p>
     <h1>${escapeHtml(p.person.name)}<span class="hero-role">${escapeHtml(p.person.role)}</span></h1>
-    <p class="hero-lede">${p.person.bio.map(escapeHtml).join(' ')}</p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="${ctx.url('projects', 'index.html')}">看项目</a>
       <a class="btn" href="${ctx.url('knowledge', 'index.html')}">进知识库</a>
       <a class="btn btn-ghost" href="${p.github}" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
     <div class="hero-stack">${stack}</div>
-  </div>
-  <div class="hero-panel">
-    <div class="panel-title">当前主线</div>
-    <ul class="panel-list">
-      <li><b>Teamcenter / AWC</b> 二次开发：BOM 导出与补列服务</li>
-      <li><b>Go</b> 短链服务：规格驱动到可交付</li>
-      <li><b>Kafka + Flink</b> 实时异常检测链路</li>
-      <li><b>Obsidian</b> 知识库持续收敛为可检索笔记</li>
-    </ul>
   </div>
 </section>
 <section class="stats">${statCards}</section>
