@@ -1,0 +1,20 @@
+{
+  "name": "lhj-personal-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "本地个人网站：Obsidian 知识库 + GitHub 项目",
+  "scripts": {
+    "build": "node build.js",
+    "check": "node scripts/check-links.js",
+    "serve": "node serve.js",
+    "dev": "node build.js && node serve.js",
+    "refresh": "node scripts/fetch-github.js"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1",
+    "js-yaml": "^4.1.0",
+    "marked": "^18.0.2",
+    "marked-highlight": "^2.2.2"
+  }
+}
