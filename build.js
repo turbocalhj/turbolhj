@@ -288,7 +288,7 @@ writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
 }));
 writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/app.css'), 'utf8'));
 writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client.js'), 'utf8'));
-writeFile(path.join('assets', 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#4f46e5"/><text x="16" y="22" font-family="ui-monospace,monospace" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">L</text></svg>`);
+writeFile(path.join('assets', 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="2" fill="#17150f"/><text x="16" y="23" font-family="Palatino Linotype,Georgia,serif" font-size="20" fill="#f7f4ee" text-anchor="middle">L</text><rect x="22" y="6" width="4" height="4" fill="#a83b2b"/></svg>`);
 
 function writeFile(rel, content) {
   const abs = path.join(DIST, rel);

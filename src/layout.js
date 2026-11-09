@@ -49,6 +49,7 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
 <script>try{var t=localStorage.getItem('lhj-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body class="section-${section} ${bodyClass}" data-base="${url()}" data-search-index="${url('assets', 'search-index.json')}">
+<div class="progress" aria-hidden="true"></div>
 <a class="skip-link" href="#main">跳到正文</a>
 <header class="topbar">
   <div class="topbar-inner">
