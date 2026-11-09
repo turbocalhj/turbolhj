@@ -1,0 +1,89 @@
+{
+  "vault": "E:/ObsidianRES/Obsidian LHJ",
+  "basePath": "/",
+  "github": "https://github.com/turbocalhj",
+  "site": {
+    "title": "李鸿杰",
+    "tagline": "后端 / 全栈 · PLM 与实时数据链路",
+    "description": "个人主页：项目档案与 Obsidian 技术知识库。"
+  },
+  "person": {
+    "name": "李鸿杰",
+    "handle": "turbocalhj",
+    "role": "制造业 PLM（Teamcenter / AWC）方向后端开发",
+    "location": "成都",
+    "bio": [
+      "2026 届，现在做 Teamcenter 二次开发：AWC 前端模块 + Java SOA/Spring Boot 服务。",
+      "写代码之外维护一套 Obsidian 知识库，把学过的前端、后端、语言、数据库、大数据、Agent 都收敛成可检索的笔记，并让每个项目都能回溯到对应的技术底座。"
+    ],
+    "stack": ["Java", "Go", "Python", "TypeScript", "Spring Boot", "Kafka", "Flink", "React", "Docker"]
+  },
+  "categories": ["个人项目", "工作项目", "学习项目"],
+  "projects": {
+    "MyGoProject": {
+      "display": "MyGoProject · 短链服务",
+      "category": "个人项目",
+      "featured": true,
+      "tagline": "Go + Gin + SQLite 的短链 REST API，OpenSpec 规格驱动，一个二进制即可运行。",
+      "highlights": ["接口驱动三层依赖单向", "统一错误模型 + 请求 ID", "IP 令牌桶限流", "优雅关闭"]
+    },
+    "Ride-hailing-order-monitoring": {
+      "display": "网约车订单异常告警与监控系统",
+      "category": "个人项目",
+      "featured": true,
+      "tagline": "NYC TLC 真实数据模拟订单流，Kafka → Flink 检测 → ES → Grafana + 邮件的最小实时风控链路。",
+      "highlights": ["侧输出分流异常订单", "事件时间滚动窗口", "Haversine + TLC 计费阈值", "告警限流"]
+    },
+    "MyhealthCloudeV2": {
+      "display": "算力调度运营平台 V2",
+      "category": "个人项目",
+      "featured": true,
+      "tagline": "React 18 + TypeScript + Ant Design 5 整体重建，门户 / 控制台 / 费用中心 / 认证四条业务线。",
+      "highlights": ["V1→V2 平滑重建", "localStorage 键完全兼容", "路由级懒加载", "44 用例单测全绿"]
+    },
+    "MyhealthCloude": {
+      "display": "算力调度运营平台 V1",
+      "category": "个人项目",
+      "featured": false,
+      "note": "CloudeV2/算力平台开发",
+      "tagline": "Vue 3 + Element Plus 初版，后期用 Pinia 收敛状态耦合，档案保留在 V2 仓库 README-V1.md。"
+    },
+    "StockAnalysis": {
+      "display": "股票行情数据分析",
+      "category": "学习项目",
+      "featured": false,
+      "tagline": "pandas 指标计算 + 6 图可视化，40 年 / 10,016 个交易日的描述性分析。"
+    },
+    "DataMining": {
+      "display": "广告点击数据挖掘",
+      "category": "学习项目",
+      "featured": false,
+      "tagline": "sklearn Pipeline 分类回归 + Apriori 关联规则，170 万行 / 596 MB 的预测性挖掘。"
+    },
+    "MyfirstFlask": {
+      "display": "MyfirstFlask · 轻量笔记站",
+      "category": "学习项目",
+      "featured": false,
+      "tagline": "Flask + SQLite：注册登录、增删改查、关键词搜索，同一份代码同时输出 HTML 与 JSON API。"
+    }
+  },
+  "workProjects": [
+    {
+      "display": "PLM · BOM 导出入口",
+      "note": "PLM开发BOM入口/BOM入口开发",
+      "category": "工作项目",
+      "featured": true,
+      "tagline": "AWC 独立模块 + Spring Boot 补列服务：一键导出带层级、中文表头、BOMLine 行属性回填的 BOM 结构表。",
+      "stack": ["Teamcenter 14", "AWC 6.3.6", "Java", "Spring Boot", "JavaScript", "openpyxl"],
+      "highlights": ["4 组交叉实验定位模板引擎取值边界", "浏览器同源取件绕开 HTTP 421", "表头文字建索引 + TCUID 双校验", "失败降级为原始件"]
+    },
+    {
+      "display": "PLM · 自制导出模板",
+      "note": "PLM系统开发/自制模板开发日志",
+      "category": "工作项目",
+      "featured": false,
+      "tagline": "Teamcenter Excel 模板 v2~v13 迭代：字符串级改造 xlsx、9 列出值、层级机制与三条硬约束的来路。",
+      "stack": ["xlsm", "openpyxl", "Teamcenter Report"]
+    }
+  ]
+}
