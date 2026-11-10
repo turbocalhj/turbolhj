@@ -22,7 +22,7 @@ const NAV = [
 ];
 const ARCHIVE_SECTIONS = ['archive', 'projects', 'knowledge', 'about'];
 
-export function renderPage({ ctx, title, desc, section, content, sidebar, toc, breadcrumb, bodyClass = '' }) {
+export function renderPage({ ctx, title, desc, section, content, sidebar, toc, breadcrumb, bodyClass = '', scripts = [] }) {
   const { url } = ctx;
   const pageHref = (file) => url(file.split('/').filter(Boolean));
   const nav = NAV.map((n) => {
@@ -128,6 +128,7 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
   </div>
 </div>
 <script src="${url('assets', 'app.js')}" defer></script>
+${scripts.map((s) => `<script src="${s}" defer></script>`).join('\n')}
 </body>
 </html>`;
 }

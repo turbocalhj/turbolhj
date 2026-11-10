@@ -67,17 +67,20 @@ export function reloadPage(ctx) {
     .map((t) => `<span>${t}</span><i aria-hidden="true">✦</i>`)
     .join('');
 
-  const menu = [
+  const menuItems = [
     { n: '01', href: ctx.url('archive.html'), cn: '档案库', en: 'ARCHIVE', desc: '项目、知识库、关于 —— 全部归档在这一个页签里' },
     { n: '02', href: ctx.url('projects', 'index.html'), cn: '项目档案', en: 'PROJECTS', desc: `${totalProjects} 个作品与工作交付，附 README 与可回溯笔记` },
     { n: '03', href: ctx.url('knowledge', 'index.html'), cn: '知识库', en: 'KNOWLEDGE', desc: `${stats.notes} 篇 Obsidian 笔记，${stats.folders} 个分区，${stats.wikiLinks} 条双链` },
     { n: '04', href: ctx.url('about.html'), cn: '关于本站', en: 'ABOUT', desc: '这个人、这个站，以及它怎么搭起来的' },
-  ].map((m) => `<a class="p3r-menu-item" href="${m.href}">
+  ];
+  // React 未加载时也能跳转的静态回退；加载后由岛屿接管（选中态、目标面板、键盘）。
+  const menu = menuItems.map((m, i) => `<a class="p3r-menu-item${i === 0 ? ' is-selected' : ''}" href="${m.href}">
         <span class="p3r-menu-no">${m.n}</span>
         <span class="p3r-menu-label">${m.cn}<em>${m.en}</em></span>
         <span class="p3r-menu-desc">${m.desc}</span>
         <span class="p3r-menu-arrow" aria-hidden="true">→</span>
       </a>`).join('');
+  const menuData = JSON.stringify({ items: menuItems }).replace(/</g, '\\u003c');
 
   const works = featured.map((pr, i) => `<a class="p3r-work" href="${pr.pageHref}">
         <span class="p3r-work-no">0${i + 1}</span>
@@ -132,7 +135,8 @@ export function reloadPage(ctx) {
 <div class="p3r-wrap">
   <section class="p3r-sec p3r-menu">
     <header class="p3r-sec-head"><h2>MENU</h2><span class="p3r-sec-sub">SELECT DESTINATION</span></header>
-    <nav class="p3r-menu-list" aria-label="站点菜单">${menu}</nav>
+    <div class="p3r-menu-root" id="p3r-menu-root">${menu}</div>
+    <script type="application/json" id="p3r-menu-root-data">${menuData}</script>
     <p class="p3r-menu-hint"><kbd>↑</kbd><kbd>↓</kbd> 选择 <kbd>Enter</kbd> 进入 <span>1–4 快捷跳转</span></p>
   </section>
   <section class="p3r-sec">
@@ -154,6 +158,7 @@ export function reloadPage(ctx) {
     section: 'home',
     content,
     bodyClass: 'p3r-home',
+    scripts: [ctx.url('assets', 'islands.js')],
   });
 }
 

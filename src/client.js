@@ -77,34 +77,6 @@
     document.body.classList.remove('is-leaving');
   });
 
-  /* ---------- 首页菜单键盘操作 ---------- */
-  const menuItems = $$('.p3r-menu-item');
-  if (menuItems.length) {
-    let menuSel = 0;
-    const paintMenu = () => menuItems.forEach((el, i) => el.classList.toggle('is-selected', i === menuSel));
-    menuItems.forEach((el, i) => {
-      el.addEventListener('mouseenter', () => { menuSel = i; paintMenu(); });
-      el.addEventListener('focus', () => { menuSel = i; paintMenu(); });
-    });
-    paintMenu();
-    document.addEventListener('keydown', (e) => {
-      if (!document.body.classList.contains('p3r-home')) return;
-      const so = $('#search-overlay');
-      if (so && !so.hidden) return;
-      if (/input|textarea|select/i.test(document.activeElement.tagName)) return;
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        menuSel = (menuSel + (e.key === 'ArrowDown' ? 1 : -1) + menuItems.length) % menuItems.length;
-        paintMenu();
-        menuItems[menuSel].focus({ preventScroll: true });
-        menuItems[menuSel].scrollIntoView({ block: 'nearest' });
-      } else if (/^[1-4]$/.test(e.key)) {
-        const item = menuItems[Number(e.key) - 1];
-        if (item) { e.preventDefault(); item.click(); }
-      }
-    });
-  }
-
   /* ---------- 自定义光标 ---------- */
   const cursor = $('#p3r-cursor');
   if (cursor && !reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {

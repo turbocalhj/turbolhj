@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import * as esbuild from 'esbuild';
 import { createEngine, renderPlainMarkdown, escapeHtml } from './src/markdown.js';
 import { loadVault, createLinkIndex } from './src/vault.js';
 import { renderPage, makeUrl } from './src/layout.js';
@@ -291,6 +292,26 @@ writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/a
 writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client.js'), 'utf8'));
 writeFile(path.join('assets', 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#08103a"/><path d="M21 5a11 11 0 1 0 7 7 9 9 0 1 1-7-7Z" fill="#6fa8ff"/><path d="M23 8l1.2 3.2L27.4 12l-3.2 1.2L23 16.4l-1.2-3.2L18.6 12l3.2-1.2Z" fill="#eaf6ff"/></svg>`);
 
+// ---------- React 岛屿 ----------
+const islandBytes = await bundleIslands();
+
+async function bundleIslands() {
+  const out = path.join(DIST, 'assets', 'islands.js');
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  await esbuild.build({
+    entryPoints: [path.join(ROOT, 'src/islands/index.jsx')],
+    bundle: true,
+    minify: true,
+    format: 'iife',
+    target: ['es2020'],
+    jsx: 'automatic',
+    define: { 'process.env.NODE_ENV': '"production"' },
+    outfile: out,
+    logLevel: 'warning',
+  });
+  return fs.statSync(out).size;
+}
+
 function writeFile(rel, content) {
   const abs = path.join(DIST, rel);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
@@ -304,6 +325,7 @@ console.log(`  笔记 ${stats.notes} 篇 / 分区 ${stats.folders} 个 / 标题 
 console.log(`  代码块 ${stats.snippets} 个 / ${stats.codeLines} 行；知识库体积 ${(stats.bytes / 1048576).toFixed(2)} MB`);
 console.log(`  项目 ${projects.length} 个（开源 ${ghRepos.length}）/ 提交 ${stats.commits}`);
 console.log(`  产物 ${totalFiles} 个文件 → dist/`);
+console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅首页加载）`);
 console.log(`  搜索索引 ${searchDocs.length} 个小节（${(fs.statSync(path.join(DIST, 'assets/search-index.json')).size / 1024).toFixed(0)} KB）`);
 if (degradedList.length) {
   const uniq = [...new Set(degradedList)];
