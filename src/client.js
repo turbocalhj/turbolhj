@@ -3,11 +3,144 @@
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- 载入动画 ---------- */
+  const booting = document.documentElement.classList.contains('is-booting');
+  const loader = $('#p3r-loader');
+  const endBoot = () => {
+    document.documentElement.classList.remove('is-booting');
+    if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+    try { sessionStorage.setItem('p3r-booted', '1'); } catch (e) {}
+  };
+
+  if (booting) {
+    const fill = $('#p3r-loader-fill');
+    const pct = $('#p3r-loader-pct');
+    if (!loader || reduceMotion) {
+      endBoot();
+    } else {
+      const started = performance.now();
+      const duration = 1150;
+      const step = (now) => {
+        const t = Math.min(1, (now - started) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const n = Math.round(eased * 100);
+        if (fill) fill.style.width = n + '%';
+        if (pct) pct.textContent = String(n).padStart(2, '0');
+        if (t < 1) { requestAnimationFrame(step); return; }
+        loader.classList.add('is-exit');
+        setTimeout(endBoot, 760);
+      };
+      requestAnimationFrame(step);
+      setTimeout(() => {
+        if (document.documentElement.classList.contains('is-booting')) endBoot();
+      }, 6000);
+    }
+  }
+
+  /* ---------- 顶栏时钟 ---------- */
+  const clockTime = $('#p3r-clock-time');
+  const clockDay = $('#p3r-clock-day');
+  const clockDate = $('#p3r-clock-date');
+  if (clockTime) {
+    const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const tickClock = () => {
+      const d = new Date();
+      clockTime.textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      if (clockDay) clockDay.textContent = days[d.getDay()];
+      if (clockDate) clockDate.textContent = `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+    };
+    tickClock();
+    setInterval(tickClock, 1000);
+  }
+
+  /* ---------- 页面切换：P3R 斜切转场 ---------- */
+  const transition = $('#p3r-transition');
+  document.addEventListener('click', (e) => {
+    if (reduceMotion || !transition || e.defaultPrevented || e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+    let u;
+    try { u = new URL(a.href, location.href); } catch (err) { return; }
+    if (u.origin !== location.origin) return;
+    if (u.pathname === location.pathname && u.search === location.search) return;
+    e.preventDefault();
+    transition.classList.add('is-active');
+    document.body.classList.add('is-leaving');
+    setTimeout(() => { location.href = u.href; }, 620);
+  });
+  window.addEventListener('pageshow', () => {
+    if (!transition) return;
+    transition.classList.remove('is-active');
+    document.body.classList.remove('is-leaving');
+  });
+
+  /* ---------- 首页菜单键盘操作 ---------- */
+  const menuItems = $$('.p3r-menu-item');
+  if (menuItems.length) {
+    let menuSel = 0;
+    const paintMenu = () => menuItems.forEach((el, i) => el.classList.toggle('is-selected', i === menuSel));
+    menuItems.forEach((el, i) => {
+      el.addEventListener('mouseenter', () => { menuSel = i; paintMenu(); });
+      el.addEventListener('focus', () => { menuSel = i; paintMenu(); });
+    });
+    paintMenu();
+    document.addEventListener('keydown', (e) => {
+      if (!document.body.classList.contains('p3r-home')) return;
+      const so = $('#search-overlay');
+      if (so && !so.hidden) return;
+      if (/input|textarea|select/i.test(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        menuSel = (menuSel + (e.key === 'ArrowDown' ? 1 : -1) + menuItems.length) % menuItems.length;
+        paintMenu();
+        menuItems[menuSel].focus({ preventScroll: true });
+        menuItems[menuSel].scrollIntoView({ block: 'nearest' });
+      } else if (/^[1-4]$/.test(e.key)) {
+        const item = menuItems[Number(e.key) - 1];
+        if (item) { e.preventDefault(); item.click(); }
+      }
+    });
+  }
+
+  /* ---------- 自定义光标 ---------- */
+  const cursor = $('#p3r-cursor');
+  if (cursor && !reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let cx = window.innerWidth / 2;
+    let cy = window.innerHeight / 2;
+    let tx = cx;
+    let ty = cy;
+    window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+    const follow = () => {
+      cx += (tx - cx) * 0.18;
+      cy += (ty - cy) * 0.18;
+      cursor.style.transform = `translate3d(${cx.toFixed(2)}px, ${cy.toFixed(2)}px, 0)`;
+      requestAnimationFrame(follow);
+    };
+    requestAnimationFrame(follow);
+    const hot = 'a, button, .card, .p3r-work, .p3r-menu-item, input, textarea, [role="button"]';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest && e.target.closest(hot)) cursor.classList.add('is-hot');
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (!e.relatedTarget || !(e.relatedTarget.closest && e.relatedTarget.closest(hot))) cursor.classList.remove('is-hot');
+    });
+  }
+
+  /* ---------- 卡片聚光跟随 ---------- */
+  $$('.card, .foldercard, .p3r-work, .pager-item, .flist-item').forEach((el) => {
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      el.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
 
   /* ---------- 主题 ---------- */
   const themeBtn = $('#theme-toggle');
-  const current = () => document.documentElement.dataset.theme
-    || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const current = () => document.documentElement.dataset.theme || 'dark';
   const paintTheme = () => { if (themeBtn) themeBtn.textContent = current() === 'dark' ? '☾' : '☀'; };
   if (themeBtn) {
     paintTheme();
@@ -88,7 +221,7 @@
   const overlay = $('#search-overlay');
   const input = $('#search-input');
   const results = $('#search-results');
-  const opener = $('#search-open');
+  const openers = $$('#search-open, [data-search-open]');
   let index = null;
   let loading = null;
   let sel = 0;
@@ -214,8 +347,8 @@
     overlay.hidden = true;
     document.body.style.overflow = '';
   }
-  if (overlay && opener) {
-    opener.addEventListener('click', open);
+  if (overlay && openers.length) {
+    openers.forEach((btn) => btn.addEventListener('click', open));
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
     input.addEventListener('input', () => render(input.value));
     input.addEventListener('keydown', (e) => {

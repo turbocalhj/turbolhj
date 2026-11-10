@@ -45,7 +45,119 @@ export function buildSidebar(ctx, currentId) {
   return `<aside class="sidebar" aria-label="知识库目录"><div class="sidebar-head"><a href="${ctx.url('knowledge', 'index.html')}">知识库 · ${ctx.notes.length} 篇</a><input class="side-filter" id="side-filter" type="search" placeholder="筛选目录" autocomplete="off"></div><div class="side-body">${body}</div></aside>`;
 }
 
-export function homePage(ctx) {
+/**
+ * P3R 风格主页：标题画面 + 菜单 + 精选作品。
+ * 站内其余功能全部收进「档案库」一个页签，这里是入口。
+ */
+export function reloadPage(ctx) {
+  const p = ctx.profile;
+  const stats = ctx.stats;
+  const featured = ctx.featuredProjects.slice(0, 3);
+  const totalProjects = stats.repos + p.workProjects.length;
+
+  const tickerItems = [
+    `${stats.notes} NOTES`,
+    `${totalProjects} PROJECTS`,
+    `${stats.wikiLinks} BACKLINKS`,
+    `${stats.commits} COMMITS`,
+    `${stats.folders} SECTIONS`,
+    `${stats.headings} HEADINGS`,
+  ];
+  const ticker = [...tickerItems, ...tickerItems]
+    .map((t) => `<span>${t}</span><i aria-hidden="true">✦</i>`)
+    .join('');
+
+  const menu = [
+    { n: '01', href: ctx.url('archive.html'), cn: '档案库', en: 'ARCHIVE', desc: '项目、知识库、关于 —— 全部归档在这一个页签里' },
+    { n: '02', href: ctx.url('projects', 'index.html'), cn: '项目档案', en: 'PROJECTS', desc: `${totalProjects} 个作品与工作交付，附 README 与可回溯笔记` },
+    { n: '03', href: ctx.url('knowledge', 'index.html'), cn: '知识库', en: 'KNOWLEDGE', desc: `${stats.notes} 篇 Obsidian 笔记，${stats.folders} 个分区，${stats.wikiLinks} 条双链` },
+    { n: '04', href: ctx.url('about.html'), cn: '关于本站', en: 'ABOUT', desc: '这个人、这个站，以及它怎么搭起来的' },
+  ].map((m) => `<a class="p3r-menu-item" href="${m.href}">
+        <span class="p3r-menu-no">${m.n}</span>
+        <span class="p3r-menu-label">${m.cn}<em>${m.en}</em></span>
+        <span class="p3r-menu-desc">${m.desc}</span>
+        <span class="p3r-menu-arrow" aria-hidden="true">→</span>
+      </a>`).join('');
+
+  const works = featured.map((pr, i) => `<a class="p3r-work" href="${pr.pageHref}">
+        <span class="p3r-work-no">0${i + 1}</span>
+        <span class="p3r-work-cat">${escapeHtml(pr.category)} · ${escapeHtml(pr.stackTop)}</span>
+        <h3>${escapeHtml(pr.display)}</h3>
+        <p>${escapeHtml(pr.tagline)}</p>
+        <span class="p3r-work-more">VIEW FILE <i aria-hidden="true">→</i></span>
+      </a>`).join('');
+
+  const content = `
+<section class="p3r-hero">
+  <div class="p3r-hero-band" aria-hidden="true"></div>
+  <div class="p3r-hero-ghost" aria-hidden="true">P3R</div>
+  <div class="p3r-hero-inner">
+    <div class="p3r-hero-copy">
+      <p class="p3r-kicker"><i aria-hidden="true">✦</i> PERSONAL ARCHIVE <span>/</span> 2026 <span>/</span> DARK HOUR</p>
+      <h1 class="p3r-logo">
+        <span class="p3r-logo-top">PERSONAL</span>
+        <span class="p3r-logo-main">RELOAD</span>
+      </h1>
+      <p class="p3r-name">${escapeHtml(p.person.name)}<em>turbocalhj</em></p>
+      <p class="p3r-role">${escapeHtml(p.person.role)}</p>
+      <div class="p3r-actions">
+        <a class="p3r-btn p3r-btn-main" href="${ctx.url('archive.html')}">进入档案库<b aria-hidden="true">→</b></a>
+        <a class="p3r-btn" href="${p.github}" target="_blank" rel="noopener">GitHub <b aria-hidden="true">↗</b></a>
+        <button class="p3r-btn p3r-btn-ghost" type="button" data-search-open>搜索笔记<kbd>/</kbd></button>
+      </div>
+      <p class="p3r-meta"><span>${stats.notes} 篇笔记</span><span>${totalProjects} 个项目</span><span>${stats.wikiLinks} 条双链</span></p>
+    </div>
+    <div class="p3r-emblem" aria-hidden="true">
+      <div class="p3r-emblem-ring"></div>
+      <svg viewBox="0 0 240 240" role="presentation">
+        <defs>
+          <linearGradient id="p3r-moon" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#bff1ff"/>
+            <stop offset=".45" stop-color="#5a8dff"/>
+            <stop offset="1" stop-color="#1230a8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="120" cy="120" r="108" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 9" opacity=".55"/>
+        <circle cx="120" cy="120" r="84" fill="none" stroke="currentColor" stroke-width="1" opacity=".22"/>
+        <path d="M152 28a92 92 0 1 0 60 60 72 72 0 1 1-60-60Z" fill="url(#p3r-moon)"/>
+        <path d="M188 54l4.6 12.2L205 71l-12.4 4.8L188 88l-4.6-12.2L171 71l12.4-4.8Z" fill="#eaf6ff"/>
+        <circle cx="74" cy="170" r="3" fill="#bff1ff"/>
+        <circle cx="196" cy="132" r="2" fill="#bff1ff" opacity=".8"/>
+      </svg>
+      <span class="p3r-emblem-tag">MOON · 00:00</span>
+    </div>
+  </div>
+  <div class="p3r-ticker" aria-hidden="true"><div class="p3r-ticker-track">${ticker}</div></div>
+</section>
+<div class="p3r-wrap">
+  <section class="p3r-sec p3r-menu">
+    <header class="p3r-sec-head"><h2>MENU</h2><span class="p3r-sec-sub">SELECT DESTINATION</span></header>
+    <nav class="p3r-menu-list" aria-label="站点菜单">${menu}</nav>
+    <p class="p3r-menu-hint"><kbd>↑</kbd><kbd>↓</kbd> 选择 <kbd>Enter</kbd> 进入 <span>1–4 快捷跳转</span></p>
+  </section>
+  <section class="p3r-sec">
+    <header class="p3r-sec-head"><h2>SELECTED WORKS</h2><a class="p3r-sec-link" href="${ctx.url('projects', 'index.html')}">全部项目 →</a></header>
+    <div class="p3r-works">${works}</div>
+  </section>
+  <section class="p3r-cta">
+    <div>
+      <p class="p3r-cta-kicker">THE JOURNEY CONTINUES</p>
+      <h2>把项目、笔记与思考<br>收进同一个档案库。</h2>
+    </div>
+    <a class="p3r-btn p3r-btn-main" href="${ctx.url('archive.html')}">打开档案库<b aria-hidden="true">→</b></a>
+  </section>
+</div>`;
+
+  return renderPageWrap(ctx, {
+    title: `${p.site.title} · ${p.site.tagline}`,
+    desc: p.site.description,
+    section: 'home',
+    content,
+    bodyClass: 'p3r-home',
+  });
+}
+
+export function archivePage(ctx) {
   const p = ctx.profile;
   const featured = ctx.featuredProjects;
   const folders = ctx.folders;
@@ -84,6 +196,12 @@ export function homePage(ctx) {
   const stack = p.person.stack.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join('');
 
   const content = `
+<nav class="subnav" aria-label="档案库分区">
+  <span class="subnav-tag">ARCHIVE</span>
+  <a href="${ctx.url('projects', 'index.html')}">项目<em>PROJECTS</em></a>
+  <a href="${ctx.url('knowledge', 'index.html')}">知识库<em>KNOWLEDGE</em></a>
+  <a href="${ctx.url('about.html')}">关于<em>ABOUT</em></a>
+</nav>
 <section class="hero">
   <div class="hero-text">
     <h1>${escapeHtml(p.person.name)}<span class="hero-role">${escapeHtml(p.person.role)}</span></h1>
@@ -100,9 +218,9 @@ export function homePage(ctx) {
 <section class="band"><h2 class="band-title">知识地图</h2><p class="band-sub">技术主线打底，项目档案落地，两边用双链互指。</p><div class="grid grid-3">${folderCards}</div><p class="band-more"><a href="${ctx.url('knowledge', 'index.html')}">知识库总览 →</a></p></section>`;
 
   return renderPageWrap(ctx, {
-    title: `${p.site.title} · ${p.site.tagline}`,
+    title: `档案库 · ${p.site.title}`,
     desc: p.site.description,
-    section: 'home',
+    section: 'archive',
     content,
   });
 }

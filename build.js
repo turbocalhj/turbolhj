@@ -3,7 +3,7 @@ import path from 'node:path';
 import { createEngine, renderPlainMarkdown, escapeHtml } from './src/markdown.js';
 import { loadVault, createLinkIndex } from './src/vault.js';
 import { renderPage, makeUrl } from './src/layout.js';
-import { homePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -274,7 +274,8 @@ for (const r of ghRepos) langCount.set(r.language || '其他', (langCount.get(r.
 ctx.langStats = [...langCount].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 
 // ---------- 站点页面 ----------
-writeFile('index.html', homePage(ctx));
+writeFile('index.html', reloadPage(ctx));
+writeFile('archive.html', archivePage(ctx));
 writeFile(path.join('knowledge', 'index.html'), knowledgePage(ctx));
 for (const f of folders) writeFile(path.join('knowledge', 'f', f.key) + '.html', folderPage(ctx, f));
 writeFile(path.join('projects', 'index.html'), projectsPage(ctx));
@@ -288,7 +289,7 @@ writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
 }));
 writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/app.css'), 'utf8'));
 writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client.js'), 'utf8'));
-writeFile(path.join('assets', 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#11100e"/><text x="16" y="22" font-family="Inter,SF Pro Display,PingFang SC,Microsoft YaHei,sans-serif" font-size="16" font-weight="700" fill="#f0ede8" text-anchor="middle">L</text><circle cx="25" cy="8" r="3" fill="#d98a5f"/></svg>`);
+writeFile(path.join('assets', 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#08103a"/><path d="M21 5a11 11 0 1 0 7 7 9 9 0 1 1-7-7Z" fill="#6fa8ff"/><path d="M23 8l1.2 3.2L27.4 12l-3.2 1.2L23 16.4l-1.2-3.2L18.6 12l3.2-1.2Z" fill="#eaf6ff"/></svg>`);
 
 function writeFile(rel, content) {
   const abs = path.join(DIST, rel);
