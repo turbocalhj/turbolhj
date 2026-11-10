@@ -82,13 +82,21 @@ export function reloadPage(ctx) {
       </a>`).join('');
   const menuData = JSON.stringify({ items: menuItems }).replace(/</g, '\\u003c');
 
-  const works = featured.map((pr, i) => `<a class="p3r-work" href="${pr.pageHref}">
-        <span class="p3r-work-no">0${i + 1}</span>
-        <span class="p3r-work-cat">${escapeHtml(pr.category)} · ${escapeHtml(pr.stackTop)}</span>
-        <h3>${escapeHtml(pr.display)}</h3>
-        <p>${escapeHtml(pr.tagline)}</p>
+  const worksData = featured.map((pr, i) => ({
+    no: '0' + (i + 1),
+    href: pr.pageHref,
+    cat: `${escapeHtml(pr.category)} · ${escapeHtml(pr.stackTop)}`,
+    title: escapeHtml(pr.display),
+    tagline: escapeHtml(pr.tagline),
+  }));
+  const works = worksData.map((w) => `<a class="p3r-work" href="${w.href}">
+        <span class="p3r-work-no">${w.no}</span>
+        <span class="p3r-work-cat">${w.cat}</span>
+        <h3>${w.title}</h3>
+        <p>${w.tagline}</p>
         <span class="p3r-work-more">VIEW FILE <i aria-hidden="true">→</i></span>
       </a>`).join('');
+  const worksJson = JSON.stringify({ items: worksData }).replace(/</g, '\\u003c');
 
   const content = `
 <section class="p3r-hero">
@@ -141,7 +149,8 @@ export function reloadPage(ctx) {
   </section>
   <section class="p3r-sec">
     <header class="p3r-sec-head"><h2>SELECTED WORKS</h2><a class="p3r-sec-link" href="${ctx.url('projects', 'index.html')}">全部项目 →</a></header>
-    <div class="p3r-works">${works}</div>
+    <div class="p3r-works-root" id="p3r-works-root"><div class="p3r-works">${works}</div></div>
+    <script type="application/json" id="p3r-works-root-data">${worksJson}</script>
   </section>
   <section class="p3r-cta">
     <div>
@@ -237,23 +246,34 @@ export function knowledgePage(ctx) {
     const r = ctx.engine.render(moc.body);
     mocHtml = `<div class="prose">${r.html}</div>`;
   }
-  const folderCards = ctx.folders.map((f) => {
-    const items = f.notes.slice(0, 12).map((n) => `<a href="${noteUrl(ctx, n.id)}">${escapeHtml(n.base)}</a>`).join('');
+  const kbFolders = ctx.folders.map((f) => ({
+    key: f.key,
+    label: f.label,
+    href: f.indexId ? noteUrl(ctx, f.indexId) : ctx.folderPageUrl(f.key),
+    more: ctx.folderPageUrl(f.key),
+    desc: f.desc || '',
+    count: f.notes.length,
+    notes: f.notes.map((n) => ({ base: n.base, href: noteUrl(ctx, n.id) })),
+  }));
+  const folderCards = kbFolders.map((f) => {
+    const items = f.notes.slice(0, 12).map((n) => `<a href="${n.href}">${escapeHtml(n.base)}</a>`).join('');
     return `<article class="foldercard">
-      <header><h3><a href="${f.indexId ? noteUrl(ctx, f.indexId) : ctx.folderPageUrl(f.key)}">${escapeHtml(f.label)}</a></h3><span class="count">${f.notes.length}</span></header>
+      <header><h3><a href="${f.href}">${escapeHtml(f.label)}</a></h3><span class="count">${f.count}</span></header>
       ${f.desc ? `<p>${escapeHtml(f.desc)}</p>` : ''}
-      <div class="foldercard-notes">${items}${f.notes.length > 12 ? `<a class="more" href="${ctx.folderPageUrl(f.key)}">全部 ${f.notes.length} 篇 →</a>` : ''}</div>
+      <div class="foldercard-notes">${items}${f.count > 12 ? `<a class="more" href="${f.more}">全部 ${f.count} 篇 →</a>` : ''}</div>
     </article>`;
   }).join('');
+  const kbJson = JSON.stringify({ folders: kbFolders }).replace(/</g, '\\u003c');
   const content = `
 <section class="page-head"><h1>知识库</h1><p class="page-sub">来自本地 Obsidian 库 <code>${escapeHtml(ctx.profile.vault)}</code>，共 ${ctx.notes.length} 篇笔记、${ctx.stats.folders} 个分区。双链、代码块、表格按原样保留并转为站内链接。</p></section>
 ${mocHtml}
-<section class="band"><h2 class="band-title">分区</h2><div class="grid grid-2">${folderCards}</div></section>`;
+<section class="band"><h2 class="band-title">分区</h2><div class="kb-root" id="kb-root"><div class="grid grid-2">${folderCards}</div></div><script type="application/json" id="kb-root-data">${kbJson}</script></section>`;
   return renderPageWrap(ctx, {
     title: '知识库 · ' + ctx.profile.site.title,
     section: 'knowledge',
     content,
     sidebar: buildSidebar(ctx, null),
+    scripts: [ctx.url('assets', 'islands.js')],
   });
 }
 

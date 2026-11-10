@@ -325,7 +325,7 @@ console.log(`  笔记 ${stats.notes} 篇 / 分区 ${stats.folders} 个 / 标题 
 console.log(`  代码块 ${stats.snippets} 个 / ${stats.codeLines} 行；知识库体积 ${(stats.bytes / 1048576).toFixed(2)} MB`);
 console.log(`  项目 ${projects.length} 个（开源 ${ghRepos.length}）/ 提交 ${stats.commits}`);
 console.log(`  产物 ${totalFiles} 个文件 → dist/`);
-console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅首页加载）`);
+console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅首页与知识库页加载）`);
 console.log(`  搜索索引 ${searchDocs.length} 个小节（${(fs.statSync(path.join(DIST, 'assets/search-index.json')).size / 1024).toFixed(0)} KB）`);
 if (degradedList.length) {
   const uniq = [...new Set(degradedList)];
