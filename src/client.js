@@ -5,110 +5,65 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- 载入动画 ---------- */
+  /* ---------- 载入：Memento Mori 白屏 → 蓝潮覆盖 ---------- */
   const booting = document.documentElement.classList.contains('is-booting');
-  const loader = $('#p3r-loader');
-  const endBoot = () => {
-    document.documentElement.classList.remove('is-booting');
-    if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-    try { sessionStorage.setItem('p3r-booted', '1'); } catch (e) {}
-  };
-
+  const boot = $('#boot');
   if (booting) {
-    const fill = $('#p3r-loader-fill');
-    const pct = $('#p3r-loader-pct');
-    if (!loader || reduceMotion) {
-      endBoot();
+    let ended = false;
+    const timers = [];
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      timers.forEach(clearTimeout);
+      if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
+      document.documentElement.classList.remove('is-booting');
+      try { sessionStorage.setItem('mm-boot', '1'); } catch (e) {}
+    };
+    if (!boot || reduceMotion) {
+      finish();
     } else {
-      const started = performance.now();
-      const duration = 1150;
-      const step = (now) => {
-        const t = Math.min(1, (now - started) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const n = Math.round(eased * 100);
-        if (fill) fill.style.width = n + '%';
-        if (pct) pct.textContent = String(n).padStart(2, '0');
-        if (t < 1) { requestAnimationFrame(step); return; }
-        loader.classList.add('is-exit');
-        setTimeout(endBoot, 760);
-      };
-      requestAnimationFrame(step);
-      setTimeout(() => {
-        if (document.documentElement.classList.contains('is-booting')) endBoot();
-      }, 6000);
+      const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+      requestAnimationFrame(() => boot.classList.add('is-on'));
+      at(1050, () => boot.classList.add('is-open'));
+      at(1500, () => boot.classList.add('is-text-out'));
+      at(2050, () => boot.classList.add('is-done'));
+      at(2500, finish);
+      const skip = () => finish();
+      boot.addEventListener('click', skip);
+      window.addEventListener('keydown', function onKey(e) {
+        if (ended) { window.removeEventListener('keydown', onKey); return; }
+        if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') skip();
+      });
     }
   }
 
-  /* ---------- 顶栏时钟 ---------- */
-  const clockTime = $('#p3r-clock-time');
-  const clockDay = $('#p3r-clock-day');
-  const clockDate = $('#p3r-clock-date');
+  /* ---------- 首页时钟 ---------- */
+  const clockTime = $('#home-clock-time');
   if (clockTime) {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    const tickClock = () => {
+    const clockDay = $('#home-clock-day');
+    const clockDate = $('#home-clock-date');
+    const tick = () => {
       const d = new Date();
       clockTime.textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
       if (clockDay) clockDay.textContent = days[d.getDay()];
-      if (clockDate) clockDate.textContent = `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+      if (clockDate) clockDate.textContent = `${String(d.getMonth() + 1).padStart(2, '0')} / ${String(d.getDate()).padStart(2, '0')}`;
     };
-    tickClock();
-    setInterval(tickClock, 1000);
+    tick();
+    setInterval(tick, 1000);
   }
 
-  /* ---------- 页面切换：P3R 斜切转场 ---------- */
-  const transition = $('#p3r-transition');
-  document.addEventListener('click', (e) => {
-    if (reduceMotion || !transition || e.defaultPrevented || e.button !== 0) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    const a = e.target.closest('a[href]');
-    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
-    let u;
-    try { u = new URL(a.href, location.href); } catch (err) { return; }
-    if (u.origin !== location.origin) return;
-    if (u.pathname === location.pathname && u.search === location.search) return;
-    e.preventDefault();
-    transition.classList.add('is-active');
-    document.body.classList.add('is-leaving');
-    setTimeout(() => { location.href = u.href; }, 620);
-  });
-  window.addEventListener('pageshow', () => {
-    if (!transition) return;
-    transition.classList.remove('is-active');
-    document.body.classList.remove('is-leaving');
-  });
-
-  /* ---------- 自定义光标 ---------- */
-  const cursor = $('#p3r-cursor');
-  if (cursor && !reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    let cx = window.innerWidth / 2;
-    let cy = window.innerHeight / 2;
-    let tx = cx;
-    let ty = cy;
-    window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; }, { passive: true });
-    const follow = () => {
-      cx += (tx - cx) * 0.18;
-      cy += (ty - cy) * 0.18;
-      cursor.style.transform = `translate3d(${cx.toFixed(2)}px, ${cy.toFixed(2)}px, 0)`;
-      requestAnimationFrame(follow);
+  /* ---------- 首页顶栏：离开主视觉后转为实心玻璃 ---------- */
+  const topbar = $('.topbar');
+  const hero = $('.home-hero');
+  if (topbar && hero) {
+    const onScroll = () => {
+      topbar.classList.toggle('is-solid', window.scrollY > hero.offsetHeight - 120);
     };
-    requestAnimationFrame(follow);
-    const hot = 'a, button, .card, .p3r-work, .p3r-menu-item, input, textarea, [role="button"]';
-    document.addEventListener('mouseover', (e) => {
-      if (e.target.closest && e.target.closest(hot)) cursor.classList.add('is-hot');
-    });
-    document.addEventListener('mouseout', (e) => {
-      if (!e.relatedTarget || !(e.relatedTarget.closest && e.relatedTarget.closest(hot))) cursor.classList.remove('is-hot');
-    });
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
   }
-
-  /* ---------- 卡片聚光跟随 ---------- */
-  $$('.card, .foldercard, .p3r-work, .pager-item, .flist-item').forEach((el) => {
-    el.addEventListener('pointermove', (e) => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--mx', `${e.clientX - r.left}px`);
-      el.style.setProperty('--my', `${e.clientY - r.top}px`);
-    });
-  });
 
   /* ---------- 主题 ---------- */
   const themeBtn = $('#theme-toggle');
@@ -185,6 +140,15 @@
         const nameHit = !q || g.querySelector('summary').textContent.toLowerCase().includes(q);
         g.style.display = hits || nameHit ? '' : 'none';
         if (q && hits) g.open = true;
+      });
+      $$('.side-section').forEach((label) => {
+        let el = label.nextElementSibling;
+        let any = false;
+        while (el && !el.classList.contains('side-section')) {
+          if (el.classList.contains('side-group') && el.style.display !== 'none') any = true;
+          el = el.nextElementSibling;
+        }
+        label.style.display = any ? '' : 'none';
       });
     });
   }

@@ -1,7 +1,23 @@
 import { escapeHtml } from './markdown.js';
 
-const MAINLINE = ['前端', '后端', '框架', '语言', '数据库', '计算机基础', 'DevOps', '大数据', 'Agent'];
-const PROJECT_FOLDERS = ['短链服务', '网约车监控', 'CloudeV2', 'PLM开发BOM入口', 'PLM系统开发', '数据分析挖掘'];
+const MAINLINE = ['前端', '后端', '框架', '语言', '数据库', '计算机基础', 'DevOps', '大数据', 'Agent', '学习'];
+const PROJECT_FOLDERS = ['短链服务', '网约车监控', 'CloudeV2', 'PLM系统开发', '动力微服务', '数据分析挖掘'];
+
+const KB_BLURB = {
+  '前端': 'HTML / CSS / JS、Vue / React 与工程化实践。',
+  '后端': '接口、鉴权、事务与 Spring Boot 服务端笔记。',
+  '框架': 'Spring、Flask、FastAPI 等框架的用法与对照。',
+  '语言': 'Java、Python、TS 等语言的语法与陷阱。',
+  '数据库': 'MySQL、Redis、MongoDB 与设计清单。',
+  '计算机基础': '计算机网络、操作系统与面试概念。',
+  'DevOps': 'Linux、Docker、Git 与 CI/CD 工具链。',
+  '大数据': 'Flink、Kafka、Hive 与数据处理链路。',
+  'Agent': 'LLM、RAG 与智能体工程笔记。',
+  '学习': '方法论、复盘与长期学习记录。',
+  '工作链': '企业工作流与协作链路记录。',
+};
+
+const isProjectFolder = (key) => PROJECT_FOLDERS.includes(String(key).split('/')[0]);
 
 export function noteUrl(ctx, id) {
   return ctx.url('notes', ...String(id).split('/')) + '.html';
@@ -22,7 +38,7 @@ function card({ eyebrow, title, desc, meta, links, cls = '' }) {
 </article>`;
 }
 
-/** 左侧知识库目录树 */
+/** 左侧知识库目录树：技术笔记与项目档案分开 */
 export function buildSidebar(ctx, currentId) {
   const groups = [];
   const seen = new Map();
@@ -34,140 +50,151 @@ export function buildSidebar(ctx, currentId) {
     }
     seen.get(key).items.push(n);
   }
-  const body = groups.map((g) => {
+  const renderGroup = (g) => {
     const open = currentId && currentId.startsWith(`${g.key}/`) ? ' open' : '';
     const items = g.items.map((n) => {
       const active = n.id === currentId;
       return `<a class="side-note${n.isIndex ? ' is-index' : ''}${active ? ' is-active' : ''}" href="${noteUrl(ctx, n.id)}">${escapeHtml(n.base)}</a>`;
     }).join('');
     return `<details class="side-group"${open}><summary><span>${escapeHtml(g.key)}</span><em>${g.items.length}</em></summary><div class="side-items">${items}</div></details>`;
-  }).join('');
+  };
+  const sectionLabel = (label, sub) => `<div class="side-section"><b>${label}</b><span>${sub}</span></div>`;
+  const rank = (key) => {
+    const i = MAINLINE.indexOf(key);
+    return i === -1 ? MAINLINE.length : i;
+  };
+  groups.sort((a, b) => rank(a.key) - rank(b.key) || a.key.localeCompare(b.key, 'zh'));
+  const tech = groups.filter((g) => !isProjectFolder(g.key));
+  const proj = groups.filter((g) => isProjectFolder(g.key));
+  const body = [
+    tech.length ? sectionLabel('技术笔记', 'TECH') + tech.map(renderGroup).join('') : '',
+    proj.length ? sectionLabel('项目档案', 'PROJECTS') + proj.map(renderGroup).join('') : '',
+  ].join('');
   return `<aside class="sidebar" aria-label="知识库目录"><div class="sidebar-head"><a href="${ctx.url('knowledge', 'index.html')}">知识库 · ${ctx.notes.length} 篇</a><input class="side-filter" id="side-filter" type="search" placeholder="筛选目录" autocomplete="off"></div><div class="side-body">${body}</div></aside>`;
 }
 
 /**
- * P3R 风格主页：标题画面 + 菜单 + 精选作品。
- * 站内其余功能全部收进「档案库」一个页签，这里是入口。
+ * 首页：官方 P3R 主视觉作全屏壁纸，左侧身份与引言，右侧时钟与玻璃入口。
+ * 不放跑马灯、入场动画和指针特效，只保留克制的 hover 过渡。
  */
 export function reloadPage(ctx) {
   const p = ctx.profile;
   const stats = ctx.stats;
   const featured = ctx.featuredProjects.slice(0, 3);
-  const totalProjects = stats.repos + p.workProjects.length;
+  const totalProjects = ctx.projects.length;
+  const techFolders = ctx.folders
+    .filter((f) => f.key !== '根目录' && !isProjectFolder(f.key))
+    .slice(0, 4);
 
-  const tickerItems = [
-    `${stats.notes} NOTES`,
-    `${totalProjects} PROJECTS`,
-    `${stats.wikiLinks} BACKLINKS`,
-    `${stats.commits} COMMITS`,
-    `${stats.folders} SECTIONS`,
-    `${stats.headings} HEADINGS`,
-  ];
-  const ticker = [...tickerItems, ...tickerItems]
-    .map((t) => `<span>${t}</span><i aria-hidden="true">✦</i>`)
-    .join('');
+  const icon = {
+    projects: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>',
+    knowledge: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h9.5A2.5 2.5 0 0 1 17 7v13H7.5A2.5 2.5 0 0 1 5 17.5z"/><path d="M5 17.5A2.5 2.5 0 0 1 7.5 15H17M9 8h4"/></svg>',
+    archive: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM3 4h18v3H3zM9.5 11h5"/></svg>',
+    about: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4.5A8 8 0 1 0 20 15a6.4 6.4 0 0 1-4.5-10.5Z"/><path d="m18.5 4.5.8 2.1 2.2.8-2.2.8-.8 2.1-.8-2.1-2.2-.8 2.2-.8Z"/></svg>',
+  };
 
-  const menuItems = [
-    { n: '01', href: ctx.url('archive.html'), cn: '档案库', en: 'ARCHIVE', desc: '项目、知识库、关于 —— 全部归档在这一个页签里' },
-    { n: '02', href: ctx.url('projects', 'index.html'), cn: '项目档案', en: 'PROJECTS', desc: `${totalProjects} 个作品与工作交付，附 README 与可回溯笔记` },
-    { n: '03', href: ctx.url('knowledge', 'index.html'), cn: '知识库', en: 'KNOWLEDGE', desc: `${stats.notes} 篇 Obsidian 笔记，${stats.folders} 个分区，${stats.wikiLinks} 条双链` },
-    { n: '04', href: ctx.url('about.html'), cn: '关于本站', en: 'ABOUT', desc: '这个人、这个站，以及它怎么搭起来的' },
-  ];
-  // React 未加载时也能跳转的静态回退；加载后由岛屿接管（选中态、目标面板、键盘）。
-  const menu = menuItems.map((m, i) => `<a class="p3r-menu-item${i === 0 ? ' is-selected' : ''}" href="${m.href}">
-        <span class="p3r-menu-no">${m.n}</span>
-        <span class="p3r-menu-label">${m.cn}<em>${m.en}</em></span>
-        <span class="p3r-menu-desc">${m.desc}</span>
-        <span class="p3r-menu-arrow" aria-hidden="true">→</span>
-      </a>`).join('');
-  const menuData = JSON.stringify({ items: menuItems }).replace(/</g, '\\u003c');
+  const link = (href, ic, cn, en, n) => `<a class="home-link" href="${href}">
+        <span class="home-link-icon">${ic}</span>
+        <span class="home-link-text"><b>${cn}</b><em>${en} · ${n}</em></span>
+        <span class="home-link-arrow" aria-hidden="true">→</span>
+      </a>`;
 
-  const worksData = featured.map((pr, i) => ({
-    no: '0' + (i + 1),
-    href: pr.pageHref,
-    cat: `${escapeHtml(pr.category)} · ${escapeHtml(pr.stackTop)}`,
-    title: escapeHtml(pr.display),
-    tagline: escapeHtml(pr.tagline),
-  }));
-  const works = worksData.map((w) => `<a class="p3r-work" href="${w.href}">
-        <span class="p3r-work-no">${w.no}</span>
-        <span class="p3r-work-cat">${w.cat}</span>
-        <h3>${w.title}</h3>
-        <p>${w.tagline}</p>
-        <span class="p3r-work-more">VIEW FILE <i aria-hidden="true">→</i></span>
-      </a>`).join('');
-  const worksJson = JSON.stringify({ items: worksData }).replace(/</g, '\\u003c');
+  const works = featured.map((pr, i) => `<a class="home-work" href="${pr.pageHref}">
+      <span class="hw-no">0${i + 1}</span>
+      <div class="hw-body">
+        <span class="hw-cat">${escapeHtml(pr.category)} · ${escapeHtml(pr.stackTop)}</span>
+        <h3>${escapeHtml(pr.display)}</h3>
+        <p>${escapeHtml(pr.tagline)}</p>
+      </div>
+      <span class="hw-arrow" aria-hidden="true">↗</span>
+    </a>`).join('');
+
+  const kbCards = techFolders.map((f) => {
+    const href = f.indexId ? noteUrl(ctx, f.indexId) : ctx.folderPageUrl(f.key);
+    const desc = KB_BLURB[f.key] || (f.desc ? escapeHtml(f.desc) : '分区笔记与双链索引。');
+    return `<a class="home-kb-card" href="${href}">
+      <span class="kb-count">${f.notes.length}</span>
+      <h3>${escapeHtml(f.label)}</h3>
+      <p>${desc}</p>
+      <span class="kb-more">浏览分区 <i aria-hidden="true">→</i></span>
+    </a>`;
+  }).join('');
 
   const content = `
-<section class="p3r-hero">
-  <div class="p3r-hero-band" aria-hidden="true"></div>
-  <div class="p3r-hero-ghost" aria-hidden="true">P3R</div>
-  <div class="p3r-hero-inner">
-    <div class="p3r-hero-copy">
-      <p class="p3r-kicker"><i aria-hidden="true">✦</i> PERSONAL ARCHIVE <span>/</span> 2026 <span>/</span> DARK HOUR</p>
-      <h1 class="p3r-logo">
-        <span class="p3r-logo-top">PERSONAL</span>
-        <span class="p3r-logo-main">RELOAD</span>
-      </h1>
-      <p class="p3r-name">${escapeHtml(p.person.name)}<em>turbocalhj</em></p>
-      <p class="p3r-role">${escapeHtml(p.person.role)}</p>
-      <div class="p3r-actions">
-        <a class="p3r-btn p3r-btn-main" href="${ctx.url('archive.html')}">进入档案库<b aria-hidden="true">→</b></a>
-        <a class="p3r-btn" href="${p.github}" target="_blank" rel="noopener">GitHub <b aria-hidden="true">↗</b></a>
-        <button class="p3r-btn p3r-btn-ghost" type="button" data-search-open>搜索笔记<kbd>/</kbd></button>
-      </div>
-      <p class="p3r-meta"><span>${stats.notes} 篇笔记</span><span>${totalProjects} 个项目</span><span>${stats.wikiLinks} 条双链</span></p>
-    </div>
-    <div class="p3r-emblem" aria-hidden="true">
-      <div class="p3r-emblem-ring"></div>
-      <svg viewBox="0 0 240 240" role="presentation">
-        <defs>
-          <linearGradient id="p3r-moon" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#bff1ff"/>
-            <stop offset=".45" stop-color="#5a8dff"/>
-            <stop offset="1" stop-color="#1230a8"/>
-          </linearGradient>
-        </defs>
-        <circle cx="120" cy="120" r="108" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 9" opacity=".55"/>
-        <circle cx="120" cy="120" r="84" fill="none" stroke="currentColor" stroke-width="1" opacity=".22"/>
-        <path d="M152 28a92 92 0 1 0 60 60 72 72 0 1 1-60-60Z" fill="url(#p3r-moon)"/>
-        <path d="M188 54l4.6 12.2L205 71l-12.4 4.8L188 88l-4.6-12.2L171 71l12.4-4.8Z" fill="#eaf6ff"/>
-        <circle cx="74" cy="170" r="3" fill="#bff1ff"/>
-        <circle cx="196" cy="132" r="2" fill="#bff1ff" opacity=".8"/>
-      </svg>
-      <span class="p3r-emblem-tag">MOON · 00:00</span>
-    </div>
+<section class="home-hero">
+  <div class="wallpaper" aria-hidden="true">
+    <video class="wallpaper-video" autoplay muted loop playsinline preload="metadata" poster="${ctx.url('assets', 'p3r', 'hero-poster.webp')}">
+      <source src="${ctx.url('assets', 'p3r', 'hero.mp4')}" type="video/mp4">
+    </video>
+    <div class="wallpaper-shards"></div>
+    <div class="wallpaper-veil"></div>
   </div>
-  <div class="p3r-ticker" aria-hidden="true"><div class="p3r-ticker-track">${ticker}</div></div>
-</section>
-<div class="p3r-wrap">
-  <section class="p3r-sec p3r-menu">
-    <header class="p3r-sec-head"><h2>MENU</h2><span class="p3r-sec-sub">SELECT DESTINATION</span></header>
-    <div class="p3r-menu-root" id="p3r-menu-root">${menu}</div>
-    <script type="application/json" id="p3r-menu-root-data">${menuData}</script>
-    <p class="p3r-menu-hint"><kbd>↑</kbd><kbd>↓</kbd> 选择 <kbd>Enter</kbd> 进入 <span>1–4 快捷跳转</span></p>
-  </section>
-  <section class="p3r-sec">
-    <header class="p3r-sec-head"><h2>SELECTED WORKS</h2><a class="p3r-sec-link" href="${ctx.url('projects', 'index.html')}">全部项目 →</a></header>
-    <div class="p3r-works-root" id="p3r-works-root"><div class="p3r-works">${works}</div></div>
-    <script type="application/json" id="p3r-works-root-data">${worksJson}</script>
-  </section>
-  <section class="p3r-cta">
-    <div>
-      <p class="p3r-cta-kicker">THE JOURNEY CONTINUES</p>
-      <h2>把项目、笔记与思考<br>收进同一个档案库。</h2>
+  <div class="home-hero-inner">
+    <div class="home-intro">
+      <p class="home-eyebrow"><span aria-hidden="true">✦</span> PERSONAL ARCHIVE <i>//</i> 2026 <i>//</i> DARK HOUR</p>
+      <h1 class="home-name">${escapeHtml(p.person.name)}</h1>
+      <p class="home-latin">${escapeHtml(p.person.handle.toUpperCase())} <span>/</span> XUZHOU</p>
+      <p class="home-role">${escapeHtml(p.person.role)} · ${escapeHtml(p.person.location)}</p>
+      <blockquote class="home-quote">
+        <p>把项目、笔记与工程判断，收进一个可回溯的档案。</p>
+        <cite>${escapeHtml(p.site.description)}</cite>
+      </blockquote>
+      <div class="home-actions">
+        <a class="btn btn-primary" href="${ctx.url('archive.html')}">打开档案库 <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="${p.github}" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="home-stats">
+        <span><b>${stats.notes}</b> 篇笔记</span><i aria-hidden="true"></i>
+        <span><b>${totalProjects}</b> 个项目</span><i aria-hidden="true"></i>
+        <span><b>${stats.wikiLinks.toLocaleString('en')}</b> 条双链</span><i aria-hidden="true"></i>
+        <span><b>${stats.commits}</b> 次提交</span>
+      </p>
     </div>
-    <a class="p3r-btn p3r-btn-main" href="${ctx.url('archive.html')}">打开档案库<b aria-hidden="true">→</b></a>
-  </section>
-</div>`;
+    <aside class="home-side" aria-label="站点状态与入口">
+      <div class="glass home-clock">
+        <div class="home-clock-row"><span id="home-clock-day">FRI</span><span id="home-clock-date">11 / 20</span></div>
+        <div class="home-clock-time" id="home-clock-time">00:00</div>
+        <div class="home-clock-meta"><span>DARK HOUR</span><span>LOCAL TIME</span></div>
+      </div>
+      <nav class="glass home-links" aria-label="站点入口">
+        <div class="home-links-head"><span>站点入口</span><em>DESTINATIONS</em></div>
+        ${link(ctx.url('projects', 'index.html'), icon.projects, '项目档案', 'PROJECTS', totalProjects)}
+        ${link(ctx.url('knowledge', 'index.html'), icon.knowledge, '知识库', 'KNOWLEDGE', stats.notes)}
+        ${link(ctx.url('archive.html'), icon.archive, '档案库', 'ARCHIVE', stats.folders)}
+        ${link(ctx.url('about.html'), icon.about, '关于本站', 'ABOUT', '01')}
+      </nav>
+    </aside>
+  </div>
+</section>
+
+<section class="home-section" id="works">
+  <header class="home-section-head">
+    <div><p class="eyebrow">SELECTED WORKS / 01</p><h2>精选项目</h2></div>
+    <a class="home-section-more" href="${ctx.url('projects', 'index.html')}">全部 ${totalProjects} 个项目 <span aria-hidden="true">→</span></a>
+  </header>
+  <div class="home-works">${works}</div>
+</section>
+
+<section class="home-section home-kb">
+  <header class="home-section-head">
+    <div><p class="eyebrow">KNOWLEDGE BASE / 02</p><h2>技术主线</h2></div>
+    <a class="home-section-more" href="${ctx.url('knowledge', 'index.html')}">${stats.notes} 篇笔记 <span aria-hidden="true">→</span></a>
+  </header>
+  <div class="home-kb-grid">${kbCards}</div>
+</section>
+
+<section class="home-cta">
+  <p class="eyebrow">THE ARCHIVE CONTINUES</p>
+  <h2>项目是项目，笔记是笔记。<br>它们都在同一个档案里。</h2>
+  <a class="btn btn-primary" href="${ctx.url('archive.html')}">进入档案库 <span aria-hidden="true">→</span></a>
+</section>`;
 
   return renderPageWrap(ctx, {
     title: `${p.site.title} · ${p.site.tagline}`,
     desc: p.site.description,
     section: 'home',
     content,
-    bodyClass: 'p3r-home',
-    scripts: [ctx.url('assets', 'islands.js')],
+    bodyClass: 'home',
   });
 }
 
@@ -200,7 +227,7 @@ export function archivePage(ctx) {
     const link = (n) => `<a href="${noteUrl(ctx, n.id)}">${escapeHtml(n.base)}</a>`;
     const preview = f.notes.filter((n) => !n.isIndex).slice(0, 6).map(link).join('、');
     return card({
-      eyebrow: `${f.notes.length} 篇${f.indexId ? ' · 有索引' : ''}`,
+      eyebrow: `${isProjectFolder(f.key) ? '项目档案' : '技术笔记'} · ${f.notes.length} 篇${f.indexId ? ' · 有索引' : ''}`,
       title: `<a href="${f.indexId ? noteUrl(ctx, f.indexId) : ctx.folderPageUrl(f.key)}">${escapeHtml(f.label)}</a>`,
       desc: f.desc ? escapeHtml(f.desc) : '随手笔记归档。',
       meta: preview ? `<div class="mini-links">${preview}</div>` : '',
@@ -228,7 +255,7 @@ export function archivePage(ctx) {
   </div>
 </section>
 <section class="stats">${statCards}</section>
-<section class="band"><h2 class="band-title">精选项目</h2><p class="band-sub">每个项目都配一份可回溯的档案笔记：定位、实现、边界与不足。</p><div class="grid grid-2">${projCards}</div><p class="band-more"><a href="${ctx.url('projects', 'index.html')}">全部 ${stats.repos + ctx.profile.workProjects.length} 个项目 →</a></p></section>
+<section class="band"><h2 class="band-title">精选项目</h2><p class="band-sub">每个项目都配一份可回溯的档案笔记：定位、实现、边界与不足。</p><div class="grid grid-2">${projCards}</div><p class="band-more"><a href="${ctx.url('projects', 'index.html')}">全部 ${ctx.projects.length} 个项目 →</a></p></section>
 <section class="band"><h2 class="band-title">知识地图</h2><p class="band-sub">技术主线打底，项目档案落地，两边用双链互指。</p><div class="grid grid-3">${folderCards}</div><p class="band-more"><a href="${ctx.url('knowledge', 'index.html')}">知识库总览 →</a></p></section>`;
 
   return renderPageWrap(ctx, {
@@ -246,16 +273,31 @@ export function knowledgePage(ctx) {
     const r = ctx.engine.render(moc.body);
     mocHtml = `<div class="prose">${r.html}</div>`;
   }
-  const kbFolders = ctx.folders.map((f) => ({
+  const folderData = (f) => ({
     key: f.key,
     label: f.label,
     href: f.indexId ? noteUrl(ctx, f.indexId) : ctx.folderPageUrl(f.key),
     more: ctx.folderPageUrl(f.key),
-    desc: f.desc || '',
+    desc: KB_BLURB[f.key] || f.desc || '',
     count: f.notes.length,
     notes: f.notes.map((n) => ({ base: n.base, href: noteUrl(ctx, n.id) })),
-  }));
-  const folderCards = kbFolders.map((f) => {
+  });
+  const groups = [
+    {
+      key: 'tech',
+      title: '技术笔记',
+      sub: '语言、框架、数据库、大数据与工程工具，按主题串联。',
+      folders: ctx.folders.filter((f) => !isProjectFolder(f.key)).map(folderData),
+    },
+    {
+      key: 'project',
+      title: '项目档案',
+      sub: '项目从需求到交付的过程记录，与「项目」页互相指认。',
+      folders: ctx.folders.filter((f) => isProjectFolder(f.key)).map(folderData),
+    },
+  ].filter((g) => g.folders.length);
+
+  const folderCards = (list) => list.map((f) => {
     const items = f.notes.slice(0, 12).map((n) => `<a href="${n.href}">${escapeHtml(n.base)}</a>`).join('');
     return `<article class="foldercard">
       <header><h3><a href="${f.href}">${escapeHtml(f.label)}</a></h3><span class="count">${f.count}</span></header>
@@ -263,11 +305,16 @@ export function knowledgePage(ctx) {
       <div class="foldercard-notes">${items}${f.count > 12 ? `<a class="more" href="${f.more}">全部 ${f.count} 篇 →</a>` : ''}</div>
     </article>`;
   }).join('');
-  const kbJson = JSON.stringify({ folders: kbFolders }).replace(/</g, '\\u003c');
+
+  const groupsHtml = groups.map((g) => `<section class="kb-group">
+    <header class="kb-group-head"><h2>${g.title}</h2><p>${g.sub}</p><span>${g.folders.length} 个分区</span></header>
+    <div class="grid grid-2">${folderCards(g.folders)}</div>
+  </section>`).join('');
+  const kbJson = JSON.stringify({ groups }).replace(/</g, '\\u003c');
   const content = `
-<section class="page-head"><h1>知识库</h1><p class="page-sub">来自本地 Obsidian 库 <code>${escapeHtml(ctx.profile.vault)}</code>，共 ${ctx.notes.length} 篇笔记、${ctx.stats.folders} 个分区。双链、代码块、表格按原样保留并转为站内链接。</p></section>
+<section class="page-head"><h1>知识库</h1><p class="page-sub">来自本地 Obsidian 库（构建时脱敏），共 ${ctx.notes.length} 篇公开笔记、${ctx.stats.folders} 个分区。双链、代码块、表格按原样保留并转为站内链接。</p></section>
 ${mocHtml}
-<section class="band"><h2 class="band-title">分区</h2><div class="kb-root" id="kb-root"><div class="grid grid-2">${folderCards}</div></div><script type="application/json" id="kb-root-data">${kbJson}</script></section>`;
+<section class="kb-band"><div class="kb-root" id="kb-root">${groupsHtml}</div><script type="application/json" id="kb-root-data">${kbJson}</script></section>`;
   return renderPageWrap(ctx, {
     title: '知识库 · ' + ctx.profile.site.title,
     section: 'knowledge',
@@ -289,6 +336,10 @@ export function notePage(ctx, note, rendered) {
   }
   const chips = tagChips(note.tags, ctx, note.id);
   const aliases = note.aliases.length ? `<div class="note-aliases">别名：${note.aliases.map((a) => `<span class="chip chip-ghost">${escapeHtml(a)}</span>`).join('')}</div>` : '';
+  const project = ctx.projectByNote.get(note.id);
+  const projectBanner = project
+    ? `<a class="note-project" href="${project.pageHref}"><span>所属项目</span><b>${escapeHtml(project.display)}</b><i aria-hidden="true">→</i></a>`
+    : '';
   const nav = noteNav(ctx, note);
   const content = `
 <article class="note">
@@ -297,6 +348,7 @@ export function notePage(ctx, note, rendered) {
     <div class="note-meta"><span>${ctx.statByNote.get(note.id)?.headings ?? 0} 个标题</span><span>${escapeHtml(note.rel)}</span><span>${(note.bytes / 1024).toFixed(1)} KB</span>${meta.join('')}</div>
     ${chips ? `<div class="note-chips">${chips}</div>` : ''}
     ${aliases}
+    ${projectBanner}
   </header>
   <div class="prose">${rendered.html}</div>
   ${nav}
@@ -326,32 +378,35 @@ function noteNav(ctx, note) {
 
 export function projectsPage(ctx) {
   const cats = ctx.profile.categories;
+  const catNotes = ctx.profile.categoryNotes || {};
+  const localCount = ctx.projects.filter((p) => p.local).length;
+  const projectCard = (pr) => card({
+    eyebrow: `${pr.category} · ${pr.isGitHub ? '开源' : '内部交付'}${pr.stackTop ? ' · ' + pr.stackTop : ''}`,
+    title: `<a href="${pr.pageHref}">${escapeHtml(pr.display)}</a>`,
+    desc: escapeHtml(pr.tagline),
+    meta: `${pr.langBars || ''}${(pr.highlights || []).slice(0, 3).map((h) => `<span class="chip chip-ghost">${escapeHtml(h)}</span>`).join('')}`,
+    links: [
+      pr.repoUrl ? `<a href="${pr.repoUrl}" target="_blank" rel="noopener">GitHub</a>` : '',
+      pr.archiveHref ? `<a href="${pr.archiveHref}">档案笔记</a>` : '',
+      `<a href="${pr.pageHref}">详情 →</a>`,
+    ].filter(Boolean).join(''),
+  });
   const blocks = cats.map((c) => {
     const items = ctx.projects.filter((p) => p.category === c);
     if (!items.length) return '';
-    const html = items.map((pr) => card({
-      eyebrow: `${pr.category}${pr.isGitHub ? ' · 开源' : ' · 内部'}${pr.stackTop ? ' · ' + pr.stackTop : ''}`,
-      title: `<a href="${pr.pageHref}">${escapeHtml(pr.display)}</a>`,
-      desc: escapeHtml(pr.tagline),
-      meta: `${pr.langBars || ''}${(pr.highlights || []).slice(0, 3).map((h) => `<span class="chip chip-ghost">${escapeHtml(h)}</span>`).join('')}`,
-      links: [
-        pr.repoUrl ? `<a href="${pr.repoUrl}" target="_blank" rel="noopener">GitHub</a>` : '',
-        pr.archiveHref ? `<a href="${pr.archiveHref}">档案笔记</a>` : '',
-        pr.readmeHref ? `<a href="${pr.pageHref}">README</a>` : '',
-      ].filter(Boolean).join(''),
-    })).join('');
-    return `<section class="band"><h2 class="band-title">${escapeHtml(c)}</h2><div class="grid grid-2">${html}</div></section>`;
+    return `<section class="band"><h2 class="band-title">${escapeHtml(c)}</h2><p class="band-sub">${escapeHtml(catNotes[c] || '')} 共 ${items.length} 个。</p><div class="grid grid-2">${items.map(projectCard).join('')}</div></section>`;
   }).join('');
 
   const langRows = ctx.langStats.map(([lang, n]) => `<tr><td>${escapeHtml(lang)}</td><td>${n}</td><td><div class="bar"><i style="width:${Math.round((n / ctx.langStats[0][1]) * 100)}%"></i></div></td></tr>`).join('');
   const content = `
-<section class="page-head"><h1>项目</h1><p class="page-sub">GitHub 上的 ${ctx.stats.repos} 个开源仓库，加上两份未开源的工作项目档案。元数据来自 <code>data/github.json</code> 快照，可用 <code>npm run refresh</code> 更新。</p></section>
+<section class="page-head"><h1>项目</h1><p class="page-sub">GitHub 上的 ${ctx.stats.repos} 个开源仓库，加上 ${localCount} 个本地工作项目档案。工作项目按脱敏口径整理：技术栈、模块与工程决策保留，公司与内网信息不公开。数据来自 <code>data/</code> 快照与 <code>profile.json</code>。</p></section>
 ${blocks}
-<section class="band"><h2 class="band-title">语言分布</h2><div class="panel-table"><table><thead><tr><th>语言</th><th>仓库数</th><th>占比</th></tr></thead><tbody>${langRows}</tbody></table></div></section>`;
+<section class="band"><h2 class="band-title">开源语言分布</h2><div class="panel-table"><table><thead><tr><th>语言</th><th>仓库数</th><th>占比</th></tr></thead><tbody>${langRows}</tbody></table></div></section>`;
   return renderPageWrap(ctx, { title: '项目 · ' + ctx.profile.site.title, section: 'projects', content });
 }
 
 export function projectPage(ctx, pr) {
+  if (pr.local) return localProjectPage(ctx, pr);
   const facts = [
     pr.repoUrl ? `<a class="btn btn-primary" href="${pr.repoUrl}" target="_blank" rel="noopener">GitHub 仓库 ↗</a>` : '',
     pr.archiveHref ? `<a class="btn" href="${pr.archiveHref}">项目档案笔记</a>` : '',
@@ -387,6 +442,52 @@ ${pr.readmeHtml ? `<section class="band"><h2 class="band-title">README</h2><div 
   });
 }
 
+function localProjectPage(ctx, pr) {
+  const stats = (pr.stats || []).map((s) => `<div><b>${escapeHtml(s.n)}</b><span>${escapeHtml(s.l)}</span></div>`).join('');
+  const stack = (pr.stack || []).map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join('');
+  const modules = (pr.modules || []).map((m, i) => `<article class="proj-module">
+      <span class="pm-no">${String(i + 1).padStart(2, '0')}</span>
+      <div><h3>${escapeHtml(m.name)}</h3><p>${escapeHtml(m.desc)}</p></div>
+    </article>`).join('');
+  const highlights = (pr.highlights || []).map((h) => `<li>${escapeHtml(h)}</li>`).join('');
+  const challenges = (pr.challenges || []).map((c) => card({
+    eyebrow: '难点 · 取舍',
+    title: escapeHtml(c.title),
+    desc: escapeHtml(c.desc),
+  })).join('');
+  const noteLink = (id) => {
+    const n = ctx.byId.get(id);
+    return n ? `<a href="${noteUrl(ctx, n.id)}">${escapeHtml(n.base)}</a>` : '';
+  };
+  const noteLinks = [...(pr.noteIds || []), ...(pr.relatedIds || [])].map(noteLink).filter(Boolean).join('');
+  const content = `
+<section class="proj-head">
+  <div class="crumbs"><a href="${ctx.url('projects', 'index.html')}">项目</a><span>/</span><span class="crumb-current">${escapeHtml(pr.display)}</span></div>
+  <h1>${escapeHtml(pr.display)}</h1>
+  <p class="page-sub">${escapeHtml(pr.tagline)}</p>
+  <div class="proj-facts">
+    <span><b>角色</b>${escapeHtml(pr.role || '—')}</span>
+    <span><b>周期</b>${escapeHtml(pr.period || '—')}</span>
+    <span class="proj-privacy-badge">脱敏档案</span>
+  </div>
+  <div class="note-chips">${stack}</div>
+  ${stats ? `<div class="proj-stats">${stats}</div>` : ''}
+</section>
+<section class="band"><h2 class="band-title">项目概览</h2><div class="prose"><p>${escapeHtml(pr.summary)}</p></div></section>
+${modules ? `<section class="band"><h2 class="band-title">模块与职责</h2><div class="proj-modules">${modules}</div></section>` : ''}
+${highlights ? `<section class="band"><h2 class="band-title">关键工作</h2><ul class="tick-list">${highlights}</ul></section>` : ''}
+${challenges ? `<section class="band"><h2 class="band-title">难点与取舍</h2><div class="grid grid-2">${challenges}</div></section>` : ''}
+${noteLinks ? `<section class="band"><h2 class="band-title">相关笔记</h2><div class="mini-links">${noteLinks}</div></section>` : ''}
+<p class="proj-privacy">${escapeHtml(pr.privacy || '')}</p>`;
+  return renderPageWrap(ctx, {
+    title: `${pr.display} · 项目`,
+    desc: pr.tagline,
+    section: 'projects',
+    content,
+    bodyClass: 'page-project',
+  });
+}
+
 export function aboutPage(ctx) {
   const p = ctx.profile;
   const content = `
@@ -394,11 +495,12 @@ export function aboutPage(ctx) {
 <div class="about-grid">
   <div class="panel-table">
     <table><tbody>
-      <tr><td>姓名</td><td>${escapeHtml(p.person.name)}</td></tr>
+      <tr><td>昵称</td><td>${escapeHtml(p.person.name)}</td></tr>
       <tr><td>GitHub</td><td><a href="${p.github}" target="_blank" rel="noopener">${escapeHtml(p.person.handle)} ↗</a></td></tr>
       <tr><td>方向</td><td>${escapeHtml(p.person.role)}</td></tr>
       <tr><td>坐标</td><td>${escapeHtml(p.person.location)}</td></tr>
-      <tr><td>知识库</td><td><code>${escapeHtml(p.vault)}</code></td></tr>
+      <tr><td>知识库</td><td>本地 Obsidian 库（构建时脱敏）</td></tr>
+      <tr><td>项目</td><td>${ctx.projects.length} 个 · 工作项目按脱敏口径整理</td></tr>
       <tr><td>站点</td><td>本地静态站，<code>npm run dev</code> 起服务</td></tr>
     </tbody></table>
   </div>
@@ -406,8 +508,10 @@ export function aboutPage(ctx) {
     <div class="panel-title">这个站是怎么来的</div>
     <ol class="steps">
       <li>扫描 Obsidian 库，解析 frontmatter、双链 <code>[[ ]]</code>、代码块与表格。</li>
-      <li>拉取 GitHub 仓库元数据与 README，缓存成 <code>data/</code> 快照，离线可构建。</li>
+      <li>拉取 GitHub 仓库元数据与 README，读取本地工作项目档案，统一分类成「项目」。</li>
+      <li>构建时脱敏：公司、内网地址、账号与私密笔记在产物中替换或跳过，<code>dist/</code> 只留可公开内容。</li>
       <li>生成静态页面与搜索索引，全部产物在 <code>dist/</code>。</li>
+      <li>视觉取自《Persona 3 Reload》官网公开素材（© ATLUS / SEGA），仅作个人非商业展示。</li>
     </ol>
   </div>
 </div>
@@ -446,7 +550,7 @@ export function folderPage(ctx, f) {
 <section class="page-head">
   <div class="crumbs"><a href="${ctx.url('knowledge', 'index.html')}">知识库</a><span>/</span><span class="crumb-current">${escapeHtml(f.label)}</span></div>
   <h1>${escapeHtml(f.label)}</h1>
-  <p class="page-sub">${f.desc ? escapeHtml(f.desc) : `${f.notes.length} 篇笔记。`}</p>
+  <p class="page-sub">${escapeHtml(KB_BLURB[f.key] || f.desc || `${f.notes.length} 篇笔记。`)}</p>
 </section>
 <div class="flist">${items}</div>`;
   return renderPageWrap(ctx, {

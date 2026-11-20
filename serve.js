@@ -45,7 +45,16 @@ const server = http.createServer((req, res) => {
   if (!file && url.pathname.endsWith('/')) file = resolveTarget(path.join(url.pathname, 'index.html'));
   if (!file) {
     res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
-    res.end('<!doctype html><meta charset="utf-8"><title>404</title><p style="font-family:monospace;padding:40px">404 未找到该页面 · <a href="/">回到首页</a></p>');
+    res.end(`<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>404 · TURBO SPARK</title><link rel="stylesheet" href="/assets/app.css"></head>
+<body class="section-404" style="display:grid;place-items:center;min-height:100svh;padding:32px">
+<div style="text-align:center;max-width:460px">
+<p class="eyebrow">SIGNAL LOST / 404</p>
+<h1 style="margin:16px 0 12px;font-family:var(--font-sans);font-size:clamp(32px,6vw,52px);font-weight:700">页面不存在</h1>
+<p style="margin:0 0 26px;color:var(--muted);font-size:13.5px;line-height:1.9">这个地址没有对应的笔记或项目档案，可能是链接过期，也可能从未存在。</p>
+<a class="btn btn-primary" href="/">回到首页 →</a>
+</div></body></html>`);
     console.log(`404 ${url.pathname}`);
     return;
   }
