@@ -2,7 +2,7 @@
 
 一个跑在本地的静态个人站：把 GitHub 仓库与本地工作项目编译成带分类的项目档案，把 Obsidian 笔记库编译成可检索的知识库，两边用双链互相指认。**项目是项目，笔记是笔记**：项目页讲交付与工程决策，知识库只负责技术主线与过程记录。
 
-页面由纯 Node ESM 脚本生成，不引入前端框架；只有知识库筛选使用 React 岛屿（esbuild 打包成 `assets/islands.js`），其余是原生 HTML/CSS/JS。构建产物是 `dist/` 下的 120 个静态 HTML。
+页面由纯 Node ESM 脚本生成；知识库筛选、游戏库筛选与电竞面板使用 React 岛屿（esbuild 打包成 `assets/islands.js`），其余是原生 HTML/CSS/JS。构建产物是 `dist/` 下的 139 个静态 HTML，另含游戏百科、电竞百科、友链页面与 PWA 离线支持。
 
 ## 快速开始
 
