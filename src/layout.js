@@ -19,6 +19,8 @@ export function makeUrl(base) {
 const NAV = [
   { key: 'home', en: 'HOME', label: '主页', file: 'index.html' },
   { key: 'projects', en: 'PROJECTS', label: '项目', file: 'projects/index.html' },
+  { key: 'games', en: 'GAMES', label: '游戏库', file: 'games/index.html' },
+  { key: 'esports', en: 'ESPORTS', label: '电竞', file: 'esports/index.html' },
   { key: 'knowledge', en: 'KNOWLEDGE', label: '知识库', file: 'knowledge/index.html' },
   { key: 'archive', en: 'ARCHIVE', label: '档案库', file: 'archive.html' },
   { key: 'about', en: 'ABOUT', label: '关于', file: 'about.html' },
@@ -57,9 +59,34 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
 <meta name="description" content="${escapeHtml(desc || ctx.profile.site.description)}">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#081226">
+<meta name="view-transition" content="same-origin">
+<link rel="canonical" href="__CANONICAL__">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${escapeHtml(ctx.profile.site.title)}">
+<meta property="og:title" content="${escapeHtml(title)}">
+<meta property="og:description" content="${escapeHtml(desc || ctx.profile.site.description)}">
+<meta property="og:url" content="__CANONICAL__">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="__SITE_URL__${url('assets', 'p3r', 'hero-poster.webp')}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeHtml(title)}">
+<meta name="twitter:description" content="${escapeHtml(desc || ctx.profile.site.description)}">
+<meta name="twitter:image" content="__SITE_URL__${url('assets', 'p3r', 'hero-poster.webp')}">
+<script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: ctx.profile.site.title,
+    url: '__SITE_URL__/',
+    description: ctx.profile.site.description,
+    inLanguage: 'zh-CN',
+    author: { '@type': 'Person', name: ctx.profile.person.name, url: ctx.profile.github },
+  }).replace(/</g, '\\u003c')}</script>
 <link rel="icon" href="${url('assets', 'p3r', 'favicon.ico')}" sizes="any">
 <link rel="stylesheet" href="${url('assets', 'app.css')}">
 <link rel="preload" href="${url('assets', 'fonts', 'Urbanist-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
+<link rel="manifest" href="${url('manifest.webmanifest')}">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>try{var t=localStorage.getItem('lhj-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <script>try{if(!sessionStorage.getItem('mm-boot')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('is-booting');}catch(e){}</script>
 </head>
@@ -72,6 +99,7 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
   <div class="boot-wave">${WAVES}</div>
 </div>
 <div class="progress" aria-hidden="true"></div>
+${section === 'games' || section === 'esports' ? '<canvas class="hero-particles" id="hero-particles" aria-hidden="true"></canvas>' : ''}
 <a class="skip-link" href="#main">跳到正文</a>
 <header class="topbar">
   <div class="topbar-inner">
@@ -107,6 +135,7 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
         <a href="${url('projects', 'index.html')}">项目</a>
         <a href="${url('knowledge', 'index.html')}">知识库</a>
         <a href="${url('about.html')}">关于</a>
+        <a href="${url('links', 'index.html')}">友链</a>
       </nav>
       <a class="footer-gh" href="${ctx.profile.github}" target="_blank" rel="noopener">github.com/turbocalhj ↗</a>
     </div>
@@ -120,6 +149,7 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
     <div class="search-hint"><kbd>↑↓</kbd> 选择 <kbd>Enter</kbd> 打开</div>
   </div>
 </div>
+<button class="back-to-top" id="back-to-top" type="button" aria-label="回到顶部">↑</button>
 <script src="${url('assets', 'app.js')}" defer></script>
 ${scripts.map((s) => `<script src="${s}" defer></script>`).join('\n')}
 </body>

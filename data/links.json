@@ -1,0 +1,29 @@
+{
+  "updated": "2026-11-20",
+  "note": "收录改造本站时参考过的开源项目与常用资源。",
+  "groups": [
+    {
+      "key": "inspiration",
+      "title": "灵感来源",
+      "desc": "优秀开源个人站与作品集，本站的交互与视觉从这里借了不少思路。",
+      "links": [
+        { "name": "adrz-portfolio", "url": "https://github.com/adarzhpathade/adrz-portfolio", "desc": "电影感滚动叙事、CSS 3D 轮播、离屏暂停渲染，性能与视觉平衡的范本。", "tag": "GSAP / Three.js" },
+        { "name": "juliorafre/portfolio", "url": "https://github.com/juliorafre/portfolio", "desc": "GLSL 着色器、文字视差与弹簧物理交互，交互实验密度很高。", "tag": "WebGL / Motion" },
+        { "name": "imsyy/home", "url": "https://github.com/imsyy/home", "desc": "本站首页「全屏壁纸 + 玻璃卡片」结构的直接参考。", "tag": "首页视觉" },
+        { "name": "academicpages", "url": "https://github.com/academicpages/academicpages.github.io", "desc": "长期维护的学术个人站模板，内容结构与可访问性做得扎实。", "tag": "静态站模板" },
+        { "name": "al-folio", "url": "https://github.com/al-folio/al-folio", "desc": "另一套高星学术个人站方案，Jekyll 生态里的常青项目。", "tag": "Jekyll" }
+      ]
+    },
+    {
+      "key": "resources",
+      "title": "数据与资源",
+      "desc": "做游戏百科和电竞内容时查过的公开资料与工具集。",
+      "links": [
+        { "name": "Liquipedia", "url": "https://liquipedia.net/", "desc": "社区维护的电竞百科，覆盖 Dota 2、CS、英雄联盟等主要项目的赛事与战队资料。", "tag": "电竞百科" },
+        { "name": "Open-source Esports", "url": "https://strift.dev/esports-oss", "desc": "开源电竞项目精选列表，包含各类数据 API 与客户端库。", "tag": "开源清单" },
+        { "name": "game-datasets", "url": "https://github.com/leomaurodesenv/game-datasets", "desc": "游戏相关数据集与工具索引，适合找分析和可视化的素材。", "tag": "数据集" },
+        { "name": "MDN Web Docs", "url": "https://developer.mozilla.org/", "desc": "View Transitions、Canvas、IntersectionObserver 等浏览器 API 的第一手文档。", "tag": "Web API" }
+      ]
+    }
+  ]
+}

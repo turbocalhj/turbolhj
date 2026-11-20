@@ -488,6 +488,38 @@ ${noteLinks ? `<section class="band"><h2 class="band-title">相关笔记</h2><di
   });
 }
 
+function skillRadar() {
+  const dims = [
+    { label: 'Java 后端', value: 4.6 },
+    { label: '大数据', value: 4.0 },
+    { label: '架构设计', value: 4.2 },
+    { label: '前端工程', value: 3.6 },
+    { label: 'DevOps', value: 3.4 },
+  ];
+  const cx = 160, cy = 152, r = 102;
+  const point = (i, ratio) => {
+    const a = (-90 + i * 72) * Math.PI / 180;
+    return [cx + Math.cos(a) * r * ratio, cy + Math.sin(a) * r * ratio];
+  };
+  const polygon = (ratio) => dims.map((_, i) => point(i, ratio).map((n) => n.toFixed(1)).join(',')).join(' ');
+  const data = dims.map((d, i) => point(i, d.value / 5).map((n) => n.toFixed(1)).join(',')).join(' ');
+  const grids = [0.33, 0.66, 1].map((x) => `<polygon points="${polygon(x)}" fill="none" stroke="rgba(158,190,235,.16)" stroke-width="1"/>`).join('');
+  const axes = dims.map((_, i) => {
+    const [x, y] = point(i, 1);
+    return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="rgba(158,190,235,.14)" stroke-width="1"/>`;
+  }).join('');
+  const dots = dims.map((d, i) => {
+    const [x, y] = point(i, d.value / 5);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="var(--accent)"/>`;
+  }).join('');
+  const labels = dims.map((d, i) => {
+    const [x, y] = point(i, 1.26);
+    const anchor = x < cx - 8 ? 'end' : x > cx + 8 ? 'start' : 'middle';
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="11" fill="var(--muted)">${d.label}</text>`;
+  }).join('');
+  return `<svg class="skill-radar" viewBox="0 0 320 310" role="img" aria-label="技能自评雷达图：Java 后端、大数据、架构设计、前端工程、DevOps">${grids}${axes}<polygon points="${data}" style="fill:rgba(2,158,235,.18);stroke:var(--accent)" stroke-width="2"/>${dots}${labels}</svg>`;
+}
+
 export function aboutPage(ctx) {
   const p = ctx.profile;
   const content = `
@@ -521,7 +553,9 @@ export function aboutPage(ctx) {
     { n: ctx.stats.headings, l: '个标题' },
     { n: ctx.stats.wikiLinks, l: '条双链' },
   ].map((s) => `<div class="stat"><div class="stat-n">${s.n.toLocaleString('en')}</div><div class="stat-l">${s.l}</div></div>`).join('')}</div></section>
-<section class="band"><h2 class="band-title">技术栈</h2><div class="hero-stack">${p.person.stack.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join('')}</div></section>`;
+<section class="band"><h2 class="band-title">技术栈</h2>
+<div class="about-skills"><div class="hero-stack">${p.person.stack.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join('')}</div>${skillRadar()}</div>
+<p class="radar-note">雷达图为主观自评，只表示各方向的相对投入程度。</p></section>`;
   return renderPageWrap(ctx, { title: '关于 · ' + p.site.title, section: 'about', content });
 }
 
@@ -558,6 +592,150 @@ export function folderPage(ctx, f) {
     section: 'knowledge',
     content,
     sidebar: buildSidebar(ctx, f.indexId),
+  });
+}
+
+/* -------------------------------------------------------------------------- */
+/*  游戏百科 / 电竞                                                            */
+/* -------------------------------------------------------------------------- */
+
+export function gamesPage(ctx) {
+  const games = (ctx.games || []).map((g) => ({ ...g, href: ctx.url('games', g.slug) + '.html' }));
+  const genres = [...new Set(games.flatMap((g) => g.genres))].sort((a, b) => a.localeCompare(b, 'zh'));
+  const platforms = [...new Set(games.flatMap((g) => g.platforms))].sort();
+  const statuses = [...new Set(games.map((g) => g.status))];
+  const hours = games.reduce((n, g) => n + (g.hours || 0), 0);
+  const data = JSON.stringify({ games, genres, platforms, statuses }).replace(/</g, '\\u003c');
+
+  const content = `
+<section class="page-head game-hero">
+  <p class="eyebrow">GAME ARCHIVE / 游戏档案</p>
+  <h1>游戏库</h1>
+  <p class="page-sub">玩过的、在玩的、想玩的。共 ${games.length} 款游戏、${hours.toLocaleString('en')} 小时记录。评分与状态是个人主观记录，发行信息是公开事实。</p>
+  <div class="game-hero-stats">
+    <span><b>${games.length}</b> 款游戏</span>
+    <span><b>${genres.length}</b> 种类型</span>
+    <span><b>${games.filter((g) => g.status === '已通关').length}</b> 款通关</span>
+    <span><b>${games.filter((g) => g.status === '在玩').length}</b> 款在玩</span>
+  </div>
+</section>
+<section class="game-band">
+  <div id="game-root" class="game-root"></div>
+  <script type="application/json" id="game-root-data">${data}</script>
+</section>`;
+
+  return renderPageWrap(ctx, {
+    title: '游戏库 · ' + ctx.profile.site.title,
+    desc: '个人游戏库：FPS、JRPG、动作、MOBA 等游戏的评分、状态与游玩记录。',
+    section: 'games',
+    bodyClass: 'page-games',
+    content,
+    scripts: [ctx.url('assets', 'islands.js')],
+  });
+}
+
+export function gameDetailPage(ctx, game) {
+  const related = (ctx.games || [])
+    .filter((g) => g.slug !== game.slug && g.genres.some((x) => game.genres.includes(x)))
+    .slice(0, 4);
+  const accent = game.accent || '#029eeb';
+  const facts = [
+    ['开发商', game.developer],
+    ['发行年份', game.year],
+    ['平台', (game.platforms || []).join(' / ')],
+    ['类型', (game.genres || []).join(' / ')],
+    ['状态', game.status],
+    ['时长', game.hours ? `${game.hours} 小时` : '未开始'],
+  ];
+  const factRows = facts.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(String(v))}</dd></div>`).join('');
+  const tags = (game.tags || []).map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join('');
+  const relatedHtml = related.length
+    ? `<section class="band"><h2 class="band-title">同类推荐</h2><div class="related-games">${related.map((g) => `<a href="${ctx.url('games', g.slug) + '.html'}" style="--game-accent:${g.accent || '#029eeb'}"><span>${escapeHtml(g.short)}</span><b>${escapeHtml(g.name)}</b><em>${g.rating.toFixed(1)}</em></a>`).join('')}</div></section>`
+    : '';
+
+  const content = `
+<section class="game-detail-hero" style="--game-accent:${accent}">
+  <a class="crumb-back" href="${ctx.url('games', 'index.html')}">← 返回游戏库</a>
+  <div class="game-detail-grid">
+    <div class="detail-cover">
+      <span class="detail-cover-short">${escapeHtml(game.short)}</span>
+      <span class="detail-cover-year">${game.year}</span>
+    </div>
+    <div class="detail-main">
+      <p class="eyebrow">${escapeHtml((game.genres || []).join(' / '))}</p>
+      <h1>${escapeHtml(game.name)}</h1>
+      <p class="detail-en">${escapeHtml(game.en)}</p>
+      <div class="detail-score"><b>${game.rating.toFixed(1)}</b><span>/ 10 个人评分</span></div>
+      <p class="detail-desc">${escapeHtml(game.desc)}</p>
+      ${game.review ? `<blockquote class="detail-review">${escapeHtml(game.review)}</blockquote>` : ''}
+      ${game.link ? `<a class="btn btn-ghost" href="${escapeHtml(game.link)}" target="_blank" rel="noopener">官方站点 ↗</a>` : ''}
+    </div>
+  </div>
+</section>
+<section class="band"><h2 class="band-title">档案信息</h2><dl class="detail-facts">${factRows}</dl>${tags ? `<div class="note-chips">${tags}</div>` : ''}</section>
+${relatedHtml}`;
+
+  return renderPageWrap(ctx, {
+    title: `${game.name} · 游戏库`,
+    desc: game.desc,
+    section: 'games',
+    bodyClass: 'page-game-detail',
+    content,
+  });
+}
+
+export function esportsPage(ctx) {
+  const e = ctx.esports || { titles: [], events: [], teams: [], milestones: [] };
+  const data = JSON.stringify(e).replace(/</g, '\\u003c');
+  const content = `
+<section class="page-head esports-hero">
+  <p class="eyebrow">ESPORTS / 电竞观察</p>
+  <h1>电竞百科</h1>
+  <p class="page-sub">赛事体系、值得关注的战队与几个记得住的瞬间。不是资料库，是一份带观点的观赛笔记。</p>
+  <div class="game-hero-stats">
+    <span><b>${e.titles.length}</b> 个项目</span>
+    <span><b>${e.events.length}</b> 项赛事</span>
+    <span><b>${e.teams.length}</b> 支队伍</span>
+  </div>
+</section>
+<section class="esports-band">
+  <div id="esports-root" class="esports-root"></div>
+  <script type="application/json" id="esports-root-data">${data}</script>
+</section>`;
+
+  return renderPageWrap(ctx, {
+    title: '电竞百科 · ' + ctx.profile.site.title,
+    desc: '电竞赛事体系、战队观察与记忆点，按项目筛选浏览。',
+    section: 'esports',
+    bodyClass: 'page-esports',
+    content,
+    scripts: [ctx.url('assets', 'islands.js')],
+  });
+}
+
+export function linksPage(ctx) {
+  const groups = ctx.links?.groups || [];
+  const total = groups.reduce((n, g) => n + (g.links?.length || 0), 0);
+  const blocks = groups.map((g) => `
+<section class="band">
+  <h2 class="band-title">${escapeHtml(g.title)}</h2>
+  <p class="band-sub">${escapeHtml(g.desc)}</p>
+  <div class="link-grid">${(g.links || []).map((l) => `<a class="link-card" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">
+    <div class="link-top"><span class="link-tag">${escapeHtml(l.tag)}</span><span aria-hidden="true">↗</span></div>
+    <h3>${escapeHtml(l.name)}</h3>
+    <p>${escapeHtml(l.desc)}</p>
+  </a>`).join('')}</div>
+</section>`).join('');
+  const content = `
+<section class="page-head"><h1>友链与参考</h1><p class="page-sub">收录 ${total} 个站点：改造本站时参考过的开源个人站，以及做游戏与电竞内容时查过的公开资源。点击会跳转到外部站点。</p></section>
+${blocks}
+<section class="band"><p class="radar-note">外部链接内容由各站点作者负责，本站仅作索引与致谢。</p></section>`;
+  return renderPageWrap(ctx, {
+    title: '友链与参考 · ' + ctx.profile.site.title,
+    desc: '开源个人站灵感来源与游戏电竞数据资源索引。',
+    section: 'links',
+    bodyClass: 'page-links',
+    content,
   });
 }
 
