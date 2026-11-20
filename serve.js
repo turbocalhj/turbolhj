@@ -17,7 +17,25 @@ const MIME = {
   '.jpg': 'image/jpeg',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
+  '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
+  '.xml': 'application/xml; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.webmanifest': 'application/manifest+json',
 };
+
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Frame-Options': 'SAMEORIGIN',
+};
+
+function pickVariant(file, acceptEncoding) {
+  const ae = String(acceptEncoding || '').toLowerCase();
+  if (ae.includes('br') && fs.existsSync(file + '.br')) return { file: file + '.br', enc: 'br' };
+  if (ae.includes('gzip') && fs.existsSync(file + '.gz')) return { file: file + '.gz', enc: 'gzip' };
+  return { file, enc: '' };
+}
 
 function resolveTarget(pathname) {
   let rel;
@@ -44,7 +62,7 @@ const server = http.createServer((req, res) => {
   let file = resolveTarget(url.pathname);
   if (!file && url.pathname.endsWith('/')) file = resolveTarget(path.join(url.pathname, 'index.html'));
   if (!file) {
-    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...SECURITY_HEADERS });
     res.end(`<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>404 · TURBO SPARK</title><link rel="stylesheet" href="/assets/app.css"></head>
@@ -59,13 +77,31 @@ const server = http.createServer((req, res) => {
     return;
   }
   const ext = path.extname(file).toLowerCase();
-  res.writeHead(200, {
+  const { file: served, enc } = pickVariant(file, req.headers['accept-encoding']);
+  const st = fs.statSync(served);
+  const etag = `"${st.mtimeMs.toString(36)}-${st.size.toString(36)}${enc ? '-' + enc : ''}"`;
+  const cacheControl = ext === '.html'
+    ? 'no-cache'
+    : 'public, max-age=3600, stale-while-revalidate=86400';
+  const headers = {
     'Content-Type': MIME[ext] || 'application/octet-stream',
-    'Cache-Control': 'no-store',
-    'Content-Length': fs.statSync(file).size,
-  });
-  fs.createReadStream(file).pipe(res);
-  if (ext === '.html') console.log(`200 ${url.pathname}`);
+    'Cache-Control': cacheControl,
+    'ETag': etag,
+    'Vary': 'Accept-Encoding',
+    'Content-Length': st.size,
+    ...SECURITY_HEADERS,
+  };
+  if (enc) headers['Content-Encoding'] = enc;
+
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304, { ETag: etag, 'Cache-Control': cacheControl, Vary: 'Accept-Encoding' });
+    res.end();
+    return;
+  }
+  res.writeHead(200, headers);
+  if (req.method === 'HEAD') { res.end(); return; }
+  fs.createReadStream(served).pipe(res);
+  if (ext === '.html') console.log(`200 ${url.pathname}${enc ? ' [' + enc + ']' : ''}`);
 });
 
 server.on('error', (e) => console.error('服务错误:', e.message));

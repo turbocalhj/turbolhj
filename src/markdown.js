@@ -236,6 +236,7 @@ export function createEngine({ resolve, noteUrl }) {
 
     html = decorateCodeBlocks(html);
     html = html.replace(/<a href="(https?:\/\/[^"]+)"/g, '<a target="_blank" rel="noopener" href="$1"');
+    html = decorateImages(html);
 
     const warnings = [];
     if (hIndex !== headingLines.length) {
@@ -259,6 +260,15 @@ function decorateCodeBlocks(html) {
   );
 }
 
+function decorateImages(html) {
+  return html.replace(/<img\b([^>]*)>/g, (m, attrs) => {
+    if (/\bloading=/.test(attrs)) return m;
+    const extra = ' loading="lazy" decoding="async"';
+    if (/\/\s*$/.test(attrs)) return `<img${attrs.replace(/\/\s*$/, '')}${extra} />`;
+    return `<img${attrs}${extra}>`;
+  });
+}
+
 /** 纯 README 渲染：相对链接改写为仓库内文件链接，不解析 wiki 链接。 */
 export function renderPlainMarkdown(markedInstance, source, { repoUrl, transformLink, transformImage } = {}) {
   let html = markedInstance.parse(source);
@@ -272,7 +282,7 @@ export function renderPlainMarkdown(markedInstance, source, { repoUrl, transform
     html = html.replace(/<img([^>]*?)\ssrc="(?!#|https?:|data:)([^"]+)"/g,
       (_, pre, src) => `<img${pre} src="${transformImage(decodeURIComponent(src))}"`);
   }
-  return html;
+  return decorateImages(html);
 }
 
 export { yaml };

@@ -1,15 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import * as esbuild from 'esbuild';
 import { createEngine, renderPlainMarkdown, escapeHtml } from './src/markdown.js';
 import { loadVault, createLinkIndex } from './src/vault.js';
 import { createRedactor, isPrivateNote } from './src/privacy.js';
 import { renderPage, makeUrl } from './src/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
 const skipped = [];
+const htmlPages = [];
 cleanDist(DIST);
 const T0 = Date.now();
 
@@ -25,8 +27,8 @@ function cleanDist(dir) {
       const abs = path.join(d, e.name);
       if (e.isDirectory()) stack.push(abs);
       else {
-        try { fs.unlinkSync(abs); } catch (err) {
-          if (err.code !== 'EPERM' && err.code !== 'EBUSY') throw err;
+        try { fs.unlinkSync(abs); } catch {
+          // 文件被占用或宿主环境的安全删除机制失败时跳过；同名文件会在写入时覆盖
           skipped.push(abs);
         }
       }
@@ -39,8 +41,12 @@ function cleanDist(dir) {
 }
 
 const profile = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/profile.json'), 'utf8'));
+const SITE_URL = String(profile.siteUrl || '').replace(/\/+$/, '');
 const ghRepos = readJson('data/github.json', []);
 const ghExtra = readJson('data/github-extra.json', { repos: {} });
+const gamesData = readJson('data/games.json', { updated: '', games: [] });
+const esportsData = readJson('data/esports.json', { titles: [], events: [], teams: [], milestones: [] });
+const linksData = readJson('data/links.json', { groups: [] });
 
 function readJson(rel, fallback) {
   try {
@@ -308,6 +314,9 @@ for (const wp of profile.localProjects || []) {
 }
 stats.commits = projects.reduce((a, p) => a + (p.commitCount || 0), 0);
 ctx.projects = projects;
+ctx.games = gamesData.games || [];
+ctx.esports = esportsData;
+ctx.links = linksData;
 ctx.featuredProjects = projects
   .filter((p) => p.featured)
   .sort((a, b) => a.featuredRank - b.featuredRank);
@@ -337,6 +346,10 @@ for (const f of folders) writeFile(path.join('knowledge', 'f', f.key) + '.html',
 writeFile(path.join('projects', 'index.html'), projectsPage(ctx));
 writeFile('about.html', aboutPage(ctx));
 for (const pr of projects) writeFile(path.join('projects', pr.slug) + '.html', projectPage(ctx, pr));
+writeFile(path.join('games', 'index.html'), gamesPage(ctx));
+for (const g of ctx.games) writeFile(path.join('games', g.slug) + '.html', gameDetailPage(ctx, g));
+writeFile(path.join('esports', 'index.html'), esportsPage(ctx));
+writeFile(path.join('links', 'index.html'), linksPage(ctx));
 
 writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
   builtAt: new Date().toISOString(),
@@ -346,6 +359,9 @@ writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
 writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/app.css'), 'utf8'));
 writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client.js'), 'utf8'));
 fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });
+fs.copyFileSync(path.join(ROOT, 'src/manifest.webmanifest'), path.join(DIST, 'manifest.webmanifest'));
+fs.copyFileSync(path.join(ROOT, 'src/sw.js'), path.join(DIST, 'sw.js'));
+writeSeoFiles();
 
 // ---------- React 岛屿 ----------
 const islandBytes = await bundleIslands();
@@ -367,11 +383,62 @@ async function bundleIslands() {
   return fs.statSync(out).size;
 }
 
+function pagePath(rel) {
+  const p = rel.replace(/\\/g, '/');
+  const pathname = p === 'index.html'
+    ? '/'
+    : '/' + p.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
+  return pathname.split('/').map(encodeURIComponent).join('/');
+}
+
 function writeFile(rel, content) {
   const abs = path.join(DIST, rel);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
+  if (rel.endsWith('.html')) {
+    htmlPages.push(pagePath(rel));
+    const canonical = (SITE_URL || '') + pagePath(rel);
+    content = String(content)
+      .replaceAll('__CANONICAL__', canonical)
+      .replaceAll('__SITE_URL__', SITE_URL);
+  }
   fs.writeFileSync(abs, content);
 }
+
+function writeSeoFiles() {
+  if (!SITE_URL) {
+    console.warn('! 未配置 profile.siteUrl，跳过 sitemap.xml / robots.txt');
+    return;
+  }
+  const escXml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const urls = htmlPages.map((p) => `  <url><loc>${escXml(SITE_URL + p)}</loc></url>`).join('\n');
+  writeFile('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+  writeFile('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+}
+
+/** 为文本类产物预生成 .br / .gz，供服务器按 Accept-Encoding 直接返回。 */
+function precompress() {
+  const exts = new Set(['.html', '.css', '.js', '.json', '.xml', '.txt', '.svg']);
+  const stack = [DIST];
+  let n = 0;
+  while (stack.length) {
+    const dir = stack.pop();
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const abs = path.join(dir, e.name);
+      if (e.isDirectory()) { stack.push(abs); continue; }
+      if (e.name.endsWith('.br') || e.name.endsWith('.gz')) continue;
+      if (!exts.has(path.extname(e.name).toLowerCase())) continue;
+      const buf = fs.readFileSync(abs);
+      fs.writeFileSync(abs + '.br', zlib.brotliCompressSync(buf, {
+        params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 },
+      }));
+      fs.writeFileSync(abs + '.gz', zlib.gzipSync(buf, { level: 9 }));
+      n++;
+    }
+  }
+  return n;
+}
+
+const compressedFiles = precompress();
 
 // 报告
 const totalFiles = countFiles(DIST);
@@ -379,7 +446,9 @@ console.log(`\n构建完成（${((Date.now() - T0) / 1000).toFixed(1)}s）`);
 console.log(`  笔记 ${stats.notes} 篇 / 分区 ${stats.folders} 个 / 标题 ${stats.headings} / 双链 ${stats.wikiLinks}（未解析 ${stats.unresolved}）`);
 console.log(`  代码块 ${stats.snippets} 个 / ${stats.codeLines} 行；知识库体积 ${(stats.bytes / 1048576).toFixed(2)} MB`);
 console.log(`  项目 ${projects.length} 个（开源 ${ghRepos.length}）/ 提交 ${stats.commits}`);
-console.log(`  产物 ${totalFiles} 个文件 → dist/`);
+console.log(`  游戏 ${ctx.games.length} 款 / 赛事 ${esportsData.events?.length || 0} 项 / 战队 ${esportsData.teams?.length || 0} 支`);
+console.log(`  产物 ${totalFiles} 个文件 → dist/（其中 ${compressedFiles} 个文本产物已预压缩为 .br + .gz）`);
+console.log(`  SEO：sitemap.xml / robots.txt / canonical / OG / JSON-LD${SITE_URL ? '（' + SITE_URL + '）' : '（未配置 siteUrl，跳过 sitemap）'}`);
 console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅知识库页加载）`);
 console.log(`  搜索索引 ${searchDocs.length} 个小节（${(fs.statSync(path.join(DIST, 'assets/search-index.json')).size / 1024).toFixed(0)} KB）`);
 if (degradedList.length) {
