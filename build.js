@@ -3,6 +3,7 @@ import path from 'node:path';
 import * as esbuild from 'esbuild';
 import { createEngine, renderPlainMarkdown, escapeHtml } from './src/markdown.js';
 import { loadVault, createLinkIndex } from './src/vault.js';
+import { createRedactor, isPrivateNote } from './src/privacy.js';
 import { renderPage, makeUrl } from './src/layout.js';
 import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
 
@@ -51,8 +52,21 @@ function readJson(rel, fallback) {
 }
 
 // ---------- 知识库 ----------
-const notes = loadVault(path.resolve(profile.vault));
-if (!notes.length) throw new Error(`知识库为空：${profile.vault}`);
+const redact = createRedactor(profile.privacy);
+const rawNotes = loadVault(path.resolve(profile.vault));
+if (!rawNotes.length) throw new Error(`知识库为空：${profile.vault}`);
+const privateNotes = rawNotes.filter((n) => isPrivateNote(n, profile.privacy));
+const privateLink = createLinkIndex(privateNotes);
+const privateById = new Map(privateNotes.map((n) => [n.id, n]));
+const notes = rawNotes
+  .filter((n) => !isPrivateNote(n, profile.privacy))
+  .map((n) => ({
+    ...n,
+    body: redact(n.body),
+    title: redact(n.title),
+    tags: n.tags.map(redact),
+    aliases: n.aliases.map(redact),
+  }));
 const byId = new Map(notes.map((n) => [n.id, n]));
 const link = createLinkIndex(notes);
 
@@ -69,7 +83,12 @@ const headingIds = new Map();
 const engine = createEngine({
   resolve: (target, alias) => {
     const hit = link.resolve(target, currentId);
-    if (!hit) return null;
+    if (!hit) {
+      const ph = privateLink.resolve(target, currentId);
+      if (!ph) return null;
+      const pn = privateById.get(ph.id);
+      return { id: ph.id, label: pn ? pn.base : ph.id.split('/').pop(), private: true };
+    }
     const note = byId.get(hit.id);
     return {
       id: hit.id,
@@ -92,6 +111,7 @@ ctx.stats = stats;
 const statByNote = new Map();
 const unresolvedList = [];
 const searchDocs = [];
+const renderedByNote = new Map();
 
 ctx.statByNote = statByNote;
 const degradedList = [];
@@ -139,7 +159,7 @@ for (const note of notes) {
     });
   }
 
-  writeFile(path.join('notes', ...note.id.split('/')) + '.html', notePage(ctx, note, rendered));
+  renderedByNote.set(note.id, rendered);
 }
 currentId = null;
 
@@ -205,10 +225,11 @@ const plainMarked = engine.marked;
 function readmeFor(name, repo) {
   const file = path.join(ROOT, 'data/readmes', `${name}.md`);
   if (!fs.existsSync(file)) return '';
-  const src = fs.readFileSync(file, 'utf8');
+  const src = redact(fs.readFileSync(file, 'utf8'));
   return renderPlainMarkdown(plainMarked, src, {
     repoUrl: repo.html_url,
     transformLink: (href) => `${repo.html_url}/blob/${repo.default_branch}/${href.replace(/^\.\//, '')}`,
+    transformImage: (src) => `https://raw.githubusercontent.com/${repo.full_name}/${repo.default_branch}/${src.replace(/^\.\//, '')}`,
   });
 }
 
@@ -221,18 +242,22 @@ for (const repo of ghRepos) {
   projects.push({
     key: repo.name,
     slug: repo.name,
-    display: ov.display || repo.name,
+    display: redact(ov.display || repo.name),
     category: ov.category || '个人项目',
     categoryIndex: catIndex(ov.category || '个人项目'),
-    tagline: ov.tagline || repo.description || '',
-    highlights: ov.highlights || [],
+    tagline: redact(ov.tagline || repo.description || ''),
+    highlights: (ov.highlights || []).map(redact),
     featured: !!ov.featured,
+    featuredRank: ov.featuredRank ?? 99,
+    local: false,
     isGitHub: true,
     repo,
     repoUrl: repo.html_url,
     pageHref: url('projects', repo.name) + '.html',
     archiveId,
     archiveHref: archiveId ? noteUrl(ctx, archiveId) : null,
+    noteIds: archiveId ? [archiveId] : [],
+    relatedIds: [],
     readmeHtml: readmeFor(repo.name, repo),
     langBreakdown: langs,
     langBars: langs.length ? `<div class="langbars-inline">${langs.map(([l, v]) => `<span class="langchip"><i data-l="${l}"></i>${l} ${v}%</span>`).join('')}</div>` : '',
@@ -241,38 +266,68 @@ for (const repo of ghRepos) {
     pushedShort: (repo.pushed_at || '').slice(0, 10),
   });
 }
-for (const wp of profile.workProjects || []) {
-  const archiveId = wp.note && byId.has(wp.note) ? wp.note : null;
-  const slug = (archiveId || wp.display).split('/').pop().replace(/\s+/g, '-');
+for (const wp of profile.localProjects || []) {
+  const noteIds = (wp.notes || []).filter((id) => byId.has(id));
+  const relatedIds = (wp.related || []).filter((id) => byId.has(id));
+  const archiveId = noteIds[0] || null;
+  const stack = (wp.stack || []).map(redact);
   projects.push({
-    key: wp.display,
-    slug: 'work-' + slug,
-    display: wp.display,
+    key: wp.slug,
+    slug: wp.slug,
+    display: redact(wp.display),
     category: wp.category || '工作项目',
     categoryIndex: catIndex(wp.category || '工作项目'),
-    tagline: wp.tagline,
-    highlights: wp.highlights || [],
+    tagline: redact(wp.tagline),
+    summary: redact(wp.summary),
+    role: redact(wp.role),
+    period: redact(wp.period),
+    stack,
+    stats: (wp.stats || []).map((s) => ({ n: redact(s.n), l: redact(s.l) })),
+    modules: (wp.modules || []).map((m) => ({ name: redact(m.name), desc: redact(m.desc) })),
+    challenges: (wp.challenges || []).map((c) => ({ title: redact(c.title), desc: redact(c.desc) })),
+    privacy: redact(wp.privacy),
+    highlights: (wp.highlights || []).map(redact),
     featured: !!wp.featured,
+    featuredRank: wp.featuredRank ?? 99,
+    local: true,
     isGitHub: false,
     repo: null,
     repoUrl: null,
-    pageHref: url('projects', 'work-' + slug) + '.html',
+    pageHref: url('projects', wp.slug) + '.html',
     archiveId,
     archiveHref: archiveId ? noteUrl(ctx, archiveId) : null,
+    noteIds,
+    relatedIds,
     readmeHtml: '',
     langBreakdown: [],
-    langBars: (wp.stack || []).map((s) => `<span class="chip chip-ghost">${escapeHtml(s)}</span>`).join(''),
-    stackTop: (wp.stack || [])[0] || '内部交付',
+    langBars: stack.map((s) => `<span class="chip chip-ghost">${escapeHtml(s)}</span>`).join(''),
+    stackTop: stack[0] || '内部交付',
     commitCount: null,
     pushedShort: '',
   });
 }
 stats.commits = projects.reduce((a, p) => a + (p.commitCount || 0), 0);
 ctx.projects = projects;
-ctx.featuredProjects = projects.filter((p) => p.featured);
+ctx.featuredProjects = projects
+  .filter((p) => p.featured)
+  .sort((a, b) => a.featuredRank - b.featuredRank);
+const projectByNote = new Map();
+for (const pr of projects) {
+  for (const id of pr.noteIds || []) {
+    if (!projectByNote.has(id)) projectByNote.set(id, pr);
+  }
+}
+ctx.projectByNote = projectByNote;
 const langCount = new Map();
 for (const r of ghRepos) langCount.set(r.language || '其他', (langCount.get(r.language || '其他') || 0) + 1);
 ctx.langStats = [...langCount].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+// ---------- 笔记页（依赖项目映射，放在项目之后写盘） ----------
+for (const note of notes) {
+  currentId = note.id;
+  writeFile(path.join('notes', ...note.id.split('/')) + '.html', notePage(ctx, note, renderedByNote.get(note.id)));
+}
+currentId = null;
 
 // ---------- 站点页面 ----------
 writeFile('index.html', reloadPage(ctx));
@@ -290,7 +345,7 @@ writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
 }));
 writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/app.css'), 'utf8'));
 writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client.js'), 'utf8'));
-writeFile(path.join('assets', 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#08103a"/><path d="M21 5a11 11 0 1 0 7 7 9 9 0 1 1-7-7Z" fill="#6fa8ff"/><path d="M23 8l1.2 3.2L27.4 12l-3.2 1.2L23 16.4l-1.2-3.2L18.6 12l3.2-1.2Z" fill="#eaf6ff"/></svg>`);
+fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });
 
 // ---------- React 岛屿 ----------
 const islandBytes = await bundleIslands();
@@ -325,7 +380,7 @@ console.log(`  笔记 ${stats.notes} 篇 / 分区 ${stats.folders} 个 / 标题 
 console.log(`  代码块 ${stats.snippets} 个 / ${stats.codeLines} 行；知识库体积 ${(stats.bytes / 1048576).toFixed(2)} MB`);
 console.log(`  项目 ${projects.length} 个（开源 ${ghRepos.length}）/ 提交 ${stats.commits}`);
 console.log(`  产物 ${totalFiles} 个文件 → dist/`);
-console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅首页与知识库页加载）`);
+console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅知识库页加载）`);
 console.log(`  搜索索引 ${searchDocs.length} 个小节（${(fs.statSync(path.join(DIST, 'assets/search-index.json')).size / 1024).toFixed(0)} KB）`);
 if (degradedList.length) {
   const uniq = [...new Set(degradedList)];
