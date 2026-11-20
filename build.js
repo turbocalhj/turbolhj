@@ -1,13 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
+import * as esbuild from 'esbuild';
 import { createEngine, renderPlainMarkdown, escapeHtml } from './src/markdown.js';
 import { loadVault, createLinkIndex } from './src/vault.js';
+import { createRedactor, isPrivateNote } from './src/privacy.js';
 import { renderPage, makeUrl } from './src/layout.js';
-import { homePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
 const skipped = [];
+const htmlPages = [];
 cleanDist(DIST);
 const T0 = Date.now();
 
@@ -23,8 +27,8 @@ function cleanDist(dir) {
       const abs = path.join(d, e.name);
       if (e.isDirectory()) stack.push(abs);
       else {
-        try { fs.unlinkSync(abs); } catch (err) {
-          if (err.code !== 'EPERM' && err.code !== 'EBUSY') throw err;
+        try { fs.unlinkSync(abs); } catch {
+          // 文件被占用或宿主环境的安全删除机制失败时跳过；同名文件会在写入时覆盖
           skipped.push(abs);
         }
       }
@@ -37,8 +41,12 @@ function cleanDist(dir) {
 }
 
 const profile = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/profile.json'), 'utf8'));
+const SITE_URL = String(profile.siteUrl || '').replace(/\/+$/, '');
 const ghRepos = readJson('data/github.json', []);
 const ghExtra = readJson('data/github-extra.json', { repos: {} });
+const gamesData = readJson('data/games.json', { updated: '', games: [] });
+const esportsData = readJson('data/esports.json', { titles: [], events: [], teams: [], milestones: [] });
+const linksData = readJson('data/links.json', { groups: [] });
 
 function readJson(rel, fallback) {
   try {
@@ -50,8 +58,21 @@ function readJson(rel, fallback) {
 }
 
 // ---------- 知识库 ----------
-const notes = loadVault(path.resolve(profile.vault));
-if (!notes.length) throw new Error(`知识库为空：${profile.vault}`);
+const redact = createRedactor(profile.privacy);
+const rawNotes = loadVault(path.resolve(profile.vault));
+if (!rawNotes.length) throw new Error(`知识库为空：${profile.vault}`);
+const privateNotes = rawNotes.filter((n) => isPrivateNote(n, profile.privacy));
+const privateLink = createLinkIndex(privateNotes);
+const privateById = new Map(privateNotes.map((n) => [n.id, n]));
+const notes = rawNotes
+  .filter((n) => !isPrivateNote(n, profile.privacy))
+  .map((n) => ({
+    ...n,
+    body: redact(n.body),
+    title: redact(n.title),
+    tags: n.tags.map(redact),
+    aliases: n.aliases.map(redact),
+  }));
 const byId = new Map(notes.map((n) => [n.id, n]));
 const link = createLinkIndex(notes);
 
@@ -68,7 +89,12 @@ const headingIds = new Map();
 const engine = createEngine({
   resolve: (target, alias) => {
     const hit = link.resolve(target, currentId);
-    if (!hit) return null;
+    if (!hit) {
+      const ph = privateLink.resolve(target, currentId);
+      if (!ph) return null;
+      const pn = privateById.get(ph.id);
+      return { id: ph.id, label: pn ? pn.base : ph.id.split('/').pop(), private: true };
+    }
     const note = byId.get(hit.id);
     return {
       id: hit.id,
@@ -91,6 +117,7 @@ ctx.stats = stats;
 const statByNote = new Map();
 const unresolvedList = [];
 const searchDocs = [];
+const renderedByNote = new Map();
 
 ctx.statByNote = statByNote;
 const degradedList = [];
@@ -138,7 +165,7 @@ for (const note of notes) {
     });
   }
 
-  writeFile(path.join('notes', ...note.id.split('/')) + '.html', notePage(ctx, note, rendered));
+  renderedByNote.set(note.id, rendered);
 }
 currentId = null;
 
@@ -204,10 +231,11 @@ const plainMarked = engine.marked;
 function readmeFor(name, repo) {
   const file = path.join(ROOT, 'data/readmes', `${name}.md`);
   if (!fs.existsSync(file)) return '';
-  const src = fs.readFileSync(file, 'utf8');
+  const src = redact(fs.readFileSync(file, 'utf8'));
   return renderPlainMarkdown(plainMarked, src, {
     repoUrl: repo.html_url,
     transformLink: (href) => `${repo.html_url}/blob/${repo.default_branch}/${href.replace(/^\.\//, '')}`,
+    transformImage: (src) => `https://raw.githubusercontent.com/${repo.full_name}/${repo.default_branch}/${src.replace(/^\.\//, '')}`,
   });
 }
 
@@ -220,18 +248,22 @@ for (const repo of ghRepos) {
   projects.push({
     key: repo.name,
     slug: repo.name,
-    display: ov.display || repo.name,
+    display: redact(ov.display || repo.name),
     category: ov.category || '个人项目',
     categoryIndex: catIndex(ov.category || '个人项目'),
-    tagline: ov.tagline || repo.description || '',
-    highlights: ov.highlights || [],
+    tagline: redact(ov.tagline || repo.description || ''),
+    highlights: (ov.highlights || []).map(redact),
     featured: !!ov.featured,
+    featuredRank: ov.featuredRank ?? 99,
+    local: false,
     isGitHub: true,
     repo,
     repoUrl: repo.html_url,
     pageHref: url('projects', repo.name) + '.html',
     archiveId,
     archiveHref: archiveId ? noteUrl(ctx, archiveId) : null,
+    noteIds: archiveId ? [archiveId] : [],
+    relatedIds: [],
     readmeHtml: readmeFor(repo.name, repo),
     langBreakdown: langs,
     langBars: langs.length ? `<div class="langbars-inline">${langs.map(([l, v]) => `<span class="langchip"><i data-l="${l}"></i>${l} ${v}%</span>`).join('')}</div>` : '',
@@ -240,46 +272,84 @@ for (const repo of ghRepos) {
     pushedShort: (repo.pushed_at || '').slice(0, 10),
   });
 }
-for (const wp of profile.workProjects || []) {
-  const archiveId = wp.note && byId.has(wp.note) ? wp.note : null;
-  const slug = (archiveId || wp.display).split('/').pop().replace(/\s+/g, '-');
+for (const wp of profile.localProjects || []) {
+  const noteIds = (wp.notes || []).filter((id) => byId.has(id));
+  const relatedIds = (wp.related || []).filter((id) => byId.has(id));
+  const archiveId = noteIds[0] || null;
+  const stack = (wp.stack || []).map(redact);
   projects.push({
-    key: wp.display,
-    slug: 'work-' + slug,
-    display: wp.display,
+    key: wp.slug,
+    slug: wp.slug,
+    display: redact(wp.display),
     category: wp.category || '工作项目',
     categoryIndex: catIndex(wp.category || '工作项目'),
-    tagline: wp.tagline,
-    highlights: wp.highlights || [],
+    tagline: redact(wp.tagline),
+    summary: redact(wp.summary),
+    role: redact(wp.role),
+    period: redact(wp.period),
+    stack,
+    stats: (wp.stats || []).map((s) => ({ n: redact(s.n), l: redact(s.l) })),
+    modules: (wp.modules || []).map((m) => ({ name: redact(m.name), desc: redact(m.desc) })),
+    challenges: (wp.challenges || []).map((c) => ({ title: redact(c.title), desc: redact(c.desc) })),
+    privacy: redact(wp.privacy),
+    highlights: (wp.highlights || []).map(redact),
     featured: !!wp.featured,
+    featuredRank: wp.featuredRank ?? 99,
+    local: true,
     isGitHub: false,
     repo: null,
     repoUrl: null,
-    pageHref: url('projects', 'work-' + slug) + '.html',
+    pageHref: url('projects', wp.slug) + '.html',
     archiveId,
     archiveHref: archiveId ? noteUrl(ctx, archiveId) : null,
+    noteIds,
+    relatedIds,
     readmeHtml: '',
     langBreakdown: [],
-    langBars: (wp.stack || []).map((s) => `<span class="chip chip-ghost">${escapeHtml(s)}</span>`).join(''),
-    stackTop: (wp.stack || [])[0] || '内部交付',
+    langBars: stack.map((s) => `<span class="chip chip-ghost">${escapeHtml(s)}</span>`).join(''),
+    stackTop: stack[0] || '内部交付',
     commitCount: null,
     pushedShort: '',
   });
 }
 stats.commits = projects.reduce((a, p) => a + (p.commitCount || 0), 0);
 ctx.projects = projects;
-ctx.featuredProjects = projects.filter((p) => p.featured);
+ctx.games = gamesData.games || [];
+ctx.esports = esportsData;
+ctx.links = linksData;
+ctx.featuredProjects = projects
+  .filter((p) => p.featured)
+  .sort((a, b) => a.featuredRank - b.featuredRank);
+const projectByNote = new Map();
+for (const pr of projects) {
+  for (const id of pr.noteIds || []) {
+    if (!projectByNote.has(id)) projectByNote.set(id, pr);
+  }
+}
+ctx.projectByNote = projectByNote;
 const langCount = new Map();
 for (const r of ghRepos) langCount.set(r.language || '其他', (langCount.get(r.language || '其他') || 0) + 1);
 ctx.langStats = [...langCount].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 
+// ---------- 笔记页（依赖项目映射，放在项目之后写盘） ----------
+for (const note of notes) {
+  currentId = note.id;
+  writeFile(path.join('notes', ...note.id.split('/')) + '.html', notePage(ctx, note, renderedByNote.get(note.id)));
+}
+currentId = null;
+
 // ---------- 站点页面 ----------
-writeFile('index.html', homePage(ctx));
+writeFile('index.html', reloadPage(ctx));
+writeFile('archive.html', archivePage(ctx));
 writeFile(path.join('knowledge', 'index.html'), knowledgePage(ctx));
 for (const f of folders) writeFile(path.join('knowledge', 'f', f.key) + '.html', folderPage(ctx, f));
 writeFile(path.join('projects', 'index.html'), projectsPage(ctx));
 writeFile('about.html', aboutPage(ctx));
 for (const pr of projects) writeFile(path.join('projects', pr.slug) + '.html', projectPage(ctx, pr));
+writeFile(path.join('games', 'index.html'), gamesPage(ctx));
+for (const g of ctx.games) writeFile(path.join('games', g.slug) + '.html', gameDetailPage(ctx, g));
+writeFile(path.join('esports', 'index.html'), esportsPage(ctx));
+writeFile(path.join('links', 'index.html'), linksPage(ctx));
 
 writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
   builtAt: new Date().toISOString(),
@@ -288,13 +358,87 @@ writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
 }));
 writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/app.css'), 'utf8'));
 writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client.js'), 'utf8'));
-writeFile(path.join('assets', 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#11100e"/><text x="16" y="22" font-family="Inter,SF Pro Display,PingFang SC,Microsoft YaHei,sans-serif" font-size="16" font-weight="700" fill="#f0ede8" text-anchor="middle">L</text><circle cx="25" cy="8" r="3" fill="#d98a5f"/></svg>`);
+fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });
+fs.copyFileSync(path.join(ROOT, 'src/manifest.webmanifest'), path.join(DIST, 'manifest.webmanifest'));
+fs.copyFileSync(path.join(ROOT, 'src/sw.js'), path.join(DIST, 'sw.js'));
+writeSeoFiles();
+
+// ---------- React 岛屿 ----------
+const islandBytes = await bundleIslands();
+
+async function bundleIslands() {
+  const out = path.join(DIST, 'assets', 'islands.js');
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+  await esbuild.build({
+    entryPoints: [path.join(ROOT, 'src/islands/index.jsx')],
+    bundle: true,
+    minify: true,
+    format: 'iife',
+    target: ['es2020'],
+    jsx: 'automatic',
+    define: { 'process.env.NODE_ENV': '"production"' },
+    outfile: out,
+    logLevel: 'warning',
+  });
+  return fs.statSync(out).size;
+}
+
+function pagePath(rel) {
+  const p = rel.replace(/\\/g, '/');
+  const pathname = p === 'index.html'
+    ? '/'
+    : '/' + p.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
+  return pathname.split('/').map(encodeURIComponent).join('/');
+}
 
 function writeFile(rel, content) {
   const abs = path.join(DIST, rel);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
+  if (rel.endsWith('.html')) {
+    htmlPages.push(pagePath(rel));
+    const canonical = (SITE_URL || '') + pagePath(rel);
+    content = String(content)
+      .replaceAll('__CANONICAL__', canonical)
+      .replaceAll('__SITE_URL__', SITE_URL);
+  }
   fs.writeFileSync(abs, content);
 }
+
+function writeSeoFiles() {
+  if (!SITE_URL) {
+    console.warn('! 未配置 profile.siteUrl，跳过 sitemap.xml / robots.txt');
+    return;
+  }
+  const escXml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const urls = htmlPages.map((p) => `  <url><loc>${escXml(SITE_URL + p)}</loc></url>`).join('\n');
+  writeFile('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+  writeFile('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+}
+
+/** 为文本类产物预生成 .br / .gz，供服务器按 Accept-Encoding 直接返回。 */
+function precompress() {
+  const exts = new Set(['.html', '.css', '.js', '.json', '.xml', '.txt', '.svg']);
+  const stack = [DIST];
+  let n = 0;
+  while (stack.length) {
+    const dir = stack.pop();
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const abs = path.join(dir, e.name);
+      if (e.isDirectory()) { stack.push(abs); continue; }
+      if (e.name.endsWith('.br') || e.name.endsWith('.gz')) continue;
+      if (!exts.has(path.extname(e.name).toLowerCase())) continue;
+      const buf = fs.readFileSync(abs);
+      fs.writeFileSync(abs + '.br', zlib.brotliCompressSync(buf, {
+        params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 11 },
+      }));
+      fs.writeFileSync(abs + '.gz', zlib.gzipSync(buf, { level: 9 }));
+      n++;
+    }
+  }
+  return n;
+}
+
+const compressedFiles = precompress();
 
 // 报告
 const totalFiles = countFiles(DIST);
@@ -302,7 +446,10 @@ console.log(`\n构建完成（${((Date.now() - T0) / 1000).toFixed(1)}s）`);
 console.log(`  笔记 ${stats.notes} 篇 / 分区 ${stats.folders} 个 / 标题 ${stats.headings} / 双链 ${stats.wikiLinks}（未解析 ${stats.unresolved}）`);
 console.log(`  代码块 ${stats.snippets} 个 / ${stats.codeLines} 行；知识库体积 ${(stats.bytes / 1048576).toFixed(2)} MB`);
 console.log(`  项目 ${projects.length} 个（开源 ${ghRepos.length}）/ 提交 ${stats.commits}`);
-console.log(`  产物 ${totalFiles} 个文件 → dist/`);
+console.log(`  游戏 ${ctx.games.length} 款 / 赛事 ${esportsData.events?.length || 0} 项 / 战队 ${esportsData.teams?.length || 0} 支`);
+console.log(`  产物 ${totalFiles} 个文件 → dist/（其中 ${compressedFiles} 个文本产物已预压缩为 .br + .gz）`);
+console.log(`  SEO：sitemap.xml / robots.txt / canonical / OG / JSON-LD${SITE_URL ? '（' + SITE_URL + '）' : '（未配置 siteUrl，跳过 sitemap）'}`);
+console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅知识库页加载）`);
 console.log(`  搜索索引 ${searchDocs.length} 个小节（${(fs.statSync(path.join(DIST, 'assets/search-index.json')).size / 1024).toFixed(0)} KB）`);
 if (degradedList.length) {
   const uniq = [...new Set(degradedList)];

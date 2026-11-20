@@ -135,6 +135,9 @@ export function createEngine({ resolve, noteUrl }) {
 
   function linkTo(entry, unresolved) {
     const text = escapeHtml(wikiDisplay(entry));
+    if (entry.hit && entry.hit.private) {
+      return `<span class="wikilink-private" title="私密笔记，未在站点公开">${text}</span>`;
+    }
     if (!entry.hit) {
       unresolved.count++;
       unresolved.items.push(entry.raw + (entry.anchor ? '#' + entry.anchor : ''));
@@ -211,6 +214,7 @@ export function createEngine({ resolve, noteUrl }) {
       t = t.replace(/^ {0,3}(?:`{3,}|~{3,})[^\n]*$/gm, ' ')
         .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
         .replace(/^ {0,3}>+ ?/gm, '')
+        .replace(/^ {0,3}#{1,6}[ 	]+/gm, '')
         .replace(/^ {0,3}([-*+]|\d+\.) /gm, '')
         .replace(/[*_`|]/g, ' ')
         .replace(/ {2,}/g, ' ');
@@ -223,7 +227,7 @@ export function createEngine({ resolve, noteUrl }) {
         h: hd.text,
         lvl: hd.level,
         a: hd.id || '',
-        t: sectionText(maskedLines.slice(hd.line, end).join('\n')).slice(0, 3000),
+        t: sectionText(maskedLines.slice(hd.line + 1, end).join('\n')).slice(0, 3000),
       };
     });
 
@@ -232,6 +236,7 @@ export function createEngine({ resolve, noteUrl }) {
 
     html = decorateCodeBlocks(html);
     html = html.replace(/<a href="(https?:\/\/[^"]+)"/g, '<a target="_blank" rel="noopener" href="$1"');
+    html = decorateImages(html);
 
     const warnings = [];
     if (hIndex !== headingLines.length) {
@@ -255,8 +260,17 @@ function decorateCodeBlocks(html) {
   );
 }
 
+function decorateImages(html) {
+  return html.replace(/<img\b([^>]*)>/g, (m, attrs) => {
+    if (/\bloading=/.test(attrs)) return m;
+    const extra = ' loading="lazy" decoding="async"';
+    if (/\/\s*$/.test(attrs)) return `<img${attrs.replace(/\/\s*$/, '')}${extra} />`;
+    return `<img${attrs}${extra}>`;
+  });
+}
+
 /** 纯 README 渲染：相对链接改写为仓库内文件链接，不解析 wiki 链接。 */
-export function renderPlainMarkdown(markedInstance, source, { repoUrl, transformLink } = {}) {
+export function renderPlainMarkdown(markedInstance, source, { repoUrl, transformLink, transformImage } = {}) {
   let html = markedInstance.parse(source);
   html = decorateCodeBlocks(html);
   html = html.replace(/<a href="(https?:\/\/[^"]+)"/g, '<a target="_blank" rel="noopener" href="$1"');
@@ -264,7 +278,11 @@ export function renderPlainMarkdown(markedInstance, source, { repoUrl, transform
     html = html.replace(/<a href="(?!#|https?:|mailto:)([^"]+)"/g,
       (_, href) => `<a href="${transformLink(decodeURIComponent(href))}" target="_blank" rel="noopener"`);
   }
-  return html;
+  if (transformImage) {
+    html = html.replace(/<img([^>]*?)\ssrc="(?!#|https?:|data:)([^"]+)"/g,
+      (_, pre, src) => `<img${pre} src="${transformImage(decodeURIComponent(src))}"`);
+  }
+  return decorateImages(html);
 }
 
 export { yaml };

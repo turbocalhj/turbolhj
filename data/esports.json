@@ -1,0 +1,98 @@
+{
+  "updated": "2026-11-20",
+  "note": "电竞观察笔记：赛事体系与战队信息为公开资料，观赛记录为主观整理。",
+  "titles": [
+    { "key": "lol", "name": "英雄联盟", "short": "LOL", "color": "#c8a45c" },
+    { "key": "cs2", "name": "反恐精英 2", "short": "CS2", "color": "#d99b34" },
+    { "key": "dota2", "name": "Dota 2", "short": "DOTA", "color": "#b23b30" },
+    { "key": "valorant", "name": "无畏契约", "short": "VAL", "color": "#ff4655" }
+  ],
+  "events": [
+    {
+      "name": "全球总决赛",
+      "en": "World Championship",
+      "title": "lol",
+      "tier": "S",
+      "cycle": "每年 10–11 月",
+      "format": "入围赛 → 瑞士轮 → 淘汰赛 → 决赛",
+      "desc": "英雄联盟年度最高级别赛事，各赛区种子队伍争夺召唤师杯。",
+      "watch": "重点看"
+    },
+    {
+      "name": "季中冠军赛",
+      "en": "Mid-Season Invitational",
+      "title": "lol",
+      "tier": "A",
+      "cycle": "每年 5 月",
+      "format": "小组赛 → 对抗赛 → 淘汰赛",
+      "desc": "各赛区春季赛冠军之间的对抗，是当年版本风向的第一次集中检验。",
+      "watch": "有空看"
+    },
+    {
+      "name": "国际邀请赛",
+      "en": "The International",
+      "title": "dota2",
+      "tier": "S",
+      "cycle": "每年 8–9 月",
+      "format": "小组赛 → 败者/胜者组 → 决赛",
+      "desc": "Dota 2 年度旗舰赛事，以双败淘汰和高额奖金池闻名。",
+      "watch": "重点看"
+    },
+    {
+      "name": "IEM 大赛",
+      "en": "Intel Extreme Masters",
+      "title": "cs2",
+      "tier": "A",
+      "cycle": "全年多站",
+      "format": "小组赛 → 淘汰赛",
+      "desc": "跨多年运营的 CS 系列赛事，卡托维兹与科隆站是其中的传统重头戏。",
+      "watch": "重点看"
+    },
+    {
+      "name": "BLAST 系列赛",
+      "en": "BLAST Premier",
+      "title": "cs2",
+      "tier": "A",
+      "cycle": "全年赛季制",
+      "format": "小组赛 → 季后赛 → 全球总决赛",
+      "desc": "CS2 的赛季制赛事体系，全年分站累计积分，年末收官。",
+      "watch": "有空看"
+    },
+    {
+      "name": "全球冠军赛",
+      "en": "Valorant Champions",
+      "title": "valorant",
+      "tier": "S",
+      "cycle": "每年 8–9 月",
+      "format": "小组赛 → 淘汰赛",
+      "desc": "VCT 赛季的最终赛事，各赛区通过全年积分争夺参赛席位。",
+      "watch": "重点看"
+    },
+    {
+      "name": "电竞世界杯",
+      "en": "Esports World Cup",
+      "title": "lol",
+      "tier": "S",
+      "cycle": "每年夏季",
+      "format": "多项目并行 + 俱乐部积分",
+      "desc": "跨多个游戏项目的综合性赛事，以俱乐部总积分排名为特色。",
+      "watch": "关注"
+    }
+  ],
+  "teams": [
+    { "name": "T1", "title": "lol", "region": "LCK · 韩国", "short": "T1", "color": "#e02b2b", "desc": "英雄联盟历史上成绩最稳定的俱乐部之一，以强烈的团队标签著称。" },
+    { "name": "Gen.G", "title": "lol", "region": "LCK · 韩国", "short": "GEN", "color": "#c8a45c", "desc": "跨项目运营的韩国俱乐部，英雄联盟与 VALORANT 均有争冠实力。" },
+    { "name": "Bilibili Gaming", "title": "lol", "region": "LPL · 中国", "short": "BLG", "color": "#4a9de0", "desc": "LPL 赛区的代表性队伍之一，近年在国际赛事中表现活跃。" },
+    { "name": "G2 Esports", "title": "cs2", "region": "LEC · 欧洲", "short": "G2", "color": "#e8e8e8", "desc": "多项目综合俱乐部，CS2 与英雄联盟两条线都有长期竞争力。" },
+    { "name": "NAVI", "title": "cs2", "region": "欧洲", "short": "NAVI", "color": "#e8c22f", "desc": "CS 历史上最具辨识度的队伍之一，以鲜明的队服和打法闻名。" },
+    { "name": "Team Spirit", "title": "dota2", "region": "东欧", "short": "TS", "color": "#4b6ecb", "desc": "Dota 2 顶级俱乐部，多次在国际邀请赛上取得好成绩。" },
+    { "name": "Team Liquid", "title": "dota2", "region": "国际", "short": "TL", "color": "#2f8fd8", "desc": "总部位于荷兰的多项目俱乐部，Dota 2 是其传统强项。" },
+    { "name": "Fnatic", "title": "valorant", "region": "EMEA · 欧洲", "short": "FNC", "color": "#e8791d", "desc": "老牌综合电竞俱乐部，VALORANT 与英雄联盟均有深厚积累。" }
+  ],
+  "milestones": [
+    { "year": "2018", "title": "LPL 首冠", "desc": "iG 拿下英雄联盟全球总决赛冠军，LPL 赛区第一次捧起召唤师杯。", "titleKey": "lol" },
+    { "year": "2021", "title": "EDG 夺冠", "desc": "EDward Gaming 赢得 S11 全球总决赛，成为 LPL 赛区的又一个里程碑。", "titleKey": "lol" },
+    { "year": "2023", "title": "CS 进入新纪元", "desc": "Counter-Strike 2 正式上线，Source 2 引擎带来道具与地图机制的全面更新。", "titleKey": "cs2" },
+    { "year": "2024", "title": "综合赛事升温", "desc": "跨项目综合型电竞赛事体系进一步成熟，俱乐部积分成为新的竞争维度。", "titleKey": "lol" }
+  ]
+}

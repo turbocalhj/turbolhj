@@ -1,25 +1,38 @@
 {
   "vault": "E:/ObsidianRES/Obsidian LHJ",
   "basePath": "/",
+  "siteUrl": "https://turbocalhj.github.io",
   "github": "https://github.com/turbocalhj",
   "site": {
-    "title": "李鸿杰",
-    "tagline": "后端 / 全栈 · PLM 与实时数据链路",
+    "title": "TURBO SPARK",
+    "tagline": "小白全栈开发 · ACG/FPS 爱好者 · 徐州",
     "description": "个人主页：项目档案与 Obsidian 技术知识库。"
   },
   "person": {
-    "name": "李鸿杰",
+    "name": "TURBO SPARK",
     "handle": "turbocalhj",
-    "role": "制造业 PLM（Teamcenter / AWC）方向后端开发",
-    "location": "成都",
+    "role": "小白全栈开发 · ACG/FPS 爱好者",
+    "location": "徐州",
     "stack": ["Java", "Go", "Python", "TypeScript", "Spring Boot", "Kafka", "Flink", "React", "Docker"]
   },
-  "categories": ["个人项目", "工作项目", "学习项目"],
+  "categories": ["工作项目", "个人项目", "学习项目"],
+  "categoryNotes": {
+    "工作项目": "企业内部交付。保留技术栈、模块划分与工程决策；公司、主机、账号与业务数据按脱敏口径处理。",
+    "个人项目": "GitHub 开源仓库，附 README 快照与可回溯的档案笔记。",
+    "学习项目": "课程设计与自学练习，保留完整过程与结论。"
+  },
   "projects": {
+    "turboforakeman": {
+      "display": "个人站 V1 · 静态档案库",
+      "category": "个人项目",
+      "featured": false,
+      "tagline": "本站的前身：纯 Node ESM 扫描 Obsidian 与 GitHub 快照，零框架生成静态档案站。",
+      "highlights": ["两遍构建解决跨笔记锚点", "双链 / 代码块 / 搜索索引", "产物 100+ 静态页"]
+    },
     "MyGoProject": {
       "display": "MyGoProject · 短链服务",
       "category": "个人项目",
-      "featured": true,
+      "featured": false,
       "tagline": "Go + Gin + SQLite 的短链 REST API，OpenSpec 规格驱动，一个二进制即可运行。",
       "highlights": ["接口驱动三层依赖单向", "统一错误模型 + 请求 ID", "IP 令牌桶限流", "优雅关闭"]
     },
@@ -27,13 +40,14 @@
       "display": "网约车订单异常告警与监控系统",
       "category": "个人项目",
       "featured": true,
+      "featuredRank": 3,
       "tagline": "NYC TLC 真实数据模拟订单流，Kafka → Flink 检测 → ES → Grafana + 邮件的最小实时风控链路。",
       "highlights": ["侧输出分流异常订单", "事件时间滚动窗口", "Haversine + TLC 计费阈值", "告警限流"]
     },
     "MyhealthCloudeV2": {
       "display": "算力调度运营平台 V2",
       "category": "个人项目",
-      "featured": true,
+      "featured": false,
       "tagline": "React 18 + TypeScript + Ant Design 5 整体重建，门户 / 控制台 / 费用中心 / 认证四条业务线。",
       "highlights": ["V1→V2 平滑重建", "localStorage 键完全兼容", "路由级懒加载", "44 用例单测全绿"]
     },
@@ -63,23 +77,218 @@
       "tagline": "Flask + SQLite：注册登录、增删改查、关键词搜索，同一份代码同时输出 HTML 与 JSON API。"
     }
   },
-  "workProjects": [
+  "localProjects": [
     {
-      "display": "PLM · BOM 导出入口",
-      "note": "PLM开发BOM入口/BOM入口开发",
+      "slug": "bpm-platform",
+      "display": "动力微服务 · BPM 流程平台",
       "category": "工作项目",
       "featured": true,
-      "tagline": "AWC 独立模块 + Spring Boot 补列服务：一键导出带层级、中文表头、BOMLine 行属性回填的 BOM 结构表。",
-      "stack": ["Teamcenter 14", "AWC 6.3.6", "Java", "Spring Boot", "JavaScript", "openpyxl"],
-      "highlights": ["4 组交叉实验定位模板引擎取值边界", "浏览器同源取件绕开 HTTP 421", "表头文字建索引 + TCUID 双校验", "失败降级为原始件"]
+      "featuredRank": 1,
+      "tagline": "Spring Boot 3 + Flowable 的企业审批中台：软件版本发布、软件开发、问题录入三条流程，从流程事件监听一路落到业务表。",
+      "summary": "面向电池研发部门的流程平台，负责把 Flowable 审批结果可靠地写回业务库，并提供流程实例详情、作废与运维对账能力。项目配套一套模块化交付资料：需求、开发文档、维护日志、对账 SQL 与排障数据各归其位。",
+      "role": "后端开发 / 运维排障",
+      "period": "2026.07 – 至今",
+      "stack": ["Java 17", "Spring Boot 3.4", "yudao-cloud", "Flowable 7", "MyBatis-Plus", "MySQL 8", "Redis", "Nacos", "Vue 3", "Element Plus"],
+      "stats": [
+        { "n": "3", "l": "条核心审批流程" },
+        { "n": "3", "l": "个业务 schema" },
+        { "n": "10", "l": "个字段口径对齐" },
+        { "n": "2", "l": "套环境逐列对账" }
+      ],
+      "modules": [
+        { "name": "流程事件监听 → 业务落库", "desc": "监听 Flowable 流程事件，把审批状态与流程变量映射到软件版本、软件开发、问题单三张业务表。" },
+        { "name": "流程实例详情与作废", "desc": "统一查询历史节点与流程变量，支持异常实例作废，保留可回查的流程副本。" },
+        { "name": "管理端列表与字典渲染", "desc": "Vue 3 管理端列表、车辆类型等字典回显，历史脏数据做空值兜底。" },
+        { "name": "运维对账与补录", "desc": "巡检 SQL、缺失业务记录对账、补录模板；测试与生产库字段差异逐项比对。" }
+      ],
+      "highlights": [
+        "流程变量与业务字段双向映射，异常时保留流程实例副本可回查",
+        "雪花 ID 表手工补录必须显式给主键，补录模板固化校验",
+        "测试 / 生产库 10 个字段的宽度与空值口径差异逐项对齐，消灭 Data too long",
+        "字典缓存与业务表不一致时，先排除缓存再判定代码问题"
+      ],
+      "challenges": [
+        { "title": "审批通过但列表为空", "desc": "流程落库监听被静默吞掉，业务表无记录。以流程变量为事实源补录，并给监听器补上失败可见性。" },
+        { "title": "流程实例不存在", "desc": "流程号尾部混入换行符，长度 37 而非 36；对账 SQL 固化长度校验。" },
+        { "title": "环境差异", "desc": "测试库更窄更严、生产库更宽允许空值；用逐列比对 SQL 固定差异基线，复测不再被环境干扰。" }
+      ],
+      "notes": ["动力微服务/动力微服务开发", "动力微服务/动力微服务运维"],
+      "related": ["工作链/Nacos", "数据库/Redis"],
+      "privacy": "公司、环境地址、库表业务数据均已脱敏；保留流程机制与排障方法。"
     },
     {
-      "display": "PLM · 自制导出模板",
-      "note": "PLM系统开发/自制模板开发日志",
+      "slug": "plm-integration",
+      "display": "PLM 集成服务群 · Teamcenter SOA",
+      "category": "工作项目",
+      "featured": true,
+      "featuredRank": 2,
+      "tagline": "围绕 Teamcenter 14 的 5 个 Spring Boot 模块：批量导入、SOA 中枢、主数据同步、公共库与 EBOM / 能源服务。",
+      "summary": "一套面向制造企业的 PLM 集成服务群，覆盖 BOM / 物料 / 项目 / 分类批量导入、MES / QMS / SCM 对接、SAP / MDM 主数据同步、PDF 转换与签章、MinIO 取件。模块之间通过公共 SOA 库收敛 Teamcenter 会话与模型，构建统一走内网私服。",
+      "role": "后端开发",
+      "period": "2026.05 – 至今",
+      "stack": ["Java 8", "Spring Boot 2.5 / 2.7", "Teamcenter 14 SOA", "MyBatis-Plus", "JPA", "Oracle", "SQL Server", "MySQL", "MinIO", "Kafka", "Feign", "Caffeine"],
+      "stats": [
+        { "n": "5", "l": "个服务模块" },
+        { "n": "1,078", "l": "个 Java 文件" },
+        { "n": "20 万+", "l": "行 Java 代码" },
+        { "n": "10+", "l": "条导入链路" }
+      ],
+      "modules": [
+        { "name": "rx-import-service · 批量导入", "desc": "BOM 层级、物料、项目、分类、数据集、参考关系等 10+ 控制器；POI + Excel 模板，启动时预热 CAD 模板与名称库。" },
+        { "name": "plm-soa-server · SOA 中枢", "desc": "物料 / 模块 / 产品主数据，MES / QMS / SCM 对接，MinIO 对象存储，Feign + OAuth2。" },
+        { "name": "plm-service · 核心服务", "desc": "定时同步、PDF 转水印、签章任务；Jasypt 配置加密与 classfinal 代码保护。" },
+        { "name": "teamcenter-soa-common · 公共库", "desc": "TC SOA 会话、模型、常量收敛，被中枢服务依赖，禁止引入任何一端的业务逻辑。" },
+        { "name": "xg-energy-service · EBOM / 能源", "desc": "SAP 库存、MDM / GDM 主数据、MES 变更同步，Kafka + MinIO，多子模块父子 POM。" }
+      ],
+      "highlights": [
+        "5 个模块、1,078 个 Java 文件、20 万行代码的边界梳理与依赖收敛",
+        "统一 TC 会话管理与异常降级，跨系统调用全部带超时",
+        "多数据源手工装配，fastjson 1 / 2 并存等历史包袱的兼容策略",
+        "定时任务密集场景的幂等与并发评估基线"
+      ],
+      "challenges": [
+        { "title": "模块边界", "desc": "公共库不引入业务逻辑，Controller 不写业务，依赖保持单向。" },
+        { "title": "多数据源", "desc": "排除自动装配后手工管理 DataSource，环境切换与连接池参数最容易踩坑。" },
+        { "title": "构建可复现", "desc": "TC14 依赖只在内网私服，离线构建需要完整本地仓库；私服地址与账号不进入站点。" }
+      ],
+      "notes": [],
+      "related": ["语言/Java", "后端/SpringBoot", "工作链/Nexus", "后端/API鉴权"],
+      "privacy": "客户名称、内网地址与供应商信息均已移除，仅保留架构与工程方法。"
+    },
+    {
+      "slug": "plm-bom-export",
+      "display": "PLM · BOM 导出与自制模板",
       "category": "工作项目",
       "featured": false,
-      "tagline": "Teamcenter Excel 模板 v2~v13 迭代：字符串级改造 xlsx、9 列出值、层级机制与三条硬约束的来路。",
-      "stack": ["xlsm", "openpyxl", "Teamcenter Report"]
+      "tagline": "AWC 独立模块 + Spring Boot 补列服务 + 12 列 Excel 模板：一键导出带层级、中文表头、行属性回填的 BOM 结构表。",
+      "summary": "从 AWC 页面按钮到 TC 报表引擎的完整链路：自制 xlsm 模板经字符串级改造后可被 AWC 识别，导出件再由补列服务回填 BOMLine 属性并做中文表头映射。共迭代 29 个模板版本，沉淀 4 组交叉实验与一套失败降级策略。",
+      "role": "全链路开发（AWC 模块 / Java 服务 / Python 工具）",
+      "period": "2026.10 – 2026.11",
+      "stack": ["Teamcenter 14", "AWC 6.3.6", "Java", "Spring Boot 2.5", "POI", "openpyxl", "xlsm", "PowerShell"],
+      "stats": [
+        { "n": "29", "l": "个模板版本" },
+        { "n": "12", "l": "列定版结构" },
+        { "n": "19", "l": "文件补丁包" },
+        { "n": "4", "l": "组交叉实验" }
+      ],
+      "modules": [
+        { "name": "AWC 导出按钮", "desc": "独立 stage 模块，调用 TC 报表引擎导出 Excel，处理同源取件与 HTTP 421。" },
+        { "name": "补列服务", "desc": "Spring Boot + POI，按 TCUID 双校验回填 BOMLine 行属性，生成中文表头。" },
+        { "name": "模板工程", "desc": "zipfile 字符串级改 sheet1.xml / sharedStrings.xml，避免整本重写导致 AWC 无响应。" },
+        { "name": "发布与回滚", "desc": "PowerShell 脚本固化「只合并、不整目录覆盖」，发布 key 失效时可快速修复。" }
+      ],
+      "highlights": [
+        "4 组交叉实验定位模板引擎取值边界",
+        "浏览器同源取件绕开 HTTP 421",
+        "表头文字索引 + TCUID 双校验防错行",
+        "失败降级为原始件，保证用户始终有文件"
+      ],
+      "challenges": [
+        { "title": "223038 重复列", "desc": "标签铺满规则行触发报表引擎拒绝，逐行去重后恢复。" },
+        { "title": "HTTP 200 ≠ 成功", "desc": "失败信息藏在 response body 的 partialErrors 里，必须解析响应体。" },
+        { "title": "发布 401", "desc": "网关签名私钥被快照回滚删除；先查 secrets 目录与 TC 进程，再动 key。" }
+      ],
+      "notes": ["PLM系统开发/BOM入口开发", "PLM系统开发/自制模板开发日志", "PLM系统开发/AWC任务箱追溯"],
+      "related": ["PLM系统开发/PLM · 目录索引", "前端/前端工程化与构建", "语言/Python", "语言/Openpyxl"],
+      "privacy": "模板中的客户名称已替换为中性表述，界面截图与业务数据未收录。"
+    },
+    {
+      "slug": "itk-customization",
+      "display": "Teamcenter ITK · 变更与文档发布",
+      "category": "工作项目",
+      "featured": false,
+      "tagline": "C++ 编写的 TC14 ITK 插件：12 个流程 Action Handler + 7 个 METHOD 回调，串联变更、文档发布与外部系统集成。",
+      "summary": "在 Teamcenter 14 平台上用 ITK 做深度定制：流程动作处理器覆盖变更管理、文档发布、时间表交付物；属性回调在保存 / 复制时维护业务字段。业务代码通过第三方封装的 SOA 库访问 TC 对象，并用 cJSON / libcurl 与外部服务交互。",
+      "role": "ITK 开发",
+      "period": "2026.09 – 至今",
+      "stack": ["C++", "Teamcenter ITK", "Tc14 SDK", "libcurl", "cJSON", "tinyxml2", "Oracle"],
+      "stats": [
+        { "n": "12", "l": "个流程处理器" },
+        { "n": "7", "l": "个回调方法" },
+        { "n": "31", "l": "个源文件" },
+        { "n": "1", "l": "个 DLL 产物" }
+      ],
+      "modules": [
+        { "name": "EPM Action Handler", "desc": "流程动作节点，处理变更单、文档发布与交付物状态流转。" },
+        { "name": "METHOD 回调", "desc": "保存 / 复制 / 属性变更时维护自定义字段。" },
+        { "name": "外部集成", "desc": "HTTP + JSON 调用 MDM / SAP 与通知服务，失败可重试。" },
+        { "name": "注册与构建", "desc": "统一回调注册入口、依赖链接与 DLL 发布。" }
+      ],
+      "highlights": [
+        "12 + 7 个扩展点的职责切分与注册",
+        "第三方封装库无源码，靠头文件签名和黑盒验证",
+        "libcurl 开发包缺失、全量 .lib 通配链接的构建问题定位",
+        "业务层 3.4k 行代码保持单一 DLL 交付"
+      ],
+      "challenges": [
+        { "title": "黑盒封装", "desc": "只能看头文件，行为靠实验确认；关键路径预埋日志与降级。" },
+        { "title": "依赖全量链接", "desc": "通配符把 lib 目录全部链进来，依赖不最小化，升级需整体验证。" },
+        { "title": "平台锁定", "desc": "TC SDK 版本不可动，任何升级都要按平台节奏整体评估。" }
+      ],
+      "notes": [],
+      "related": ["PLM系统开发/TeamCenter术语表", "PLM系统开发/AWC任务箱追溯"],
+      "privacy": "外部系统名称、接口地址与供应商信息未收录，仅保留扩展点设计。"
+    },
+    {
+      "slug": "bms-delivery-kit",
+      "display": "BMS 流程平台 · 交付知识库",
+      "category": "工作项目",
+      "featured": false,
+      "tagline": "17 份文档 + 对账 / 巡检 / 补录 SQL + 排障数据，把一次流程平台交付拆成可交接、可复盘的模块化资料。",
+      "summary": "面向后续接手人的交付资料体系：按业务模块（软件版本、软件开发、问题录入、流程公共）组织 docs / code / notes，配套对账、巡检、补录脚本与历次排障事实数据。生产操作只读、改动先备份、脚本不含账号密码。",
+      "role": "文档与数据治理",
+      "period": "2026.11",
+      "stack": ["Markdown", "SQL", "Python", "Flowable", "MySQL"],
+      "stats": [
+        { "n": "4", "l": "个业务模块" },
+        { "n": "17", "l": "份文档" },
+        { "n": "3", "l": "类运维脚本" },
+        { "n": "1", "l": "套交接流程" }
+      ],
+      "modules": [
+        { "name": "总览与索引", "desc": "阅读顺序、目录结构、生产操作注意事项。" },
+        { "name": "业务模块资料", "desc": "每个模块统一 docs / code / notes 三层，避免上下文只存在聊天记录里。" },
+        { "name": "工具脚本", "desc": "对账、巡检、补录模板，去除账号密码后可复用。" },
+        { "name": "排障数据", "desc": "对账结果与处理动作留痕，带日期与事实，可复盘。" }
+      ],
+      "highlights": [
+        "docs / code / notes 固定结构，交接不靠口口相传",
+        "生产库操作默认只读，UPDATE / INSERT 先确认影响行数并备份",
+        "脚本去除账号密码，执行前自行填写连接信息",
+        "排障数据带日期与事实，可追溯每一次处理"
+      ],
+      "challenges": [
+        { "title": "交接成本", "desc": "把散落在聊天和脑子里的上下文固化成索引与模板。" },
+        { "title": "安全边界", "desc": "生产库只读、改动留痕、脚本脱敏，三件事写进规范。" }
+      ],
+      "notes": ["动力微服务/动力微服务运维"],
+      "related": ["数据库/Mysql", "数据库/SQL练习题"],
+      "privacy": "库表业务数据与账号信息未收录，SQL 仅保留结构与校验逻辑。"
     }
-  ]
+  ],
+  "privacy": {
+    "excludeFolders": ["社会文件"],
+    "rules": [
+      ["李鸿杰", "TURBO SPARK"],
+      ["徐州徐工新能源科技有限公司", "某新能源科技公司"],
+      ["徐州工程机械集团有限公司", "某机械集团"],
+      ["徐工动力", "某电池企业"],
+      ["徐工重卡", "某车型"],
+      ["徐工", "企业"],
+      ["dlknexus.xcmg.com", "nexus.example.internal"],
+      ["dlknexus", "nexus"],
+      ["XGDL", "PLM"],
+      ["XCMG", "企业"],
+      ["xcmg", "企业"],
+      ["上海冉修", "第三方供应商"],
+      ["冉修", "第三方"],
+      ["RxPub", "RxLib"],
+      ["RXPub", "RxLib"],
+      ["rxpub", "rxlib"],
+      ["plmtest", "plm-host"],
+      ["dl-cloud", "biz-cloud"],
+      ["E:/ObsidianRES/Obsidian LHJ", "本地 Obsidian 库"],
+      ["E:\\\\ObsidianRES\\\\Obsidian LHJ", "本地 Obsidian 库"]
+    ]
+  }
 }
