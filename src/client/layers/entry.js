@@ -79,15 +79,30 @@
     bind();
   }
 
+  function focusables() {
+    return Array.prototype.slice.call(cover.querySelectorAll('a[href], button:not([disabled])'));
+  }
+
   function onKey(e) {
     if (closing) return;
-    if (e.key === 'Escape' || e.key === 'Enter') {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      dismiss();
+    } else if (e.key === 'Enter') {
+      // 焦点在更新公告链接上时，把回车交还给浏览器执行跳转
+      if (document.activeElement && document.activeElement.tagName === 'A') return;
       e.preventDefault();
       dismiss();
     } else if (e.key === 'Tab') {
-      // 焦点锁在 ENTER 按钮，避免外泄到被遮挡的页面
+      // 焦点在封面内的链接与按钮之间循环，避免外泄到被遮挡的页面
+      var list = focusables();
+      if (!list.length) return;
+      var idx = list.indexOf(document.activeElement);
       e.preventDefault();
-      focusEnter();
+      var next = e.shiftKey
+        ? (idx <= 0 ? list.length - 1 : idx - 1)
+        : (idx === -1 || idx === list.length - 1 ? 0 : idx + 1);
+      list[next].focus();
     }
   }
 

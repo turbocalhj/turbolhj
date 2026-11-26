@@ -6,7 +6,7 @@ import { createEngine, renderPlainMarkdown, escapeHtml } from './src/core/markdo
 import { loadVault, createLinkIndex } from './src/core/vault.js';
 import { createRedactor, isPrivateNote } from './src/core/privacy.js';
 import { renderPage, makeUrl } from './src/site/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, authPage, adminPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, updatesPage, authPage, adminPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -47,6 +47,7 @@ const ghExtra = readJson('data/github-extra.json', { repos: {} });
 const gamesData = readJson('data/games.json', { updated: '', games: [] });
 const esportsData = readJson('data/esports.json', { titles: [], events: [], teams: [], milestones: [] });
 const linksData = readJson('data/links.json', { groups: [] });
+const updatesData = readJson('data/updates.json', { updated: '', entries: [] });
 
 function readJson(rel, fallback) {
   try {
@@ -321,6 +322,7 @@ stats.commits = projects.reduce((a, p) => a + (p.commitCount || 0), 0);
 ctx.projects = projects;
 ctx.games = gamesData.games || [];
 ctx.esports = esportsData;
+ctx.updates = updatesData;
 ctx.links = linksData;
 ctx.featuredProjects = projects
   .filter((p) => p.featured)
@@ -355,6 +357,7 @@ writeFile(path.join('games', 'index.html'), gamesPage(ctx));
 for (const g of ctx.games) writeFile(path.join('games', g.slug) + '.html', gameDetailPage(ctx, g));
 writeFile(path.join('esports', 'index.html'), esportsPage(ctx));
 writeFile(path.join('links', 'index.html'), linksPage(ctx));
+writeFile('updates.html', updatesPage(ctx));
 writeFile('login.html', authPage(ctx, 'login'), { noindex: true });
 writeFile('register.html', authPage(ctx, 'register'), { noindex: true });
 writeFile('admin.html', adminPage(ctx), { noindex: true });

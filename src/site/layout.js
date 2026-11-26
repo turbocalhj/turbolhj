@@ -153,6 +153,7 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
         <a href="${url('projects', 'index.html')}">项目</a>
         <a href="${url('knowledge', 'index.html')}">知识库</a>
         <a href="${url('about.html')}">关于</a>
+        <a href="${url('updates.html')}">更新公告</a>
         <a href="${url('links', 'index.html')}">友链</a>
       </nav>
       <a class="footer-gh" href="${ctx.profile.github}" target="_blank" rel="noopener">github.com/turbocalhj ↗</a>
@@ -181,6 +182,8 @@ function entryCover(ctx) {
   const site = profile.site || {};
   const person = profile.person || {};
   const stats = ctx.stats || {};
+  const updates = ctx.updates && Array.isArray(ctx.updates.entries) ? ctx.updates.entries : [];
+  const latestUpdate = updates[0] || null;
   const groups = ctx.links && Array.isArray(ctx.links.groups) ? ctx.links.groups : [];
   const links = groups.reduce((n, g) => n + (g && Array.isArray(g.links) ? g.links.length : 0), 0);
   const num = (v) => (v === null || v === undefined || v === '' || Number.isNaN(Number(v)) ? '—' : Number(v).toLocaleString('en'));
@@ -215,6 +218,12 @@ function entryCover(ctx) {
         <li><span class="entry-idx-k">ARCHIVE</span><span class="entry-idx-v">${num(stats.folders)}</span></li>
       </ul>
       <div class="entry-action">
+        ${latestUpdate ? `<a class="entry-news" href="${ctx.url('updates.html')}">
+          <span class="entry-news-k">WHAT'S NEW</span>
+          <span class="entry-news-v">${escapeHtml(String(latestUpdate.date || '').slice(5).replace('-', '.'))} · ${escapeHtml(latestUpdate.title || '更新公告')}</span>
+          <span class="entry-news-n">${updates.length}</span>
+          <span class="entry-news-arrow" aria-hidden="true">↗</span>
+        </a>` : ''}
         <span class="entry-hint">CLICK / SCROLL / ENTER</span>
         <button class="entry-enter" type="button"><span>ENTER</span><span class="entry-enter-arrow" aria-hidden="true">↗</span></button>
       </div>

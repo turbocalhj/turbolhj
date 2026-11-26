@@ -773,6 +773,100 @@ ${blocks}
   });
 }
 
+export function updatesPage(ctx) {
+  const data = ctx.updates || {};
+  const entries = Array.isArray(data.entries) ? data.entries.slice() : [];
+  entries.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+  const tags = [...new Set(entries.map((e) => e.tag).filter(Boolean))];
+  const latest = entries[0];
+  const shortDate = (v) => String(v || '').slice(5, 10).replace('-', '.');
+  const yearOf = (v) => String(v || '').slice(0, 4);
+
+  const tabs = ['全部', ...tags].map((tag, i) => {
+    const count = tag === '全部' ? entries.length : entries.filter((e) => e.tag === tag).length;
+    return `<button type="button" class="upd-tab${i === 0 ? ' is-active' : ''}" data-upd-filter="${escapeHtml(tag === '全部' ? '*' : tag)}" aria-pressed="${i === 0}">${escapeHtml(tag)}<em>${count}</em></button>`;
+  }).join('');
+
+  const rows = entries.map((e, i) => `
+<article class="upd-item" data-tag="${escapeHtml(e.tag || '')}">
+  <div class="upd-when">
+    <b>${escapeHtml(shortDate(e.date))}</b>
+    <span>${escapeHtml(yearOf(e.date))}</span>
+    <em>${String(i + 1).padStart(2, '0')}</em>
+  </div>
+  <div class="upd-body">
+    <p class="upd-tagline"><span class="upd-dot" aria-hidden="true"></span>${escapeHtml(e.tag || '更新')}</p>
+    <h2 class="upd-title">${escapeHtml(e.title || '')}</h2>
+    ${e.summary ? `<p class="upd-sum">${escapeHtml(e.summary)}</p>` : ''}
+    ${Array.isArray(e.bullets) && e.bullets.length ? `<ul class="upd-points">${e.bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>` : ''}
+  </div>
+</article>`).join('');
+
+  const playing = (ctx.games || []).filter((g) => g.status === '在玩').slice(0, 3);
+  const recent = [...(ctx.notes || [])]
+    .filter((n) => !n.isIndex)
+    .sort((a, b) => b.mtime - a.mtime)
+    .slice(0, 5);
+  const stamp = (v) => {
+    const d = new Date(v);
+    if (Number.isNaN(d.getTime())) return '';
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}`;
+  };
+
+  const nowCards = `
+  <div class="upd-now-grid">
+    <section class="upd-card" aria-labelledby="upd-playing">
+      <header class="upd-card-head"><span>NOW PLAYING</span><h3 id="upd-playing">近期在玩</h3></header>
+      ${playing.length ? playing.map((g) => `<a class="upd-play" href="${ctx.url('games', g.slug)}.html" style="--upd-game:${g.accent || '#426e52'}">
+        <span class="upd-play-mark" aria-hidden="true"></span>
+        <span class="upd-play-body"><b>${escapeHtml(g.name)}</b><em>${escapeHtml(g.en || '')}</em></span>
+        <span class="upd-play-state">${escapeHtml(g.status || '')}</span>
+      </a>`).join('') : '<p class="upd-empty-line">暂时没有标记「在玩」的游戏。</p>'}
+    </section>
+    <section class="upd-card" aria-labelledby="upd-recent">
+      <header class="upd-card-head"><span>RECENT NOTES</span><h3 id="upd-recent">最近更新</h3></header>
+      ${recent.map((n) => `<a class="upd-note" href="${noteUrl(ctx, n.id)}">
+        <span class="upd-note-date">${escapeHtml(stamp(n.mtime))}</span>
+        <b>${escapeHtml(n.title)}</b>
+        <em>${escapeHtml(n.folder || '根目录')}</em>
+      </a>`).join('')}
+    </section>
+  </div>`;
+
+  const content = `
+<div class="upd-sheet">
+  <header class="upd-head">
+    <p class="upd-kicker">01 / UPDATE LOG</p>
+    <div class="upd-head-row">
+      <h1 class="upd-h1">更新公告<span>.</span></h1>
+      <div class="upd-stamp"><b>${entries.length}</b> 条记录<span>LAST UPDATE ${escapeHtml(latest ? String(latest.date || '').replace(/-/g, '.') : '—')}</span></div>
+    </div>
+    <p class="upd-sub">记录站点的功能、内容与体验改进。所有变更只做新增与修正，已发布的区块不删改。</p>
+  </header>
+  <nav class="upd-tabs" aria-label="按类型筛选更新">${tabs}</nav>
+  <div class="upd-list">${rows}</div>
+  <p class="upd-noresult" hidden>这个分类下还没有记录。</p>
+  <section class="upd-now" aria-labelledby="upd-now-title">
+    <p class="upd-kicker">02 / NOW</p>
+    <div class="upd-head-row"><h2 class="upd-h2" id="upd-now-title">最近在做什么<span>.</span></h2><a class="upd-more" href="${ctx.url('games', 'index.html')}">去游戏库 <span aria-hidden="true">→</span></a></div>
+    ${nowCards}
+  </section>
+  <footer class="upd-quote">
+    <p>把项目、笔记与工程判断，收进一个可回溯的档案。</p>
+    <span>THE ARCHIVE CONTINUES · ${escapeHtml(yearOf(latest && latest.date))}</span>
+  </footer>
+</div>`;
+
+  return renderPageWrap(ctx, {
+    title: '更新公告 · ' + ctx.profile.site.title,
+    desc: '站点更新公告：功能、内容与体验改进的时间线，以及最近在玩与最近更新的笔记。',
+    section: 'updates',
+    bodyClass: 'page-updates',
+    content,
+  });
+}
+
 export function authPage(ctx, mode = 'login') {
   const isReg = mode === 'register';
   const content = `
