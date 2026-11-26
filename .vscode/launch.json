@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "构建站点（build.js）",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/build.js",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "本地服务（serve.js）",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/serve.js",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": { "PORT": "5173" }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "构建并启动",
+      "configurations": ["构建站点（build.js）", "本地服务（serve.js）"],
+      "stopAll": true
+    }
+  ]
+}
