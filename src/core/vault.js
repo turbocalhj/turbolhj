@@ -44,6 +44,7 @@ export function loadVault(vaultPath) {
       isIndex: tags.includes(INDEX_TAG) || /\s·\s索引$/.test(base),
       repo: typeof data.仓库 === 'string' ? data.仓库 : null,
       bytes: Buffer.byteLength(raw, 'utf8'),
+      mtime: fs.statSync(abs).mtimeMs,
     });
   }
   notes.sort((a, b) => a.id.localeCompare(b.id, 'zh'));

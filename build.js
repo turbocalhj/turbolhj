@@ -2,11 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import * as esbuild from 'esbuild';
-import { createEngine, renderPlainMarkdown, escapeHtml } from './src/markdown.js';
-import { loadVault, createLinkIndex } from './src/vault.js';
-import { createRedactor, isPrivateNote } from './src/privacy.js';
-import { renderPage, makeUrl } from './src/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/pages.js';
+import { createEngine, renderPlainMarkdown, escapeHtml } from './src/core/markdown.js';
+import { loadVault, createLinkIndex } from './src/core/vault.js';
+import { createRedactor, isPrivateNote } from './src/core/privacy.js';
+import { renderPage, makeUrl } from './src/site/layout.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, authPage, adminPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -117,10 +117,10 @@ ctx.stats = stats;
 const statByNote = new Map();
 const unresolvedList = [];
 const searchDocs = [];
+const feedItems = [];
 const renderedByNote = new Map();
 
 ctx.statByNote = statByNote;
-const degradedList = [];
 
 /** 第一遍：只为收集每篇笔记的标题 id，第二遍才能校验跨笔记锚点。 */
 for (const note of notes) {
@@ -146,7 +146,6 @@ for (const note of notes) {
   stats.bytes += note.bytes;
   statByNote.set(note.id, { headings: rendered.toc.length + 1, wiki: rendered.wikiCount });
   for (const u of rendered.unresolved.items) unresolvedList.push(`${note.id} → ${u}`);
-  for (const d of rendered.unresolved.degraded) degradedList.push(`${note.id} → ${d}`);
   for (const w of rendered.warnings) console.warn(`  ! ${note.id}: ${w}`);
 
   const href = noteUrl(ctx, note.id);
@@ -166,6 +165,12 @@ for (const note of notes) {
   }
 
   renderedByNote.set(note.id, rendered);
+  feedItems.push({
+    title: note.title,
+    href,
+    date: new Date(note.mtime),
+    desc: (rendered.sections.find((s) => s.t)?.t || '').replace(/\s+/g, ' ').trim().slice(0, 160),
+  });
 }
 currentId = null;
 
@@ -350,18 +355,25 @@ writeFile(path.join('games', 'index.html'), gamesPage(ctx));
 for (const g of ctx.games) writeFile(path.join('games', g.slug) + '.html', gameDetailPage(ctx, g));
 writeFile(path.join('esports', 'index.html'), esportsPage(ctx));
 writeFile(path.join('links', 'index.html'), linksPage(ctx));
+writeFile('login.html', authPage(ctx, 'login'), { noindex: true });
+writeFile('register.html', authPage(ctx, 'register'), { noindex: true });
+writeFile('admin.html', adminPage(ctx), { noindex: true });
 
 writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
   builtAt: new Date().toISOString(),
   notes: searchDocs,
   projects: projects.map((p) => ({ title: p.display, text: p.tagline, href: p.pageHref, category: p.category })),
 }));
-writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/app.css'), 'utf8'));
-writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client.js'), 'utf8'));
+writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/client/app.css'), 'utf8'));
+writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client/app.js'), 'utf8'));
+for (const name of ['auth.js', 'admin.js']) {
+  writeFile(path.join('assets', name), fs.readFileSync(path.join(ROOT, 'src/client', name), 'utf8'));
+}
 fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });
-fs.copyFileSync(path.join(ROOT, 'src/manifest.webmanifest'), path.join(DIST, 'manifest.webmanifest'));
-fs.copyFileSync(path.join(ROOT, 'src/sw.js'), path.join(DIST, 'sw.js'));
+fs.copyFileSync(path.join(ROOT, 'src/static/manifest.webmanifest'), path.join(DIST, 'manifest.webmanifest'));
+fs.copyFileSync(path.join(ROOT, 'src/static/sw.js'), path.join(DIST, 'sw.js'));
 writeSeoFiles();
+const feedCount = writeFeed();
 
 // ---------- React 岛屿 ----------
 const islandBytes = await bundleIslands();
@@ -391,11 +403,11 @@ function pagePath(rel) {
   return pathname.split('/').map(encodeURIComponent).join('/');
 }
 
-function writeFile(rel, content) {
+function writeFile(rel, content, opts = {}) {
   const abs = path.join(DIST, rel);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
   if (rel.endsWith('.html')) {
-    htmlPages.push(pagePath(rel));
+    if (!opts.noindex) htmlPages.push(pagePath(rel));
     const canonical = (SITE_URL || '') + pagePath(rel);
     content = String(content)
       .replaceAll('__CANONICAL__', canonical)
@@ -413,6 +425,41 @@ function writeSeoFiles() {
   const urls = htmlPages.map((p) => `  <url><loc>${escXml(SITE_URL + p)}</loc></url>`).join('\n');
   writeFile('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
   writeFile('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+}
+
+/** RSS 2.0：按文件修改时间取最近 30 篇笔记，供阅读器与聚合站订阅。 */
+function writeFeed() {
+  if (!SITE_URL) {
+    console.warn('! 未配置 profile.siteUrl，跳过 feed.xml');
+    return 0;
+  }
+  const xml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const items = feedItems
+    .slice()
+    .sort((a, b) => b.date - a.date)
+    .slice(0, 30)
+    .map((it) => `    <item>
+      <title>${xml(it.title)}</title>
+      <link>${xml(SITE_URL + it.href)}</link>
+      <guid isPermaLink="true">${xml(SITE_URL + it.href)}</guid>
+      <pubDate>${it.date.toUTCString()}</pubDate>
+      <description>${xml(it.desc)}</description>
+    </item>`)
+    .join('\n');
+  writeFile('feed.xml', `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>${xml(profile.site.title)} · 笔记</title>
+    <link>${xml(SITE_URL + '/')}</link>
+    <description>${xml(profile.site.description)}</description>
+    <language>zh-CN</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <atom:link href="${xml(SITE_URL + '/feed.xml')}" rel="self" type="application/rss+xml"/>
+${items}
+  </channel>
+</rss>
+`);
+  return Math.min(feedItems.length, 30);
 }
 
 /** 为文本类产物预生成 .br / .gz，供服务器按 Accept-Encoding 直接返回。 */
@@ -448,15 +495,9 @@ console.log(`  代码块 ${stats.snippets} 个 / ${stats.codeLines} 行；知识
 console.log(`  项目 ${projects.length} 个（开源 ${ghRepos.length}）/ 提交 ${stats.commits}`);
 console.log(`  游戏 ${ctx.games.length} 款 / 赛事 ${esportsData.events?.length || 0} 项 / 战队 ${esportsData.teams?.length || 0} 支`);
 console.log(`  产物 ${totalFiles} 个文件 → dist/（其中 ${compressedFiles} 个文本产物已预压缩为 .br + .gz）`);
-console.log(`  SEO：sitemap.xml / robots.txt / canonical / OG / JSON-LD${SITE_URL ? '（' + SITE_URL + '）' : '（未配置 siteUrl，跳过 sitemap）'}`);
+console.log(`  SEO：sitemap.xml / robots.txt / feed.xml（${feedCount} 条）/ canonical / OG / JSON-LD${SITE_URL ? '（' + SITE_URL + '）' : '（未配置 siteUrl，跳过 sitemap）'}`);
 console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅知识库页加载）`);
 console.log(`  搜索索引 ${searchDocs.length} 个小节（${(fs.statSync(path.join(DIST, 'assets/search-index.json')).size / 1024).toFixed(0)} KB）`);
-if (degradedList.length) {
-  const uniq = [...new Set(degradedList)];
-  console.log(`\n  锚点已失效的双链（${uniq.length} 条，已降级为跳到笔记开头）：`);
-  for (const d of uniq.slice(0, 20)) console.log('    - ' + d);
-  if (uniq.length > 20) console.log(`    … 其余 ${uniq.length - 20} 条`);
-}
 if (skipped.length) console.log(`  ! ${skipped.length} 个旧文件被占用未删除（重启服务后重建即可）：${skipped.slice(0, 3).join(', ')}`);
 if (unresolvedList.length) {
   const uniq = [...new Map(unresolvedList.map((u) => [u, u])).values()];

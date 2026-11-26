@@ -65,16 +65,17 @@ npm run dev        # 构建 + 起本地服务 → http://localhost:5173
 ```
 build.js              构建编排：两遍渲染、搜索索引、SEO/预压缩、产物统计
 serve.js              零依赖静态服务器（MIME / ETag / Brotli+gzip / 缓存策略 / 路径防护）
-src/vault.js          Obsidian 库扫描、frontmatter 解析、双链解析索引
-src/privacy.js        构建期脱敏：字面规则 + 私网 IP 兜底、私密笔记判定
-src/markdown.js       渲染管线：占位屏蔽 → wikilink → marked → 锚点校验 → 图片懒加载
-src/layout.js         HTML 外壳、导航、TOC、搜索面板、主题/PWA/View Transition 元信息
-src/pages.js          首页 / 知识库 / 笔记 / 项目 / 游戏库 / 电竞 / 友链 / 关于
-src/app.css           全站样式（设计令牌 + 明暗主题 + 新页面响应式）
-src/client.js         载入动画、搜索、TOC、代码复制、滚动交互、粒子、PWA 注册
+src/core/vault.js     Obsidian 库扫描、frontmatter 解析、双链解析索引
+src/core/privacy.js   构建期脱敏：字面规则 + 私网 IP 兜底、私密笔记判定
+src/core/markdown.js  渲染管线：占位屏蔽 → wikilink → marked → 锚点校验 → 图片懒加载
+src/site/layout.js    HTML 外壳、导航、TOC、搜索面板、主题/PWA/View Transition/SEO 元信息
+src/site/pages.js     首页 / 知识库 / 笔记 / 项目 / 游戏库 / 电竞 / 友链 / 关于
+src/client/app.css    全站样式（设计令牌 + 明暗主题 + 新页面响应式）
+src/client/app.js     载入动画、搜索、TOC、代码复制、滚动交互、粒子、PWA 注册
 src/islands/          React 岛屿：knowledge / games / esports → assets/islands.js
-src/manifest.webmanifest  PWA 应用清单
-src/sw.js             Service Worker：网络优先 + 离线回退
+src/static/manifest.webmanifest  PWA 应用清单
+src/static/sw.js      Service Worker：网络优先 + 离线回退
+server/               可选后端服务：静态托管 + 搜索/统计/联系表单 API
 data/profile.json     站点内容模型：GitHub 展示口径、本地项目档案、脱敏规则、siteUrl
 data/github*.json     GitHub 仓库与提交/语言快照
 data/games.json       游戏库：16 款游戏的评分、状态与主观记录

@@ -301,7 +301,9 @@
       else if (e.key === 'Enter' && items[sel]) { e.preventDefault(); location.href = items[sel].href; }
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); open(); }
+      const typing = /input|textarea/i.test(document.activeElement.tagName);
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); open(); }
+      else if (e.key === '/' && !typing) { e.preventDefault(); open(); }
       else if (e.key === 'Escape' && !overlay.hidden) close();
     });
   }

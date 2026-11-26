@@ -1,4 +1,4 @@
-import { escapeHtml } from './markdown.js';
+import { escapeHtml } from '../core/markdown.js';
 
 export function urlJoin(...parts) {
   const joined = parts
@@ -36,7 +36,7 @@ const WAVES = `<svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 
   </g>
 </svg>`;
 
-export function renderPage({ ctx, title, desc, section, content, sidebar, toc, breadcrumb, bodyClass = '', scripts = [] }) {
+export function renderPage({ ctx, title, desc, section, content, sidebar, toc, breadcrumb, bodyClass = '', scripts = [], jsonLd = null, noindex = false }) {
   const { url } = ctx;
   const pageHref = (file) => url(file.split('/').filter(Boolean));
   const nav = NAV.map((n) => {
@@ -55,7 +55,8 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(title)}</title>
+<title>${escapeHtml(ctx.profile.site.title)}</title>
+${noindex ? '<meta name="robots" content="noindex,nofollow">' : ''}
 <meta name="description" content="${escapeHtml(desc || ctx.profile.site.description)}">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#081226">
@@ -68,10 +69,12 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
 <meta property="og:url" content="__CANONICAL__">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="__SITE_URL__${url('assets', 'p3r', 'hero-poster.webp')}">
+<meta property="og:image:alt" content="${escapeHtml(ctx.profile.site.title)} · ${escapeHtml(ctx.profile.site.tagline)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(title)}">
 <meta name="twitter:description" content="${escapeHtml(desc || ctx.profile.site.description)}">
 <meta name="twitter:image" content="__SITE_URL__${url('assets', 'p3r', 'hero-poster.webp')}">
+<meta name="twitter:image:alt" content="${escapeHtml(ctx.profile.site.title)} · ${escapeHtml(ctx.profile.site.tagline)}">
 <script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -81,10 +84,15 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
     inLanguage: 'zh-CN',
     author: { '@type': 'Person', name: ctx.profile.person.name, url: ctx.profile.github },
   }).replace(/</g, '\\u003c')}</script>
+${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>` : ''}
 <link rel="icon" href="${url('assets', 'p3r', 'favicon.ico')}" sizes="any">
 <link rel="stylesheet" href="${url('assets', 'app.css')}">
 <link rel="preload" href="${url('assets', 'fonts', 'Urbanist-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="${url('manifest.webmanifest')}">
+${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${escapeHtml(ctx.profile.site.title)} · 笔记" href="${url('feed.xml')}">` : ''}
+<script type="speculationrules">
+{"prerender":[{"where":{"and":[{"href_matches":"/*"},{"not":{"selector_matches":"a[target=_blank]"}},{"not":{"selector_matches":"a[download]"}}]},"eagerness":"moderate"}]}
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>try{var t=localStorage.getItem('lhj-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>

@@ -1,4 +1,4 @@
-import { escapeHtml } from './markdown.js';
+import { escapeHtml } from '../core/markdown.js';
 
 const MAINLINE = ['前端', '后端', '框架', '语言', '数据库', '计算机基础', 'DevOps', '大数据', 'Agent', '学习'];
 const PROJECT_FOLDERS = ['短链服务', '网约车监控', 'CloudeV2', 'PLM系统开发', '动力微服务', '数据分析挖掘'];
@@ -190,7 +190,7 @@ export function reloadPage(ctx) {
 </section>`;
 
   return renderPageWrap(ctx, {
-    title: `${p.site.title} · ${p.site.tagline}`,
+    title: p.site.title,
     desc: p.site.description,
     section: 'home',
     content,
@@ -353,15 +353,28 @@ export function notePage(ctx, note, rendered) {
   <div class="prose">${rendered.html}</div>
   ${nav}
 </article>`;
+  const plainText = (rendered.sections.find((s) => s.t)?.t || '').replace(/\s+/g, ' ').trim();
   return renderPageWrap(ctx, {
     title: `${note.title} · 知识库`,
-    desc: (rendered.plain || '').slice(0, 120),
+    desc: plainText.slice(0, 120),
     section: 'knowledge',
     content,
     sidebar: buildSidebar(ctx, note.id),
     toc: rendered.toc,
     breadcrumb: `${folderCrumb}<span>/</span><span class="crumb-current">${escapeHtml(note.base)}</span>`,
     bodyClass: 'page-note',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: note.title,
+      description: plainText.slice(0, 140),
+      url: '__CANONICAL__',
+      mainEntityOfPage: '__CANONICAL__',
+      inLanguage: 'zh-CN',
+      dateModified: new Date(note.mtime).toISOString(),
+      author: { '@type': 'Person', name: ctx.profile.person.name, url: ctx.profile.github },
+      isPartOf: { '@type': 'WebSite', name: ctx.profile.site.title, url: '__SITE_URL__/' },
+    },
   });
 }
 
@@ -736,6 +749,82 @@ ${blocks}
     section: 'links',
     bodyClass: 'page-links',
     content,
+  });
+}
+
+export function authPage(ctx, mode = 'login') {
+  const isReg = mode === 'register';
+  const content = `
+<section class="page-head"><h1>${isReg ? '注册账号' : '登录'}</h1><p class="page-sub">${isReg ? '注册后即可留言与使用后台；首个注册账号自动获得管理员权限。' : '使用邮箱与密码登录，管理员可进入后台管理。'}</p></section>
+<div class="auth-panel">
+  <form class="auth-form" id="auth-form" data-mode="${mode}">
+    ${isReg ? '<label>昵称<input name="name" maxlength="40" autocomplete="nickname" placeholder="怎么称呼你"></label>' : ''}
+    <label>邮箱<input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
+    <label>密码<input name="password" type="password" required minlength="8" autocomplete="${isReg ? 'new-password' : 'current-password'}" placeholder="至少 8 位"></label>
+    <button class="btn btn-primary" type="submit">${isReg ? '注册' : '登录'}</button>
+    <p class="auth-alt">${isReg ? `已有账号？<a href="${ctx.url('login.html')}">去登录</a>` : `还没有账号？<a href="${ctx.url('register.html')}">注册一个</a>`}</p>
+    <p class="auth-error" id="auth-error" role="alert" hidden></p>
+  </form>
+</div>`;
+  return renderPageWrap(ctx, {
+    title: isReg ? '注册' : '登录',
+    section: 'account',
+    content,
+    scripts: [ctx.url('assets', 'auth.js')],
+    bodyClass: 'page-auth',
+    noindex: true,
+  });
+}
+
+export function adminPage(ctx) {
+  const content = `
+<section class="page-head"><h1>后台管理</h1><p class="page-sub">登录状态：<b id="admin-user">—</b> · <button type="button" class="linklike" id="admin-logout">退出登录</button></p></section>
+<nav class="admin-tabs" aria-label="后台分区">
+  <button type="button" class="admin-tab is-active" data-tab="overview">概览</button>
+  <button type="button" class="admin-tab" data-tab="inbox">留言</button>
+  <button type="button" class="admin-tab" data-tab="config">站点配置</button>
+  <button type="button" class="admin-tab" data-tab="build">构建</button>
+</nav>
+<section class="admin-panel" data-panel="overview">
+  <div class="admin-stats">
+    <div><span>产物文件</span><b id="stat-files">—</b></div>
+    <div><span>产物体积</span><b id="stat-size">—</b></div>
+    <div><span>搜索索引</span><b id="stat-index">—</b></div>
+    <div><span>留言</span><b id="stat-inbox">—</b></div>
+    <div><span>账号</span><b id="stat-users">—</b></div>
+    <div><span>最近构建</span><b id="stat-built">—</b></div>
+    <div><span>服务运行</span><b id="stat-uptime">—</b></div>
+    <div><span>构建状态</span><b id="stat-build">—</b></div>
+  </div>
+</section>
+<section class="admin-panel" data-panel="inbox" hidden>
+  <div class="admin-list" id="inbox-list"><p class="admin-empty">加载中…</p></div>
+</section>
+<section class="admin-panel" data-panel="config" hidden>
+  <form class="admin-form" id="config-form">
+    <label>站点标题<input name="site.title" maxlength="60"></label>
+    <label>副标题<input name="site.tagline" maxlength="120"></label>
+    <label>站点描述<textarea name="site.description" rows="3" maxlength="200"></textarea></label>
+    <label>你的名字<input name="person.name" maxlength="40"></label>
+    <label>一句话介绍<input name="person.role" maxlength="120"></label>
+    <label>所在地<input name="person.location" maxlength="60"></label>
+    <label>站点地址<input name="siteUrl" maxlength="200" placeholder="https://example.com"></label>
+    <button class="btn btn-primary" type="submit">保存配置</button>
+    <p class="auth-ok" id="config-msg" hidden></p>
+  </form>
+</section>
+<section class="admin-panel" data-panel="build" hidden>
+  <p class="admin-hint">触发一次完整构建，日志实时回显；构建状态：<b id="build-status">待命</b></p>
+  <button class="btn btn-primary" type="button" id="build-run">重新构建</button>
+  <pre class="admin-log" id="build-log"></pre>
+</section>`;
+  return renderPageWrap(ctx, {
+    title: '后台管理',
+    section: 'account',
+    content,
+    scripts: [ctx.url('assets', 'admin.js')],
+    bodyClass: 'page-admin',
+    noindex: true,
   });
 }
 
