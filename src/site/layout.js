@@ -115,6 +115,7 @@ ${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title=
   </div>
   <div class="boot-wave">${WAVES}</div>
 </div>
+${section === 'home' ? entryCover(ctx) : ''}
 <div class="progress" aria-hidden="true"></div>
 ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles" id="hero-particles" aria-hidden="true"></canvas>' : ''}
 <a class="skip-link" href="#main">跳到正文</a>
@@ -172,4 +173,52 @@ ${layers ? LAYER_JS.map((f) => `<script src="${url('assets', 'layers', f)}" defe
 ${scripts.map((s) => `<script src="${s}" defer></script>`).join('\n')}
 </body>
 </html>`;
+}
+
+/** 首页进入封面：编辑式排版，纯展示；显示与揭幕交给 layers/entry.js。 */
+function entryCover(ctx) {
+  const profile = ctx.profile || {};
+  const site = profile.site || {};
+  const person = profile.person || {};
+  const stats = ctx.stats || {};
+  const groups = ctx.links && Array.isArray(ctx.links.groups) ? ctx.links.groups : [];
+  const links = groups.reduce((n, g) => n + (g && Array.isArray(g.links) ? g.links.length : 0), 0);
+  const num = (v) => (v === null || v === undefined || v === '' || Number.isNaN(Number(v)) ? '—' : Number(v).toLocaleString('en'));
+
+  const title = String(site.title || person.name || 'TURBO SPARK').trim();
+  const words = title.split(/\s+/).filter(Boolean);
+  const line1 = words[0] || 'TURBO';
+  const line2 = words.length > 1 ? words.slice(1).join(' ') : String(person.handle || 'SPARK').toUpperCase();
+  const handle = String(person.handle || '').trim();
+  const location = String(person.location || '').trim();
+  const tagline = String(site.tagline || site.description || '').trim();
+  const year = new Date().getFullYear();
+
+  return `<div class="entry-cover" id="entry-cover" role="dialog" aria-modal="true" aria-label="站点进入" hidden>
+  <div class="entry-frame">
+    <header class="entry-top">
+      <span class="entry-no">N° 001</span>
+      <span class="entry-coord">34.2058° N / 117.2841° E</span>
+      <span class="entry-loc">${escapeHtml(location || 'XUZHOU')}</span>
+      <span class="entry-year">${year}</span>
+    </header>
+    <div class="entry-head">
+      <p class="entry-tag"><span class="entry-tag-dot" aria-hidden="true"></span>PERSONAL ARCHIVE${handle ? ' / ' + escapeHtml(handle) : ''}</p>
+      <h2 class="entry-wordmark"><span class="entry-line">${escapeHtml(line1)}</span><span class="entry-line entry-line-outline">${escapeHtml(line2)}</span></h2>
+      ${tagline ? `<p class="entry-note">${escapeHtml(tagline)}</p>` : ''}
+    </div>
+    <footer class="entry-bottom">
+      <ul class="entry-index">
+        <li><span class="entry-idx-k">PROJECTS</span><span class="entry-idx-v">${num(ctx.projects ? ctx.projects.length : null)}</span></li>
+        <li><span class="entry-idx-k">NOTES</span><span class="entry-idx-v">${num(stats.notes)}</span></li>
+        <li><span class="entry-idx-k">LINKS</span><span class="entry-idx-v">${num(links)}</span></li>
+        <li><span class="entry-idx-k">ARCHIVE</span><span class="entry-idx-v">${num(stats.folders)}</span></li>
+      </ul>
+      <div class="entry-action">
+        <span class="entry-hint">CLICK / SCROLL / ENTER</span>
+        <button class="entry-enter" type="button"><span>ENTER</span><span class="entry-enter-arrow" aria-hidden="true">↗</span></button>
+      </div>
+    </footer>
+  </div>
+</div>`;
 }
