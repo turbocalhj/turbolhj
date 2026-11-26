@@ -3,3 +3,8 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
+data/inbox.jsonl
+data/accounts.json
+data/session.secret
+.env
+.env.local
