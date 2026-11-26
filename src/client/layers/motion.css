@@ -1,0 +1,199 @@
+/* ==========================================================================
+   motion.css —— 增量动效层
+   全部使用 .ts-* / .is-inview 命名空间，不覆盖站点既有类；
+   html 上没有 .ts-motion 时（无 JS / 减少动效），页面保持原样完全可见。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01 滚动揭示
+   隐藏态使用独立的 translate 属性，避免覆盖既有 :hover 的 transform 过渡。
+   .ts-reveal 由脚本打标，动态插入的卡片（如游戏库）不会因未观察而一直隐藏。
+   -------------------------------------------------------------------------- */
+
+.ts-motion .ts-reveal:not(.is-inview) {
+  opacity: 0;
+  translate: 0 24px;
+}
+
+.ts-motion .ts-reveal.is-inview {
+  animation: ts-rise 0.7s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+}
+
+/* 交错节奏：只给第二、第三个子项小幅延迟，最大 90ms */
+.ts-motion .ts-reveal.is-inview:nth-child(2) { animation-delay: 45ms; }
+.ts-motion .ts-reveal.is-inview:nth-child(3) { animation-delay: 90ms; }
+
+@keyframes ts-rise {
+  from { opacity: 0; translate: 0 24px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* 减少动效：双保险，直接静止显示 */
+@media (prefers-reduced-motion: reduce) {
+  .ts-motion .ts-reveal:not(.is-inview) { opacity: 1; translate: none; }
+  .ts-motion .ts-reveal.is-inview { animation: none; }
+}
+
+/* --------------------------------------------------------------------------
+   02 首页编辑式跑马灯
+   两层相同内容首尾相接，位移 -50% 即为一个完整循环，视觉上无缝。
+   -------------------------------------------------------------------------- */
+
+.ts-marquee {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-deep);
+  color: var(--muted);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.ts-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: ts-marquee 52s linear infinite;
+  will-change: transform;
+}
+
+.ts-marquee:hover .ts-marquee-track { animation-play-state: paused; }
+
+.ts-marquee-group {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-around;
+  gap: 0 46px;
+  min-width: 100vw;
+  padding: 15px 23px;
+}
+
+.ts-marquee-item {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 46px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ts-marquee-item::after {
+  content: '✦';
+  font-size: 9px;
+  letter-spacing: 0;
+  color: var(--accent-soft);
+}
+
+@keyframes ts-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* 减少动效：静止展示，改为可横向滚动查看 */
+@media (prefers-reduced-motion: reduce) {
+  .ts-marquee {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-mask-image: none;
+    mask-image: none;
+    scrollbar-width: thin;
+  }
+  .ts-marquee-track { animation: none; }
+  .ts-marquee:hover .ts-marquee-track { animation-play-state: running; }
+}
+
+/* --------------------------------------------------------------------------
+   03 首页项目悬停预览
+   固定定位浮层：墨黑半透明 + 细边框 + 轻微模糊，排版化信息层级。
+   位移由脚本用 rAF + lerp 写入 transform，这里只负责外观与淡入淡出。
+   -------------------------------------------------------------------------- */
+
+.ts-preview {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  width: min(320px, 76vw);
+  padding: 17px 19px 18px;
+  border: 1px solid rgba(160, 200, 245, 0.22);
+  border-radius: 12px;
+  background: rgba(4, 9, 18, 0.8);
+  -webkit-backdrop-filter: blur(9px) saturate(125%);
+  backdrop-filter: blur(9px) saturate(125%);
+  box-shadow: 0 22px 54px rgba(1, 5, 14, 0.5);
+  color: #eef6ff;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  contain: layout style;
+  will-change: transform, opacity;
+  transition: opacity 0.18s ease, visibility 0s linear 0.18s;
+}
+
+.ts-preview.is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.18s ease;
+}
+
+.ts-preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid rgba(160, 200, 245, 0.16);
+}
+
+.ts-preview-no {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: #7fd4ff;
+}
+
+.ts-preview-cat {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-align: right;
+  color: rgba(190, 220, 250, 0.55);
+}
+
+.ts-preview-title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+.ts-preview-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  margin-top: 9px;
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: rgba(206, 224, 245, 0.72);
+}
+
+/* 触屏 / 无精细指针时不创建，也不占位 */
+@media (hover: none), (pointer: coarse) {
+  .ts-preview { display: none; }
+}
