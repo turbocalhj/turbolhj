@@ -411,8 +411,29 @@ export function projectsPage(ctx) {
   }).join('');
 
   const langRows = ctx.langStats.map(([lang, n]) => `<tr><td>${escapeHtml(lang)}</td><td>${n}</td><td><div class="bar"><i style="width:${Math.round((n / ctx.langStats[0][1]) * 100)}%"></i></div></td></tr>`).join('');
+  // 编辑式索引：编号、项目名、分类、技术栈、年份、箭头，整行为链接
+  const indexRows = ctx.projects.map((pr, i) => {
+    const year = (pr.pushedShort || '').slice(0, 4) || '—';
+    return `<li class="pindex-row"><a class="pindex-link" href="${pr.pageHref}">
+      <span class="pindex-no">${String(i + 1).padStart(2, '0')}</span>
+      <span class="pindex-name">${escapeHtml(pr.display)}</span>
+      <span class="pindex-cat">${escapeHtml(pr.category)}</span>
+      <span class="pindex-stack">${escapeHtml(pr.stackTop || '—')}</span>
+      <span class="pindex-year">${escapeHtml(year)}</span>
+      <span class="pindex-arrow" aria-hidden="true">↗</span>
+    </a></li>`;
+  }).join('');
+  const indexTable = `
+<section class="pindex" aria-labelledby="pindex-title">
+  <header class="pindex-head">
+    <h2 class="pindex-title" id="pindex-title"><span class="pindex-title-cn">项目索引 · </span>INDEX <i>/</i> SELECTED &amp; ARCHIVED WORKS</h2>
+    <p class="pindex-total"><b>${ctx.projects.length}</b> 个项目</p>
+  </header>
+  <ol class="pindex-list">${indexRows}</ol>
+</section>`;
   const content = `
 <section class="page-head"><h1>项目</h1><p class="page-sub">GitHub 上的 ${ctx.stats.repos} 个开源仓库，加上 ${localCount} 个本地工作项目档案。工作项目按脱敏口径整理：技术栈、模块与工程决策保留，公司与内网信息不公开。数据来自 <code>data/</code> 快照与 <code>profile.json</code>。</p></section>
+${indexTable}
 ${blocks}
 <section class="band"><h2 class="band-title">开源语言分布</h2><div class="panel-table"><table><thead><tr><th>语言</th><th>仓库数</th><th>占比</th></tr></thead><tbody>${langRows}</tbody></table></div></section>`;
   return renderPageWrap(ctx, { title: '项目 · ' + ctx.profile.site.title, section: 'projects', content });
