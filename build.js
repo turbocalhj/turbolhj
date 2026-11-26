@@ -369,6 +369,12 @@ writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/cl
 for (const name of ['auth.js', 'admin.js']) {
   writeFile(path.join('assets', name), fs.readFileSync(path.join(ROOT, 'src/client', name), 'utf8'));
 }
+const layersDir = path.join(ROOT, 'src/client/layers');
+if (fs.existsSync(layersDir)) {
+  for (const name of fs.readdirSync(layersDir).sort()) {
+    writeFile(path.join('assets', 'layers', name), fs.readFileSync(path.join(layersDir, name), 'utf8'));
+  }
+}
 fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });
 fs.copyFileSync(path.join(ROOT, 'src/static/manifest.webmanifest'), path.join(DIST, 'manifest.webmanifest'));
 fs.copyFileSync(path.join(ROOT, 'src/static/sw.js'), path.join(DIST, 'sw.js'));

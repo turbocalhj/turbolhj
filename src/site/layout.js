@@ -1,4 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { escapeHtml } from '../core/markdown.js';
+
+// 增量层：src/client/layers 下的 css/js 会自动挂到每个公开页面，用于并行开发与后续叠加效果
+const LAYER_DIR = path.join(import.meta.dirname, '..', 'client', 'layers');
+const LAYER_FILES = fs.existsSync(LAYER_DIR) ? fs.readdirSync(LAYER_DIR).sort() : [];
+const LAYER_CSS = LAYER_FILES.filter((f) => f.endsWith('.css'));
+const LAYER_JS = LAYER_FILES.filter((f) => f.endsWith('.js'));
 
 export function urlJoin(...parts) {
   const joined = parts
@@ -36,7 +44,7 @@ const WAVES = `<svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 
   </g>
 </svg>`;
 
-export function renderPage({ ctx, title, desc, section, content, sidebar, toc, breadcrumb, bodyClass = '', scripts = [], jsonLd = null, noindex = false }) {
+export function renderPage({ ctx, title, desc, section, content, sidebar, toc, breadcrumb, bodyClass = '', scripts = [], jsonLd = null, noindex = false, layers = true }) {
   const { url } = ctx;
   const pageHref = (file) => url(file.split('/').filter(Boolean));
   const nav = NAV.map((n) => {
@@ -87,6 +95,7 @@ ${noindex ? '<meta name="robots" content="noindex,nofollow">' : ''}
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>` : ''}
 <link rel="icon" href="${url('assets', 'p3r', 'favicon.ico')}" sizes="any">
 <link rel="stylesheet" href="${url('assets', 'app.css')}">
+${layers ? LAYER_CSS.map((f) => `<link rel="stylesheet" href="${url('assets', 'layers', f)}">`).join('\n') : ''}
 <link rel="preload" href="${url('assets', 'fonts', 'Urbanist-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="${url('manifest.webmanifest')}">
 ${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${escapeHtml(ctx.profile.site.title)} · 笔记" href="${url('feed.xml')}">` : ''}
@@ -159,6 +168,7 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
 </div>
 <button class="back-to-top" id="back-to-top" type="button" aria-label="回到顶部">↑</button>
 <script src="${url('assets', 'app.js')}" defer></script>
+${layers ? LAYER_JS.map((f) => `<script src="${url('assets', 'layers', f)}" defer></script>`).join('\n') : ''}
 ${scripts.map((s) => `<script src="${s}" defer></script>`).join('\n')}
 </body>
 </html>`;

@@ -773,6 +773,7 @@ export function authPage(ctx, mode = 'login') {
     scripts: [ctx.url('assets', 'auth.js')],
     bodyClass: 'page-auth',
     noindex: true,
+    layers: false,
   });
 }
 
@@ -825,6 +826,7 @@ export function adminPage(ctx) {
     scripts: [ctx.url('assets', 'admin.js')],
     bodyClass: 'page-admin',
     noindex: true,
+    layers: false,
   });
 }
 

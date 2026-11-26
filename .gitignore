@@ -8,3 +8,4 @@ data/accounts.json
 data/session.secret
 .env
 .env.local
+.worktrees/
