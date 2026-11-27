@@ -1,157 +1,107 @@
-# 个人主页 · 项目档案 + Obsidian 知识库
+# TURBO SPARK · 个人技术档案站
 
-一个跑在本地的静态个人站：把 GitHub 仓库与本地工作项目编译成带分类的项目档案，把 Obsidian 笔记库编译成可检索的知识库，两边用双链互相指认。**项目是项目，笔记是笔记**：项目页讲交付与工程决策，知识库只负责技术主线与过程记录。
+一个把工程实践整理成网站的个人项目：项目档案记录交付过程与工程决策，知识库沉淀技术主线与方法，游戏与电竞作为兴趣旁支。整站静态生成、离线可用，构建产物 156 个 HTML 页面。
 
-页面由纯 Node ESM 脚本生成；知识库筛选、游戏库筛选与电竞面板使用 React 岛屿（esbuild 打包成 `assets/islands.js`），其余是原生 HTML/CSS/JS。构建产物是 `dist/` 下的 149 个静态 HTML，含游戏百科、电竞百科、友链页面与 PWA 离线支持。
+它同时也是我对「内容如何变成产品」的一次完整实践——从解析、渲染、检索，到主题、动效、部署与发布流程，全部自己实现。
 
-## 快速开始
+## 这个站体现的技术能力
 
-```bash
-npm install
-npm run dev        # 构建 + 起本地服务 → http://localhost:5173
-```
-
-单独使用：
-
-| 命令 | 作用 |
+| 能力 | 具体实现 |
 |---|---|
-| `npm run build` | 生成 `dist/`，输出统计与失效锚点报告 |
-| `npm run serve` | 只起静态服务器（零依赖，`serve.js`） |
-| `npm run check` | 审计产物里的每一个 `<a href>`：内链、页内锚点、静态资产 |
-| `npm run refresh` | 重新抓取 GitHub 元数据与 README 快照到 `data/` |
-
-## 工程文档
-
-| 文档 | 内容 |
-|---|---|
-| [`docs/api.md`](docs/api.md) | 账号、后台与公开接口：字段、状态码、限流、示例 |
-| [`docs/devlog.md`](docs/devlog.md) | 开发日志：每次合并记录改动、决策与验证 |
-| [`CHANGELOG.md`](CHANGELOG.md) | 版本迭代记录（SemVer + git tag） |
-| [`.trae/skills/`](.trae/skills/) | 可复用开发流程：发布、图层 UI、内容管线、账号后台、并行 git |
+| 内容工程 | 自建 Markdown 管线：frontmatter、`[[双链]]` 四级回退解析、代码块占位防误解析、标题锚点 slug 与重名去重 |
+| 构建系统 | 两遍渲染：第一遍收集标题锚点，第二遍校验跨页链接；无效锚点自动降级并写入构建报告，不留静默死链 |
+| 质量保障 | 自写链接审计脚本，扫描全部产物页面的内链、页内锚点与静态资产；资源 URL 按内容哈希刷新缓存 |
+| 前端架构 | 主体零框架，筛选类交互用 React 19 增量岛屿；原生 CSS 设计令牌、明暗主题、响应式与 View Transition |
+| 服务与接口 | 零依赖 Node `http` 服务：MIME、ETag、Brotli/gzip 协商、缓存策略、路径越界防护；可选账号后台含 scrypt 密码、HMAC 会话与限流 |
+| 数据与离线 | GitHub 元数据与内容模型全部落成 JSON 快照，断网可复现同一份站点；Service Worker 提供离线回退 |
+| 工程流程 | SemVer、CHANGELOG、annotated tag、开发日志与可复用技能文档，功能按分支开发并 `--no-ff` 合并 |
 
 ## 技术栈
 
 | 层 | 选用 | 说明 |
 |---|---|---|
-| 运行时与构建 | Node.js 24（ESM）、esbuild | 两遍渲染纯 Node 脚本；esbuild 把 React 岛屿打成 `islands.js` |
-| Markdown 管线 | marked、marked-highlight、highlight.js、js-yaml | frontmatter / 双链 / 代码块 / 标题锚点 |
-| 前端 | React 19（增量岛屿）、原生 ES Modules | 仅知识库筛选、游戏库、电竞面板用 React，其余零框架 |
+| 运行时与构建 | Node.js 24（ESM）、esbuild | 纯 Node 脚本两遍渲染；esbuild 把 React 岛屿打成 `islands.js` |
+| Markdown 管线 | marked、marked-highlight、highlight.js、js-yaml | frontmatter、双链、代码块、表格与标题锚点 |
+| 前端 | React 19 增量岛屿、原生 ES Modules | 只有筛选与列表交互挂 React，其余零框架 |
 | 样式 | 原生 CSS 设计令牌、明暗主题、响应式 | 无 UI 框架；Noto Sans SC / Urbanist / JetBrains Mono 自托管 |
-| 浏览器 API | View Transitions、IntersectionObserver、Canvas 2D、Service Worker + Cache API | 页面转场、滚动揭示/数字滚动、粒子网络、离线缓存 |
-| 数据 | JSON 快照（`github*.json`、`games.json`、`esports.json`、`links.json`） | 全部构建期读取，断网可复现 |
-| 服务 | 零依赖 Node `http` 服务器 | MIME / ETag / Brotli+gzip 协商 / 缓存策略 / 路径越界防护 |
-| 部署 | 静态托管（GitHub Pages 等）或自托管 | `siteUrl` 可配置，sitemap / canonical 自动生成 |
+| 浏览器能力 | View Transitions、IntersectionObserver、Canvas 2D、Service Worker + Cache API | 转场、滚动揭示、粒子背景、离线缓存 |
+| 数据 | JSON 快照（仓库、游戏、电竞、友链、内容模型） | 全部构建期读取，断网可复现 |
+| 服务 | 零依赖 Node `http` 服务器 | MIME / ETag / 压缩协商 / 缓存 / 路径防护 |
+| 部署 | 静态托管或自托管 | `siteUrl` 可配置，sitemap、canonical、RSS 自动生成 |
 
-一句话概括：**Node 构建期干重活，浏览器只跑必要交互，数据全部是本地快照。**
+一句话概括：**构建期干重活，浏览器只跑必要交互，数据全部本地快照。**
 
-## 数据流
+## 知识库覆盖面
 
+知识库以「技术主线 + 项目过程档案」双线组织，当前 18 个分区、93 篇技术记录、1,418 个标题、1,321 条双链：
+
+- **语言与语法**：Java、Python、TypeScript、Go 的类型系统、并发模型与常见陷阱。
+- **后端服务**：接口设计、鉴权、事务、缓存与 Spring Boot 服务端实践。
+- **框架对照**：Spring、Flask、FastAPI 等框架的用法差异与选型依据。
+- **数据库**：MySQL 索引与事务、Redis 缓存策略、MongoDB 建模清单。
+- **计算机基础**：计算机网络、操作系统与面试概念的结构化梳理。
+- **DevOps**：Linux、Docker、Git 与 CI/CD 工具链的日常操作与排障。
+- **大数据**：Flink、Kafka、Hive 组成的实时与离线数据处理链路。
+- **智能体工程**：LLM、RAG 与 Agent 的工程化笔记。
+- **方法与复盘**：学习方法、项目复盘与长期积累。
+- **项目过程档案**：短链服务、网约车监控、算力调度、PLM 集成、动力微服务、数据分析等项目的需求、实现与取舍。
+
+每条技术记录都带标签与别名，主题之间用双链互指；项目档案与技术记录互相反链，避免项目与笔记混成一团。
+
+## 实现历程
+
+- **v1.0 基线**：搭起 P3R 视觉体系、进入封面、双链知识库、项目档案、游戏库、电竞与友链；完成两遍构建、搜索索引、RSS、sitemap 与 PWA。
+- **v1.1.0 平台化**：加入零依赖账号体系与后台（注册登录、留言收件箱、配置更新、触发重建）；导航改为单行悬浮分组与移动抽屉；新增 ACG 分区与 GitHub 式项目索引；主题跟随系统并用 View Transition 切换；字体子集化把 2.0 MB 压到 486 KB。
+- **v1.1.1 视觉校准**：修复浅色主题下首页玻璃卡白字白底，明确「深色主视觉上的卡片固定深色」这条约束。
+- **v1.2.0 背景重构**：把首页背景视频换成从视频中提取的 1920×1080 关键帧，全站固定背景；首页完整清晰，内页统一模糊压暗，明暗主题各有一套蒙版。
+
+每次合并都记录在 [开发日志](docs/devlog.md)，正式版本在 [CHANGELOG](CHANGELOG.md) 中按 SemVer 归档并打 tag。
+
+## 构建与运行
+
+```bash
+npm install
+npm run dev        # 构建 + 本地服务 → http://localhost:5173
 ```
-本地 Obsidian 库（只读）   api.github.com（curl）   本地 JSON 内容模型
-        │                       │                  │
-   vault.js 扫描+四级索引   fetch-github.js    games / esports / links
-        │                       │                  │
-        │                  github*.json            │
-        │                  readmes/*.md            │
-        │                       │                  │
-        └───────────┬───────────┴──────────────────┘
-                    ▼
-         privacy.js 构建期脱敏（公司 / 内网地址 / 私密笔记）
-                    ▼
-         markdown.js 渲染管线（frontmatter / 双链 / 代码块 / 锚点 / 图片懒加载）
-                    ▼
-         pages.js + layout.js 页面模板与外壳
-                    ▼
-         build.js 两遍构建 → dist/（HTML + 预压缩 .br/.gz + sitemap + manifest + sw）
-                    ▼
-         serve.js / 静态托管  http://localhost:5173
-```
 
-`data/` 里的快照是构建输入的一部分：断网也能复现同一份站点，`npm run refresh` 才需要联网。本地工作项目只读取技术事实（模块、栈、代码量、难点），不复制源码与业务数据。
+| 命令 | 作用 |
+|---|---|
+| `npm run build` | 生成 `dist/`，输出统计与失效锚点报告 |
+| `npm run serve` | 只起静态服务器（零依赖） |
+| `npm run check` | 审计全部产物的内链、页内锚点与静态资产 |
+| `npm run refresh` | 重新抓取 GitHub 元数据与 README 快照 |
+| `npm run api` | 可选：启动账号与后台接口（8787） |
+
+当前 `npm run check` 覆盖 156 个页面、21,017 条链接，全部可达。
 
 ## 目录结构
 
 ```
-build.js              构建编排：两遍渲染、搜索索引、SEO/预压缩、产物统计
-serve.js              零依赖静态服务器（MIME / ETag / Brotli+gzip / 缓存策略 / 路径防护）
-src/core/vault.js     Obsidian 库扫描、frontmatter 解析、双链解析索引
-src/core/privacy.js   构建期脱敏：字面规则 + 私网 IP 兜底、私密笔记判定
-src/core/markdown.js  渲染管线：占位屏蔽 → wikilink → marked → 锚点校验 → 图片懒加载
-src/site/layout.js    HTML 外壳、导航、TOC、搜索面板、主题/PWA/View Transition/SEO 元信息
-src/site/pages.js     首页 / 知识库 / 笔记 / 项目 / 游戏库 / 电竞 / 友链 / 关于
-src/client/app.css    全站样式（设计令牌 + 明暗主题 + 新页面响应式）
-src/client/app.js     载入动画、搜索、TOC、代码复制、滚动交互、粒子、PWA 注册
-src/islands/          React 岛屿：knowledge / games / esports → assets/islands.js
-src/static/manifest.webmanifest  PWA 应用清单
-src/static/sw.js      Service Worker：网络优先 + 离线回退
-server/               可选后端服务：静态托管 + 搜索/统计/联系表单 API
-data/profile.json     站点内容模型：GitHub 展示口径、本地项目档案、脱敏规则、siteUrl
-data/github*.json     GitHub 仓库与提交/语言快照
-data/games.json       游戏库：16 款游戏的评分、状态与主观记录
-data/esports.json     电竞：赛事体系、战队、里程碑
-data/links.json       友链：开源个人站与技术资源索引
-data/readmes/         各项目 README 快照
-scripts/              fetch-github.js（抓取）、check-links.js（审计）
+build.js              构建编排：两遍渲染、搜索索引、SEO、预压缩与产物统计
+serve.js              零依赖静态服务器（MIME / ETag / 压缩 / 缓存 / 路径防护）
+src/core/vault.js     内容扫描、frontmatter 解析与双链索引
+src/core/privacy.js   公开前的内容审查与替换
+src/core/markdown.js  渲染管线：占位屏蔽 → 双链 → marked → 锚点校验 → 图片懒加载
+src/site/layout.js    HTML 外壳、导航、TOC、搜索面板与 SEO 元信息
+src/site/pages.js     首页、知识库、项目、游戏库、电竞、友链、关于等页面
+src/client/           全站样式与交互脚本（设计令牌、明暗主题、搜索、粒子、PWA）
+src/islands/          React 岛屿：知识库 / 游戏库 / 电竞
+src/static/           manifest 与 Service Worker
+server/               可选后端：静态托管 + 账号 / 统计 / 留言接口
+data/                 内容模型与公开数据快照
+scripts/              抓取与链接审计脚本
 dist/                 构建产物（已 gitignore）
 ```
 
-## 站点的两遍构建
+## 文档
 
-1. **第一遍**：渲染全部笔记，只收集每篇的标题 id 集合；
-2. **第二遍**：正式渲染时校验 `[[笔记#小节]]` 指向的锚点是否真实存在——存在就深链，不存在就降级成跳到笔记开头并加虚线样式，同时在构建报告里列出。
+| 文档 | 内容 |
+|---|---|
+| [`docs/api.md`](docs/api.md) | 账号、后台与公开接口：字段、状态码、限流与示例 |
+| [`docs/devlog.md`](docs/devlog.md) | 开发日志：每次合并的改动、决策与验证 |
+| [`CHANGELOG.md`](CHANGELOG.md) | 版本迭代记录（SemVer + git tag） |
+| [`.trae/skills/`](.trae/skills/) | 可复用流程：发布、图层 UI、内容管线、账号后台、并行 git、文档版本 |
 
-这样源笔记里的陈旧锚点会主动暴露出来，而不是变成静默的死链接。目前全站 1,321 条双链零未解析，`npm run check` 覆盖 18,052 个链接。
+## 素材与版权
 
-## 项目与笔记的边界
-
-- **项目页**：GitHub 仓库（8 个）与本地工作项目（5 个）统一进入「项目」，按工作 / 个人 / 学习三类分组。工作项目只写技术栈、模块职责、关键工作与工程难点，来源是本地工作区的架构文档与代码统计。
-- **知识库**：拆成「技术笔记」与「项目档案」两组。项目档案是过程记录，每个项目页再反链到对应笔记；技术笔记按语言、后端、数据库、大数据等主线排列。
-- **连接方式**：项目详情页列出档案笔记与相关技术笔记；笔记页顶部显示所属项目。项目不再是笔记的别名，笔记也不再假装成项目。
-
-## 游戏百科与电竞
-
-- **游戏库**：`data/games.json` 收录 16 款游戏，React 岛屿提供搜索、类型/平台/状态筛选、排序与网格/列表视图；评分与游玩状态是主观记录，发行信息是公开事实。
-- **电竞百科**：`data/esports.json` 按项目组织赛事体系、战队观察与时间线，可切换筛选；不编造具体比赛结果，只写公开赛制与里程碑。
-- **游戏详情**：每款游戏生成独立页面，含档案信息、主观短评与同类推荐。
-- **友链页**：`data/links.json` 收录本站改造时参考的开源个人站与技术资源。
-- **技术博客精选**：Obsidian 库里的独立分区，8 篇权威原文摘要（Chrome / MDN / web.dev / React / Go / Rust / Flask），每篇带原文跳转链接与到现有笔记的双链，构建后自动进入知识库。
-
-## Obsidian 语义的还原范围
-
-- YAML frontmatter：`tags` / `aliases` / `仓库`（用于把项目和档案笔记对上）；
-- `[[笔记]]`、`[[笔记|别名]]`、`[[笔记#小节]]`、`[[#本页小节]]`；
-- 链接解析四级回退：精确路径 → 分区索引笔记 → 唯一文件名（同分区优先，再取最短路径）→ 别名表；
-- 标题锚点 = 标题原文的 slug，与 Obsidian 的跳转规则一致，同篇重名标题追加 `-2`、`-3`；
-- 代码块与行内代码先替换成占位 token 再解析双链，保证 `` `[[x]]` `` 这类示例不会被当成真链接。
-
-## 视觉设计
-
-版式参考 [imsyy/home](https://github.com/imsyy/home) 的「全屏壁纸 + 玻璃卡片」结构，主题与素材取自 [Persona 3 Reload 官网](https://asia.sega.com/p3r/cht/)：
-
-- **主视觉**：官方 FV 视频做首页全屏壁纸，深海军蓝遮罩保证中文可读；下方内容区回到暗色档案风格。
-- **载入动画**：仅首次访问播放的 Memento Mori 白屏 + 官方蓝潮 SVG，约 2.5 秒；点击或按键可跳过，`sessionStorage` 记忆，`prefers-reduced-motion` 直接跳过。
-- **字体**：全站统一一套字体栈——Noto Sans SC 子集（中文，按站内字符裁剪）+ Urbanist（拉丁与数字），JetBrains Mono 只用于代码；全部自托管，离线构建可用。
-- **玻璃质感**：顶栏、首页时钟、站点入口使用 `backdrop-filter`；离开主视觉后顶栏转为实心玻璃，避免深色条压在浅色内容上。
-- **克制动效**：不放跑马灯、入场漂浮、自定义光标和页面斜切转场；只保留 hover 位移、滚动揭示/数字滚动、页尾粒子与 View Transition 轻转场，全部尊重 `prefers-reduced-motion`。
-- **明暗主题**：默认暗色，顶栏按钮可切换并写入 `localStorage`，首屏渲染前由内联脚本决定，不闪白。
-
-> Persona 3 Reload 的视觉素材版权归 ATLUS / SEGA 所有，取自其官方网站，本站仅作个人非商业展示，与官方无关。
-
-## 隐私边界
-
-Obsidian 库只读不写，脱敏发生在构建期，源笔记保持原样：
-
-- `data/profile.json` 的 `privacy.rules` 按顺序做字面替换：公司全称与简称、内网私服域名、内部仓库名、第三方供应商、内部主机名、本地库路径；
-- `src/privacy.js` 额外兜底私网 IP（`10/8`、`172.16/12`、`192.168/16`），统一替换为 `<内网IP>`；`127.0.0.1` 与业务无关示例保留；
-- `privacy.excludeFolders` 里的目录（当前是 `社会文件`）不进入产物，指向它们的双链降级成不可点击的「私密笔记」标记，而不是死链；
-- 脱敏覆盖笔记正文、标题、别名、标签、搜索索引、GitHub README 与本地项目档案；
-- `dist/`（含全部笔记正文的 HTML）已在 `.gitignore` 里，仓库里只有代码、脱敏后的内容模型与 GitHub 公开数据快照。
-
-每次构建后可以对产物做一次敏感词扫描，确认 `徐工 / XCMG / 内网 IP / 私服域名` 均为 0 命中。换库路径改 `data/profile.json` 的 `vault` 字段即可。
-
-## 已知限制
-
-- 全文搜索是自建的分节倒排（1,565 个小节，构建期生成 `assets/search-index.json`），没有分词与拼音，中文按子串命中；技术博客精选笔记里记录了 Rust/WASM 分词方案，尚未接入；
-- 代码块复制按钮在 `http://localhost` 之外的非安全上下文会被浏览器拒绝，此时如实提示失败并退回选中；
-- 站点按绝对路径 `/` 生成，子路径部署需改 `data/profile.json` 的 `basePath` 后重新构建；
-- 构建清理 `dist/` 时对正在被浏览器占用的文件容忍跳过，极端情况下需要手动删一次。
+版式参考开源个人站 [imsyy/home](https://github.com/imsyy/home) 的结构，主题与素材取自 [Persona 3 Reload 官网](https://asia.sega.com/p3r/cht/)。Persona 3 Reload 的视觉素材版权归 ATLUS / SEGA 所有，本站仅作个人非商业展示，与官方无关。

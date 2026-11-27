@@ -135,7 +135,7 @@ ${layers ? LAYER_CSS.map((f) => `<link rel="stylesheet" href="${url('assets', 'l
 <link rel="preload" href="${url('assets', 'fonts', 'Urbanist-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${url('assets', 'fonts', 'NotoSansSC-subset.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="${url('manifest.webmanifest')}">
-${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${escapeHtml(ctx.profile.site.title)} · 笔记" href="${url('feed.xml')}">` : ''}
+${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${escapeHtml(ctx.profile.site.title)} · 技术记录" href="${url('feed.xml')}">` : ''}
 <script type="speculationrules">
 {"prerender":[{"where":{"and":[{"href_matches":"/*"},{"not":{"selector_matches":"a[target=_blank]"}},{"not":{"selector_matches":"a[download]"}}]},"eagerness":"moderate"}]}
 </script>
@@ -189,7 +189,7 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
   <div class="footer-inner">
     <img class="footer-mark" src="${url('assets', 'p3r', 'memento-mori.svg')}" alt="Memento Mori" width="150" height="18">
     <div class="footer-row">
-      <span class="footer-note">${ctx.version ? `<b class="footer-ver">v${escapeHtml(ctx.version)}</b> · ` : ''}本地构建 · 笔记与项目分离归档 · 构建时脱敏</span>
+      <span class="footer-note">${ctx.version ? `<b class="footer-ver">v${escapeHtml(ctx.version)}</b> · ` : ''}静态生成 · 项目与技术记录双线归档</span>
       <nav class="footer-nav" aria-label="页脚导航">
         <a href="${url('archive.html')}">档案库</a>
         <a href="${url('projects', 'index.html')}">项目</a>
@@ -205,7 +205,7 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
 <div class="search-overlay" id="search-overlay" hidden>
   <div class="search-box" role="dialog" aria-modal="true" aria-label="搜索知识库">
     <div class="search-head"><span>SEARCH / 知识库</span><kbd>Esc</kbd></div>
-    <input type="search" id="search-input" placeholder="搜索笔记标题、正文、标签…" autocomplete="off" spellcheck="false">
+    <input type="search" id="search-input" placeholder="搜索记录标题、正文、标签…" autocomplete="off" spellcheck="false">
     <div class="search-results" id="search-results" aria-live="polite"></div>
     <div class="search-hint"><kbd>↑↓</kbd> 选择 <kbd>Enter</kbd> 打开</div>
   </div>

@@ -1,6 +1,6 @@
 # TURBO SPARK 接口文档
 
-- 版本：v1.2.0
+- 版本：v1.2.1
 - 服务：`node server/index.js`（`npm run api`）
 - 默认地址：`http://127.0.0.1:8787`
 - 数据格式：请求与响应均为 `application/json; charset=utf-8`
