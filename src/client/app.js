@@ -19,7 +19,12 @@
       document.documentElement.classList.remove('is-booting');
       try { sessionStorage.setItem('mm-boot', '1'); } catch (e) {}
     };
-    if (!boot || reduceMotion) {
+    // 首页进入封面会承担开场，两道全屏门不叠加
+    let coverPending = false;
+    try {
+      coverPending = !!document.getElementById('entry-cover') && !sessionStorage.getItem('ts-entry-cover');
+    } catch (e) { coverPending = !!document.getElementById('entry-cover'); }
+    if (!boot || reduceMotion || coverPending) {
       finish();
     } else {
       const at = (ms, fn) => timers.push(setTimeout(fn, ms));
@@ -34,6 +39,27 @@
         if (ended) { window.removeEventListener('keydown', onKey); return; }
         if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') skip();
       });
+    }
+  }
+
+  /* ---------- 首页背景视频：只在桌面、非省流时加载 ---------- */
+  const heroVideo = $('.wallpaper-video');
+  if (heroVideo) {
+    const wide = window.matchMedia('(min-width: 900px)').matches;
+    const saveData = !!(navigator.connection && navigator.connection.saveData);
+    if (reduceMotion || !wide || saveData) {
+      heroVideo.removeAttribute('autoplay');
+    } else {
+      const src = heroVideo.dataset.src;
+      if (src) {
+        const s = document.createElement('source');
+        s.src = src;
+        s.type = 'video/mp4';
+        heroVideo.appendChild(s);
+        heroVideo.load();
+        const playing = heroVideo.play();
+        if (playing && playing.catch) playing.catch(() => {});
+      }
     }
   }
 
@@ -75,15 +101,65 @@
   /* ---------- 主题 ---------- */
   const themeBtn = $('#theme-toggle');
   const current = () => document.documentElement.dataset.theme || 'dark';
-  const paintTheme = () => { if (themeBtn) themeBtn.textContent = current() === 'dark' ? '☾' : '☀'; };
+  const paintTheme = () => {
+    if (!themeBtn) return;
+    const dark = current() === 'dark';
+    themeBtn.textContent = dark ? '☾' : '☀';
+    const label = dark ? '切换到浅色主题' : '切换到深色主题';
+    themeBtn.setAttribute('aria-label', label);
+    themeBtn.setAttribute('title', label);
+  };
+  const root = document.documentElement;
+  const syncThemeColor = (theme) => {
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
+      m.removeAttribute('media');
+      m.setAttribute('content', theme === 'dark' ? '#081226' : '#f4f1e9');
+    });
+  };
+  const applyTheme = (theme, persist = true) => {
+    root.dataset.theme = theme;
+    if (persist) { try { localStorage.setItem('lhj-theme', theme); } catch (e) {} }
+    syncThemeColor(theme);
+    paintTheme();
+  };
   if (themeBtn) {
     paintTheme();
-    themeBtn.addEventListener('click', () => {
+    syncThemeColor(current());
+    themeBtn.addEventListener('click', (e) => {
       const next = current() === 'dark' ? 'light' : 'dark';
-      document.documentElement.dataset.theme = next;
-      try { localStorage.setItem('lhj-theme', next); } catch (e) {}
-      paintTheme();
+      if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        applyTheme(next);
+        return;
+      }
+      const r = e.currentTarget.getBoundingClientRect();
+      root.style.setProperty('--theme-x', `${r.left + r.width / 2}px`);
+      root.style.setProperty('--theme-y', `${r.top + r.height / 2}px`);
+      root.classList.add('theme-switching');
+      const vt = document.startViewTransition(() => applyTheme(next));
+      vt.finished.finally(() => root.classList.remove('theme-switching'));
     });
+  }
+
+  const navToggle = document.getElementById('nav-toggle');
+  const navPanel = document.getElementById('nav-panel');
+  if (navToggle && navPanel) {
+    const setOpen = (open) => {
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      navToggle.setAttribute('aria-label', open ? '关闭导航' : '打开导航');
+      navPanel.hidden = !open;
+      root.classList.toggle('nav-panel-open', open);
+      if (open) {
+        const first = navPanel.querySelector('a');
+        if (first) { try { first.focus({ preventScroll: true }); } catch (e) { first.focus(); } }
+      } else {
+        navToggle.focus({ preventScroll: true });
+      }
+    };
+    navToggle.addEventListener('click', () => setOpen(navPanel.hidden));
+    navPanel.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !navPanel.hidden) setOpen(false); });
+    const wide = window.matchMedia('(min-width: 901px)');
+    if (wide.addEventListener) wide.addEventListener('change', (e) => { if (e.matches && !navPanel.hidden) setOpen(false); });
   }
 
   /* ---------- 代码块复制 ---------- */
@@ -280,7 +356,13 @@
     if (items[sel]) items[sel].scrollIntoView({ block: 'nearest' });
   }
 
+  let lastOpener = null;
+  function overlayFocusables() {
+    return $$('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])', overlay)
+      .filter((el) => el.offsetParent !== null);
+  }
   function open() {
+    lastOpener = document.activeElement;
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
     input.focus();
@@ -289,6 +371,8 @@
   function close() {
     overlay.hidden = true;
     document.body.style.overflow = '';
+    if (lastOpener && typeof lastOpener.focus === 'function') lastOpener.focus();
+    lastOpener = null;
   }
   if (overlay && openers.length) {
     openers.forEach((btn) => btn.addEventListener('click', open));
@@ -305,6 +389,15 @@
       if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); open(); }
       else if (e.key === '/' && !typing) { e.preventDefault(); open(); }
       else if (e.key === 'Escape' && !overlay.hidden) close();
+      else if (e.key === 'Tab' && !overlay.hidden) {
+        // 焦点在对话框内循环，不落到被遮住的页面上
+        const list = overlayFocusables();
+        if (!list.length) return;
+        const first = list[0];
+        const last = list[list.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     });
   }
 

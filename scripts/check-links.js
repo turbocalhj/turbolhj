@@ -33,7 +33,8 @@ for (const f of files) {
       if (/[\s"<>]/.test(href)) bad.push(`${rel}: 外链含空格/尖括号 ${href}`);
       continue;
     }
-    const [rawPath, hash] = href.split('#');
+    const [rawPart, hash] = href.split('#');
+    const rawPath = rawPart.split('?')[0];
     let target;
     if (rawPath === '') target = f;
     else {
@@ -54,7 +55,7 @@ for (const f of files) {
   }
 }
 
-const assets = [...fs.readFileSync(path.join(DIST, 'index.html'), 'utf8').matchAll(/(src|href)="\/assets\/([^"]+)"/g)].map((m) => m[2]);
+const assets = [...fs.readFileSync(path.join(DIST, 'index.html'), 'utf8').matchAll(/(src|href)="\/assets\/([^"]+)"/g)].map((m) => m[2].split('?')[0]);
 for (const a of new Set(assets)) {
   if (!fs.existsSync(path.join(DIST, 'assets', a))) bad.push(`资产缺失: ${a}`);
 }

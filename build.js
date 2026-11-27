@@ -1,19 +1,21 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import crypto from 'node:crypto';
 import * as esbuild from 'esbuild';
 import { createEngine, renderPlainMarkdown, escapeHtml } from './src/core/markdown.js';
 import { loadVault, createLinkIndex } from './src/core/vault.js';
 import { createRedactor, isPrivateNote } from './src/core/privacy.js';
 import { renderPage, makeUrl } from './src/site/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, updatesPage, authPage, adminPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, acgPage, privatePage, updatesPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
 const skipped = [];
 const htmlPages = [];
+/** 页面路径 → 内容最后修改时间，供 sitemap 标注 lastmod。 */
+const lastmodByPath = new Map();
 cleanDist(DIST);
-const T0 = Date.now();
 
 /** 逐个删除，被浏览器占用的文件跳过（Windows 下整目录 rm 会 EPERM）。 */
 function cleanDist(dir) {
@@ -48,6 +50,7 @@ const gamesData = readJson('data/games.json', { updated: '', games: [] });
 const esportsData = readJson('data/esports.json', { titles: [], events: [], teams: [], milestones: [] });
 const linksData = readJson('data/links.json', { groups: [] });
 const updatesData = readJson('data/updates.json', { updated: '', entries: [] });
+const acgData = readJson('data/acg.json', { items: [] });
 
 function readJson(rel, fallback) {
   try {
@@ -107,6 +110,18 @@ const engine = createEngine({
   noteUrl: (id) => noteUrl(ctx, id),
 });
 ctx.engine = engine;
+
+/** 资源内容指纹：给 app.css / app.js / 图层加 ?v=，改版后不会被浏览器旧缓存挡住。 */
+const assetVersions = new Map();
+ctx.assetVersion = (rel) => {
+  if (assetVersions.has(rel)) return assetVersions.get(rel);
+  let hash = '0';
+  try {
+    hash = crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, rel))).digest('hex').slice(0, 8);
+  } catch { /* 缺文件时退回 0，不影响构建 */ }
+  assetVersions.set(rel, hash);
+  return hash;
+};
 
 ctx.folderOf = link.folderIndex;
 ctx.folderPageUrl = (key) => url('knowledge', 'f', key) + '.html';
@@ -323,6 +338,7 @@ ctx.projects = projects;
 ctx.games = gamesData.games || [];
 ctx.esports = esportsData;
 ctx.updates = updatesData;
+ctx.acg = acgData;
 ctx.links = linksData;
 ctx.featuredProjects = projects
   .filter((p) => p.featured)
@@ -341,7 +357,10 @@ ctx.langStats = [...langCount].sort((a, b) => b[1] - a[1] || a[0].localeCompare(
 // ---------- 笔记页（依赖项目映射，放在项目之后写盘） ----------
 for (const note of notes) {
   currentId = note.id;
-  writeFile(path.join('notes', ...note.id.split('/')) + '.html', notePage(ctx, note, renderedByNote.get(note.id)));
+  const rel = path.join('notes', ...note.id.split('/')) + '.html';
+  writeFile(rel, notePage(ctx, note, renderedByNote.get(note.id)));
+  const stamp = new Date(note.mtime).toISOString();
+  lastmodByPath.set(pagePath(rel), stamp.slice(0, 10));
 }
 currentId = null;
 
@@ -357,10 +376,13 @@ writeFile(path.join('games', 'index.html'), gamesPage(ctx));
 for (const g of ctx.games) writeFile(path.join('games', g.slug) + '.html', gameDetailPage(ctx, g));
 writeFile(path.join('esports', 'index.html'), esportsPage(ctx));
 writeFile(path.join('links', 'index.html'), linksPage(ctx));
+writeFile(path.join('acg', 'index.html'), acgPage(ctx));
+writeFile('private.html', privatePage(ctx));
 writeFile('updates.html', updatesPage(ctx));
 writeFile('login.html', authPage(ctx, 'login'), { noindex: true });
 writeFile('register.html', authPage(ctx, 'register'), { noindex: true });
 writeFile('admin.html', adminPage(ctx), { noindex: true });
+writeFile('404.html', notFoundPage(ctx), { noindex: true });
 
 writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
   builtAt: new Date().toISOString(),
@@ -380,12 +402,19 @@ if (fs.existsSync(layersDir)) {
 }
 fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });
 fs.copyFileSync(path.join(ROOT, 'src/static/manifest.webmanifest'), path.join(DIST, 'manifest.webmanifest'));
-fs.copyFileSync(path.join(ROOT, 'src/static/sw.js'), path.join(DIST, 'sw.js'));
+const buildId = crypto.createHash('sha1')
+  .update(fs.readFileSync(path.join(ROOT, 'src/client/app.css')))
+  .update(fs.readFileSync(path.join(ROOT, 'src/client/app.js')))
+  .digest('hex').slice(0, 10);
+fs.writeFileSync(
+  path.join(DIST, 'sw.js'),
+  fs.readFileSync(path.join(ROOT, 'src/static/sw.js'), 'utf8').replaceAll('__BUILD_ID__', buildId),
+);
 writeSeoFiles();
-const feedCount = writeFeed();
+writeFeed();
 
 // ---------- React 岛屿 ----------
-const islandBytes = await bundleIslands();
+await bundleIslands();
 
 async function bundleIslands() {
   const out = path.join(DIST, 'assets', 'islands.js');
@@ -397,6 +426,12 @@ async function bundleIslands() {
     format: 'iife',
     target: ['es2020'],
     jsx: 'automatic',
+    alias: {
+      react: 'preact/compat',
+      'react/jsx-runtime': 'preact/jsx-runtime',
+      'react-dom': 'preact/compat',
+      'react-dom/client': 'preact/compat',
+    },
     define: { 'process.env.NODE_ENV': '"production"' },
     outfile: out,
     logLevel: 'warning',
@@ -431,7 +466,10 @@ function writeSeoFiles() {
     return;
   }
   const escXml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const urls = htmlPages.map((p) => `  <url><loc>${escXml(SITE_URL + p)}</loc></url>`).join('\n');
+  const urls = htmlPages.map((p) => {
+    const lastmod = lastmodByPath.get(p);
+    return `  <url><loc>${escXml(SITE_URL + p)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
+  }).join('\n');
   writeFile('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
   writeFile('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 }
@@ -473,6 +511,10 @@ ${items}
 
 /** 为文本类产物预生成 .br / .gz，供服务器按 Accept-Encoding 直接返回。 */
 function precompress() {
+  if (process.env.NO_COMPRESS === '1') {
+    console.log('  已跳过预压缩（NO_COMPRESS=1，静态托管自带 gzip 时用）');
+    return 0;
+  }
   const exts = new Set(['.html', '.css', '.js', '.json', '.xml', '.txt', '.svg']);
   const stack = [DIST];
   let n = 0;
@@ -494,32 +536,4 @@ function precompress() {
   return n;
 }
 
-const compressedFiles = precompress();
-
-// 报告
-const totalFiles = countFiles(DIST);
-console.log(`\n构建完成（${((Date.now() - T0) / 1000).toFixed(1)}s）`);
-console.log(`  笔记 ${stats.notes} 篇 / 分区 ${stats.folders} 个 / 标题 ${stats.headings} / 双链 ${stats.wikiLinks}（未解析 ${stats.unresolved}）`);
-console.log(`  代码块 ${stats.snippets} 个 / ${stats.codeLines} 行；知识库体积 ${(stats.bytes / 1048576).toFixed(2)} MB`);
-console.log(`  项目 ${projects.length} 个（开源 ${ghRepos.length}）/ 提交 ${stats.commits}`);
-console.log(`  游戏 ${ctx.games.length} 款 / 赛事 ${esportsData.events?.length || 0} 项 / 战队 ${esportsData.teams?.length || 0} 支`);
-console.log(`  产物 ${totalFiles} 个文件 → dist/（其中 ${compressedFiles} 个文本产物已预压缩为 .br + .gz）`);
-console.log(`  SEO：sitemap.xml / robots.txt / feed.xml（${feedCount} 条）/ canonical / OG / JSON-LD${SITE_URL ? '（' + SITE_URL + '）' : '（未配置 siteUrl，跳过 sitemap）'}`);
-console.log(`  React 岛屿 ${(islandBytes / 1024).toFixed(0)} KB → assets/islands.js（仅知识库页加载）`);
-console.log(`  搜索索引 ${searchDocs.length} 个小节（${(fs.statSync(path.join(DIST, 'assets/search-index.json')).size / 1024).toFixed(0)} KB）`);
-if (skipped.length) console.log(`  ! ${skipped.length} 个旧文件被占用未删除（重启服务后重建即可）：${skipped.slice(0, 3).join(', ')}`);
-if (unresolvedList.length) {
-  const uniq = [...new Map(unresolvedList.map((u) => [u, u])).values()];
-  console.log(`\n  未解析的双链（${uniq.length} 条）：`);
-  for (const u of uniq.slice(0, 25)) console.log('    - ' + u);
-  if (uniq.length > 25) console.log(`    … 其余 ${uniq.length - 25} 条`);
-}
-
-function countFiles(dir) {
-  let n = 0;
-  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.isDirectory()) n += countFiles(path.join(dir, e.name));
-    else n++;
-  }
-  return n;
-}
+precompress();

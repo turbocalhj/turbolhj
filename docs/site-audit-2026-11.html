@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TURBO SPARK · 站点优化体检报告</title>
+<style>
+  :root {
+    --bg: #060c18;
+    --bg-soft: #0b1425;
+    --panel: #0d1829;
+    --panel-2: #101d31;
+    --line: rgba(150, 185, 230, 0.16);
+    --text: #e9f0fb;
+    --muted: #a8b8cf;
+    --faint: #8b9cb4;
+    --accent: #6fc8ff;
+    --p0: #ff8f8f;
+    --p1: #ffc56b;
+    --p2: #8fd8ff;
+    --p3: #b8c6da;
+    --ok: #63d7ab;
+    --radius: 14px;
+    --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 600px at 85% -8%, rgba(2, 158, 235, 0.16), transparent 60%),
+      radial-gradient(800px 520px at -10% 20%, rgba(90, 120, 190, 0.12), transparent 65%),
+      var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 28px 96px; }
+  header.hero { border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 34px; }
+  .eyebrow { margin: 0 0 12px; font-size: 12px; letter-spacing: 0.16em; color: var(--faint); text-transform: uppercase; }
+  h1 { margin: 0 0 12px; font-size: clamp(28px, 4.4vw, 44px); line-height: 1.25; letter-spacing: -0.01em; }
+  .lede { margin: 0; max-width: 72ch; color: var(--muted); font-size: 15px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 18px; font-size: 12.5px; color: var(--faint); }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  h2 { margin: 46px 0 14px; font-size: 20px; letter-spacing: 0.01em; }
+  h2 .num { color: var(--accent); font-family: var(--mono); font-size: 13px; margin-right: 10px; }
+  h3 { margin: 26px 0 8px; font-size: 15.5px; }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 14px; padding-left: 1.25em; }
+  li { margin: 5px 0; }
+
+  .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .card { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: 16px 18px; }
+  .card .k { font-size: 11.5px; letter-spacing: 0.08em; color: var(--faint); }
+  .card .v { font-size: 22px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .card .s { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .verdict { border-left: 3px solid var(--accent); background: var(--bg-soft); border-radius: 0 var(--radius) var(--radius) 0; padding: 18px 22px; }
+  .verdict p:last-child { margin-bottom: 0; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 760px; }
+  caption { caption-side: top; text-align: left; padding: 12px 16px; color: var(--faint); font-size: 12.5px; }
+  th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  th { position: sticky; top: 0; background: var(--panel-2); font-size: 11.5px; letter-spacing: 0.08em; color: var(--faint); font-weight: 600; text-transform: uppercase; }
+  tr:last-child td { border-bottom: 0; }
+  td.sev { white-space: nowrap; font-weight: 700; font-family: var(--mono); font-size: 12px; }
+  .s-p0 { color: var(--p0); }
+  .s-p1 { color: var(--p1); }
+  .s-p2 { color: var(--p2); }
+  .s-p3 { color: var(--p3); }
+  code { font-family: var(--mono); font-size: 12px; background: rgba(120, 170, 230, 0.12); padding: 1px 5px; border-radius: 4px; color: #d8e8ff; }
+
+  .block { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: 18px 22px; margin: 14px 0; }
+  .block h3 { margin-top: 0; }
+  .block p:last-child, .block ul:last-child { margin-bottom: 0; }
+  .tag { display: inline-block; font-size: 11px; letter-spacing: 0.06em; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-right: 8px; }
+
+  pre { margin: 10px 0 0; padding: 14px 16px; background: #050a14; border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; font-family: var(--mono); font-size: 12px; line-height: 1.7; color: #cfe2f8; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  .fix { border-top: 1px dashed var(--line); margin-top: 16px; padding-top: 14px; }
+  .fix .lbl { font-size: 11.5px; letter-spacing: 0.1em; color: var(--ok); }
+
+  .steps { counter-reset: s; list-style: none; padding: 0; }
+  .steps li { counter-increment: s; position: relative; padding-left: 40px; margin: 12px 0; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--accent); font-family: var(--mono); font-size: 12px; display: grid; place-items: center; }
+
+  .dim { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .dim .block { margin: 0; }
+
+  footer { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 18px; font-size: 12.5px; color: var(--faint); }
+
+  @media (max-width: 900px) {
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dim { grid-template-columns: minmax(0, 1fr); }
+    .wrap { padding: 36px 18px 72px; }
+  }
+  @media (max-width: 480px) {
+    .cards { grid-template-columns: minmax(0, 1fr); }
+    .card .v { font-size: 20px; }
+  }
+  @media print {
+    body { background: #fff; color: #111; }
+    .card, .block, .table-wrap { border-color: #ddd; background: #fff; }
+    th { background: #f4f4f4; }
+    a { color: #0a58a8; }
+    code, pre { background: #f5f5f5; color: #111; }
+    .s-p0, .s-p1, .s-p2, .s-p3, .fix .lbl { color: #111; }
+    .wrap { padding: 0; max-width: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Site Audit / 2026-11-27</p>
+  <h1>TURBO SPARK 个人站 · 可以优化的地方</h1>
+  <p class="lede">基于当前仓库真实代码与构建产物做的一轮体检。构建和链接都是健康的，问题集中在四类：一处出口级 SEO 缺陷、窄屏适配的两处破口、首屏 4MB 的传输结构，以及少量可访问性与服务端安全问题。</p>
+  <div class="meta">
+    <span>检查对象：<b>E:\Mywebsite</b></span>
+    <span>构建：<b>18.3s / 153 个 HTML / 522 个文件</b></span>
+    <span>链接审计：<b>18,290 条全部可达</b></span>
+    <span>视图：<b>320 / 375 / 1440px</b></span>
+  </div>
+</header>
+
+<h2><span class="num">00</span>先说结论</h2>
+<div class="verdict">
+  <p><strong>做得好的部分不用动</strong>：两遍构建 + 锚点校验、18,290 条链接零死链、1,321 条双链零未解析、构建期脱敏、CLS 0.0005 的稳定布局、进入封面的焦点陷阱与 reduced-motion 降级，这些都是超出个人站平均水平的工程细节。</p>
+  <p><strong>最该先修的四处</strong>：一，153 个页面的 <code>&lt;title&gt;</code> 全是「TURBO SPARK」，<code>title</code> 参数只进了 og:title；二，320px 下顶栏的主题切换按钮被挤出屏幕；三，首页首屏要传 4.07MB（1.67MB 视频 + 2.02MB 中文字体）；四，搜索面板 Tab 会把焦点送到遮罩后面。</p>
+</div>
+
+<div class="cards" style="margin-top:22px">
+  <div class="card"><div class="k">首页首屏传输（375px）</div><div class="v">4.07 MB</div><div class="s">视频 1.67MB + 字体 2.02MB</div></div>
+  <div class="card"><div class="k">字体单文件</div><div class="v">2.02 MB</div><div class="s">无 unicode-range，全站每页都下</div></div>
+  <div class="card"><div class="k">Java 笔记页元素数</div><div class="v">9,485</div><div class="s">页高 173,528px，单页到底</div></div>
+  <div class="card"><div class="k">320px 顶栏</div><div class="v">357 &gt; 320</div><div class="s">工具区右侧被裁 37px</div></div>
+</div>
+
+<div class="block" style="margin-top:26px">
+  <h3>本轮已落地的优化（2026-11-27）</h3>
+  <div class="table-wrap" style="border:0">
+    <table style="min-width:640px">
+      <thead><tr><th style="width:190px">项目</th><th style="width:170px">改前</th><th style="width:190px">改后（实测）</th><th>位置</th></tr></thead>
+      <tbody>
+        <tr><td>页面标题</td><td>153 页同一标题</td><td>每页独立，如「Java · 知识库」</td><td><code>src/site/layout.js</code></td></tr>
+        <tr><td>移动端首屏传输</td><td>4.07 MB</td><td>0.78 MB（不再请求视频）</td><td><code>src/client/app.js</code> / <code>src/site/pages.js</code></td></tr>
+        <tr><td>中文字体</td><td>2,018 KB</td><td>476 KB（按站内 1,773 字裁剪）</td><td><code>scripts/subset-font.py</code></td></tr>
+        <tr><td>岛屿打包</td><td>235 KB</td><td>26 KB（React → Preact 兼容层）</td><td><code>build.js</code> / <code>src/islands/index.jsx</code></td></tr>
+        <tr><td>320px 顶栏</td><td>内容宽 357，主题键在屏外</td><td>工具区右边界 308，导航自身滚动</td><td><code>src/client/app.css</code></td></tr>
+        <tr><td>笔记页 320px</td><td>scrollWidth 374</td><td>scrollWidth 320</td><td><code>src/core/markdown.js</code></td></tr>
+        <tr><td>游戏页 320px</td><td>scrollWidth 324</td><td>scrollWidth 320</td><td><code>src/client/app.css</code></td></tr>
+        <tr><td>搜索面板焦点</td><td>Tab 12 次逃出遮罩</td><td>在对话框内循环，Esc 归还焦点</td><td><code>src/client/app.js</code></td></tr>
+        <tr><td>对比度</td><td>faint 4.03 / 3.09，亮色 accent 4.36</td><td>5.69 / 4.80，亮色 accent 5.07</td><td><code>src/client/app.css</code> 令牌</td></tr>
+        <tr><td>页脚触控目标</td><td>36×21px</td><td>36px 高</td><td><code>src/client/app.css</code></td></tr>
+        <tr><td>Service Worker</td><td>安装即缓存 ~3.6MB</td><td>5 个小文件 + 静态资产 SWR</td><td><code>src/static/sw.js</code></td></tr>
+        <tr><td>404 页</td><td>无产物，落到平台默认页</td><td><code>dist/404.html</code>，链接审计 154 页全通</td><td><code>src/site/pages.js</code></td></tr>
+        <tr><td>sitemap</td><td>无 lastmod</td><td>93 条笔记日期</td><td><code>build.js</code></td></tr>
+        <tr><td>服务端</td><td>CORS 全域 *，首注册即管理员</td><td>仅公开接口 CORS；注册开关与初始化口令；搜索限流；异步 scrypt</td><td><code>server/index.js</code> / <code>server/lib/auth.js</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:12px;font-size:13px;color:var(--muted)">未做视频重编码：仓库里的 <code>hero.mp4</code> 本身是截断文件（ffmpeg 报 <code>partial file</code>），强行转码会丢帧，因此改为按视口与省流偏好决定是否加载，桌面端维持原片。</p>
+</div>
+
+<h2><span class="num">01</span>问题清单</h2>
+<p style="color:var(--muted);font-size:13.5px">P0 = 影响可用性或正确性，建议先修；P1 = 影响速度与体验；P2 = 可访问性 / SEO 细节；P3 = 维护性与安全加固。行内证据均可在仓库中直接定位。</p>
+
+<div class="table-wrap">
+<table>
+<caption>共 28 项，按优先级排列。「修复方向」只给最小改动，不改变站点现有内容口径与视觉方向。</caption>
+<thead>
+<tr><th style="width:52px">级别</th><th style="width:190px">问题</th><th style="width:250px">证据</th><th style="width:230px">影响</th><th>修复方向</th></tr>
+</thead>
+<tbody>
+<tr><td class="sev s-p0">P0-1</td><td>153 个页面的标题完全相同</td><td><code>src/site/layout.js:66</code> 写死 <code>ctx.profile.site.title</code>；<code>dist/*.html</code> 实测全部为 <code>&lt;title&gt;TURBO SPARK&lt;/title&gt;</code>，而传入的 <code>title</code> 只用于 <code>og:title</code></td><td>搜索结果的每条标题都一样，浏览器标签、历史、书签、分享卡片无法区分页面</td><td>改为 <code>&lt;title&gt;${escapeHtml(title)}&lt;/title&gt;</code>；首页仍传站点名，笔记页保持「笔记名 · 知识库」</td></tr>
+
+<tr><td class="sev s-p0">P0-2</td><td>320px 顶栏工具被裁切</td><td><code>.topbar-inner</code> 可视宽 320、内容宽 357；<code>.tools</code> 右边界 357，主题按钮整块在屏幕外（320px 截图可见搜索键被切、主题键消失）</td><td>最窄的手机上无法切换明暗主题，搜索键只剩一半</td><td>≤390px 让 <code>.nav</code> 可横向滚动并让 <code>.tools</code> 固定不被挤压，或把次级导航收进菜单</td></tr>
+
+<tr><td class="sev s-p0">P0-3</td><td>游戏库视图切换溢出</td><td>320px：<code>.game-view-switch</code> 右边界 364；375px：页面 scrollWidth 379 &gt; 375</td><td>视图切换按钮被推到屏幕外，页面出现轻微横向拖动</td><td>工具条允许换行（<code>flex-wrap: wrap</code>）或把「网格/列表」收进图标按钮</td></tr>
+
+<tr><td class="sev s-p0">P0-4</td><td>笔记页在 320px 横向溢出</td><td>Java 页 scrollWidth 374 &gt; 320，可横向拖动；源头是正文里不能断行的行内代码（单个 <code>code</code> 宽 330）与未断行的 <code>strong</code>，宽表格（<code>thead</code> 333）同样撑破</td><td>正文被横向拖动，长表格与长标识符阅读体验断裂</td><td>行内代码加 <code>overflow-wrap:anywhere</code>、正文加 <code>overflow-wrap:break-word</code>；表格套 <code>.table-scroll</code> 容器，<code>.prose table</code> 改回 <code>display:table</code></td></tr>
+
+<tr><td class="sev s-p1">P1-1</td><td>首屏传输 4.07MB</td><td>375px 首次访问实测 17 个请求 4,072,469B：<code>hero.mp4</code> 1,669KB（1920×1080）、<code>NotoSansSC-subset.woff2</code> 2,019KB</td><td>移动网络下首屏等待明显；视频还带 <code>autoplay</code>，进一步抢带宽</td><td>视频降到 1280×720、更高 CRF（可压到 300–500KB），移动端 <code>preload="none"</code> 只用 poster；字体见 P1-2</td></tr>
+
+<tr><td class="sev s-p1">P1-2</td><td>中文字体整包 2MB，且每页都下</td><td><code>src/client/app.css:14-20</code> 单个 <code>@font-face</code> 无 <code>unicode-range</code>；153 个页面共用同一份 2,066,936B 字体</td><td>连只有几百字的「关于」「友链」页也要付 2MB；首字渲染依赖 <code>font-display: swap</code> 回退</td><td>按 <code>unicode-range</code> 切成常用/次常用 2–4 片，只在正文页按需加载；或正文用系统字体，仅标题用自托管字体</td></tr>
+
+<tr><td class="sev s-p1">P1-3</td><td>React 岛屿 235KB 共用一份</td><td><code>build.js:388-404</code> 把 knowledge / games / esports 打成一个 <code>islands.js</code>（234,789B，br 62KB）</td><td>访问知识库也要加载游戏库、电竞面板的代码；React 19 运行时占了主要体积</td><td>按页面拆三个入口各自打包，或换 Preact（体积降到 ~1/5）；构建期已用 esbuild，改造成本低</td></tr>
+
+<tr><td class="sev s-p1">P1-4</td><td>搜索索引 1.34MB 且同步解析</td><td><code>dist/assets/search-index.json</code> 1,371,957B（br 295KB）；<code>src/client/app.js:175-178</code> 整包 <code>fetch</code> + <code>JSON.parse</code></td><td>首次搜索在低端机上会卡住主线程；README 已记录「无分词、按子串命中」的已知限制</td><td>按分区拆成小索引 + 打开时按需拉取；字段数组化压缩体积；后续再接二分/分词</td></tr>
+
+<tr><td class="sev s-p1">P1-5</td><td>Service Worker 预缓存过重</td><td><code>src/static/sw.js:5-16</code> 安装阶段 <code>cache.addAll</code> 直接拉字体 2MB、索引 1.34MB、islands 235KB；策略是网络优先</td><td>用户只是看了首页，后台也会吃掉约 3.6MB；每次请求先打网络，离线收益被削弱</td><td>CORE 只留 HTML 壳 + app.css/js；静态资产改 stale-while-revalidate；缓存名接构建 hash 而不是手写 v3</td></tr>
+
+<tr><td class="sev s-p1">P1-6</td><td>减少动效下视频仍在播放</td><td>reduced-motion 上下文实测 <code>video.paused === false</code>、<code>currentTime 1.22s</code>；CSS 的 <code>prefers-reduced-motion</code> 只处理 <code>scroll-behavior</code> 与动画时长</td><td>明确表示「减少动效」的用户仍面对全屏运动画面，也违背站点自己写下的降级承诺</td><td>在 reduced-motion 时 <code>video.pause()</code> 并隐藏，仅留 poster；或 <code>@media (prefers-reduced-motion: reduce) { .wallpaper-video { display:none } }</code></td></tr>
+
+<tr><td class="sev s-p1">P1-7</td><td>首页首次进入有两道门</td><td><code>src/client/app.js:27-30</code> 载入动画 2.5s；<code>src/client/layers/entry.js:afterBoot</code> 之后 380ms 再弹进入封面</td><td>新访客要等 2.5 秒动画、再点一次「ENTER」才看到内容，两道全屏遮罩叠加</td><td>二选一：要么封面承担开场（去掉 boot 白屏），要么 boot 结束直接进正文（封面只在二次访问或桌面端）</td></tr>
+
+<tr><td class="sev s-p1">P1-8</td><td>预压缩产物在 GitHub Pages 上无效</td><td><code>build.js:475-497</code> 为 171 个文本产物各生成 .br/.gz；<code>serve.js</code> 会协商，但 GitHub Pages 只做自己的 gzip，不认这两个副文件</td><td>522 个文件里有 342 个是压缩副本；换部署环境后属于死重量，也容易误导后续维护</td><td>按实际部署二选一：自托管保留，静态托管在构建时跳过或发布前剔除</td></tr>
+
+<tr><td class="sev s-p2">P2-1</td><td>辅助文字对比度不足</td><td>实测 <code>--faint #61738f</code> 在暗色 4.03:1、亮色 3.09:1；<code>--accent #0075b3</code> 在亮色 4.36:1。这些颜色用于 8.5–11px 的说明文字与链接</td><td>低于 WCAG AA 的 4.5:1，小字在亮色主题下偏灰、弱视用户难读</td><td>把 <code>--faint</code> 调亮/调深到 ≥4.5:1（暗色约 #7c8ca6、亮色约 #5b6a7e），亮色 accent 再深一档</td></tr>
+
+<tr><td class="sev s-p2">P2-2</td><td>部分触控目标过小</td><td>实测页脚链接 36×21px、移动端导航项高 27px、搜索/主题按钮 32×32px</td><td>页脚链接高度低于 WCAG 2.5.8 的 24px 下限，手指点击容易误触</td><td>移动端把页脚链接与导航项的内边距加到 ≥44px 高，或给按钮加透明扩展区</td></tr>
+
+<tr><td class="sev s-p2">P2-3</td><td>搜索面板焦点会逃出遮罩</td><td>实测打开搜索后连按 12 次 Tab，焦点落到遮罩外的 <code>.search-btn</code>；结果列表无 <code>role</code>/<code>aria-live</code></td><td>键盘与读屏用户会在被遮住的页面上游走，命中数量也不会被播报</td><td>在 dialog 内做焦点循环（参考 entry.js 已有实现），关闭后归还焦点；结果区加 <code>aria-live="polite"</code></td></tr>
+
+<tr><td class="sev s-p2">P2-4</td><td>主题按钮没有状态语义</td><td><code>src/site/layout.js:134</code> 只有 <code>aria-label="切换深浅色"</code>，按钮内容是 ☾/☀ 字形，无 <code>aria-pressed</code></td><td>读屏用户听不出当前是暗色还是亮色</td><td>同步维护 <code>aria-pressed</code> 或 <code>aria-label="切换到浅色/深色"</code></td></tr>
+
+<tr><td class="sev s-p2">P2-5</td><td>知识库页出现两个 h1</td><td><code>dist/knowledge/index.html</code>：页头 <code>&lt;h1&gt;知识库&lt;/h1&gt;</code>，正文又有 <code>&lt;h1 id="知识库总览"&gt;</code></td><td>标题层级失去唯一主标题，影响 SEO 与读屏大纲</td><td>正文里的索引笔记标题降为 h2，或页头改用 h2</td></tr>
+
+<tr><td class="sev s-p2">P2-6</td><td>没有站点自己的 404 页</td><td><code>dist/</code> 无 <code>404.html</code>；<code>serve.js:64-75</code> 只是内联一段兜底；<code>server/index.js:381</code> 也要求 <code>404.html</code> 存在</td><td>部署到 GitHub Pages 后，输错地址会看到平台默认 404，与站点风格断裂</td><td>用现有 layout 生成 <code>404.html</code>（noindex），并入构建清单</td></tr>
+
+<tr><td class="sev s-p2">P2-7</td><td>分享图与面包屑偏薄</td><td><code>src/site/layout.js:86-95</code> 输出 WebSite；笔记页另有 <code>BlogPosting</code>（<code>src/site/pages.js:368-379</code>，已带 dateModified）；缺 BreadcrumbList；<code>:79</code> og:image 全站同一张 hero poster，且是 WebP</td><td>笔记页已有文章级结构化数据，但缺面包屑语义；部分平台不渲染 WebP 分享图，卡片会空白</td><td>笔记页补 BreadcrumbList；OG 图提供 1200×630 jpg 兜底并声明尺寸</td></tr>
+
+<tr><td class="sev s-p2">P2-8</td><td>其他 SEO 细节</td><td>sitemap 无 <code>lastmod</code>；<code>theme-color</code> 只给暗色；笔记 description 取首段后硬截 150 字（Java 页末尾断在半句）</td><td>搜索引擎无法判断更新频率；系统 UI 不跟随亮色；摘要不完整</td><td>lastmod 用笔记 mtime；补 <code>theme-color media="(prefers-color-scheme: light)"</code>；摘要在句号处收口</td></tr>
+
+<tr><td class="sev s-p3">P3-1</td><td>滚动揭示动效注册了两遍</td><td><code>src/client/app.js:325-340</code> 与 <code>src/client/layers/motion.js:startReveal</code> 各建一个 IntersectionObserver，选择器重叠（<code>.card</code>、<code>.home-kb-card</code>…），加的是不同 class</td><td>同一元素可能双触发或互相覆盖，动效表现不稳定，后续调参要改两处</td><td>保留 layers/motion.js 一套，app.js 只负责核心交互</td></tr>
+
+<tr><td class="sev s-p3">P3-2</td><td>核心脚本职责过多</td><td><code>src/client/app.js</code> 437 行一个 IIFE，内含载入、PWA、时钟、主题、复制、TOC、侧栏筛选、搜索、进度、揭示、粒子</td><td>任何一处改动都要重读整文件；搜索逻辑还与 <code>server/index.js:50-88</code> 重复</td><td>按功能拆模块，构建期 esbuild 打包；搜索打分抽成共享模块</td></tr>
+
+<tr><td class="sev s-p3">P3-3</td><td>构建串行且压缩开销高</td><td><code>build.js</code> 逐个同步写 522 个文件，随后 brotli quality 11 全量压缩，合计 18.3s</td><td>改一篇文章也要等 18 秒；增量开发体验偏慢</td><td>写盘改并发；brotli 降到 quality 9 或在部署阶段压缩；可选按 mtime 跳过未变文件</td></tr>
+
+<tr><td class="sev s-p3">P3-4</td><td>API 全域放开 CORS</td><td><code>server/index.js:106</code> 所有响应带 <code>Access-Control-Allow-Origin: *</code>，包括 <code>/api/auth/*</code> 与 <code>/api/admin/*</code></td><td>配合 HttpOnly Cookie 尚不能直接读数据，但把鉴权接口暴露给任意站点是不必要的攻击面</td><td>只对 <code>/api/health</code>、<code>/api/search</code> 这类公开接口放开，鉴权接口回同源</td></tr>
+
+<tr><td class="sev s-p3">P3-5</td><td>首个注册用户自动成为管理员</td><td><code>server/index.js:263-276</code>：<code>countUsers() === 0</code> 即授 admin，且注册接口默认开放</td><td>服务一旦对公网开放，先到者可直接拿到后台（改配置、触发构建、读收件箱）</td><td>加 <code>ALLOW_REGISTER</code> 开关与邀请码；首个管理员只由环境变量创建（<code>ensureAdminByEnv</code> 已有）</td></tr>
+
+<tr><td class="sev s-p3">P3-6</td><td>接口缺少限流与异步哈希</td><td><code>/api/search</code> 无速率限制；<code>server/lib/auth.js</code> 用 <code>crypto.scryptSync</code></td><td>全表扫描 1.34MB 索引可被反复触发；登录并发时同步 scrypt 会阻塞整个事件循环</td><td>给搜索加每 IP 限流；改 <code>crypto.scrypt</code> 异步版本</td></tr>
+
+<tr><td class="sev s-p3">P3-7</td><td>缺少 CSP 等安全头</td><td><code>serve.js:27-31</code> 只有 nosniff / Referrer-Policy / X-Frame-Options</td><td>站点大量使用 <code>innerHTML</code> 拼装搜索与后台界面，没有 CSP 兜底</td><td>加 <code>Content-Security-Policy</code>（script-src 'self'，style-src 'self' 'unsafe-inline'）与 <code>Permissions-Policy</code></td></tr>
+
+<tr><td class="sev s-p3">P3-8</td><td>文档与现实有偏差</td><td>README 写 Node.js 24，实际环境 <code>v22.22.3</code>；<code>npm run dev</code> 描述为「构建 + 起本地服务」，但 <code>serve.js</code> 不监听文件变化</td><td>新环境按文档装 Node 24 可能遇到差异；改完代码刷新页面看不到更新，容易误判</td><td>README 标为「Node ≥22」；dev 脚本加注释或接一个 watch 模式（<code>fs.watch</code> 触发 rebuild）</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2><span class="num">02</span>四处最小修复，可以直接照着改</h2>
+
+<div class="block">
+  <h3><span class="tag">P0-1</span>页面标题</h3>
+  <p>这是本轮唯一一个「出口级」缺陷：所有页面的 title 都相同，但 <code>title</code> 参数其实已经一路传到位，只是模板没用它。</p>
+<pre><code>// src/site/layout.js:66
+- &lt;title&gt;${escapeHtml(ctx.profile.site.title)}&lt;/title&gt;
++ &lt;title&gt;${escapeHtml(title)}&lt;/title&gt;</code></pre>
+  <p style="margin-top:10px">改完抽查：<code>index.html</code> 仍为站点名，<code>notes/语言/Java.html</code> 应为「Java · 知识库」。</p>
+</div>
+
+<div class="block">
+  <h3><span class="tag">P0-2 / P0-3</span>窄屏顶栏与工具条</h3>
+  <p>320px 下导航 7 项把工具区顶出边界。最小改动是让导航自己滚动、工具区不被压缩，同时让游戏页工具条允许换行。</p>
+<pre><code>@media (max-width: 390px) {
+  .topbar-inner { gap: 8px; }
+  .nav { flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-link { padding: 8px 6px; }
+  .tools { flex: 0 0 auto; }
+}
+.game-toolbar, .game-view-switch { flex-wrap: wrap; }</code></pre>
+</div>
+
+<div class="block">
+  <h3><span class="tag">P0-4</span>笔记里的宽表格</h3>
+  <p>现在 <code>.prose table</code> 用 <code>display:block + overflow-x:auto</code>，在 320px 下仍把页面撑到 374px。改成外层容器负责滚动更稳：</p>
+<pre><code>/* src/core/markdown.js 渲染 table 时包一层 */
+&lt;div class="table-scroll"&gt;&lt;table&gt;…&lt;/table&gt;&lt;/div&gt;
+
+/* src/client/app.css */
+.prose table { display: table; width: 100%; overflow: visible; }
+.table-scroll { max-width: 100%; overflow-x: auto; margin: 1.5em 0; }
+.table-scroll table { margin: 0; }</code></pre>
+</div>
+
+<div class="block">
+  <h3><span class="tag">P1-1 / P1-2</span>首屏 4MB</h3>
+  <p>两件事分开做：视频先降规格，字体按字符分片。字体分片不需要改设计，只改 <code>@font-face</code> 的 <code>unicode-range</code>，浏览器只下载页面真正用到的片。</p>
+<pre><code># 视频：1080p → 720p，CRF 30 左右
+ffmpeg -i hero.mp4 -vf scale=-2:720 -c:v libx264 -crf 30 -preset slow -an hero-720.mp4
+
+# 字体：按常用字/次常用字切两片
+pyftsubset NotoSansSC-subset.woff2 --unicodes=U+4E00-9FA5 \
+  --flavor=woff2 --output-file=noto-sc-a.woff2</code></pre>
+  <p style="margin-top:10px">预期：首页首屏从 4.07MB 降到 1MB 以内；字体片只在正文页加载，说明页几乎不付成本。</p>
+</div>
+
+<h2><span class="num">03</span>分维度小结</h2>
+<div class="dim">
+  <div class="block">
+    <h3>性能</h3>
+    <p>本机实测 CLS 0.0005、FCP 540ms、DCL 479ms，说明渲染本身很干净，短板全在<strong>字节数</strong>：视频、字体、岛屿、搜索索引四项加起来约 5.2MB。优先做 P1-1 到 P1-4，收益最大。</p>
+  </div>
+  <div class="block">
+    <h3>SEO</h3>
+    <p>站点结构（sitemap、canonical、RSS、双链）已经比多数个人站完整。真正的问题只有 P0-1 一条，其余是 P2-7/P2-8 这类锦上添花：结构化数据、分享图、lastmod。</p>
+  </div>
+  <div class="block">
+    <h3>可访问性</h3>
+    <p>键盘可达性基础扎实（skip link、焦点样式、entry 封面的焦点陷阱），缺口集中在 P2-1 对比度、P2-2 触控尺寸、P2-3 搜索面板焦点循环，都属于小改动。</p>
+  </div>
+  <div class="block">
+    <h3>服务端与维护</h3>
+    <p>零依赖实现很克制，密码哈希与签名会话写得规范。风险点是 P3-5「首个注册即管理员」与 P3-4 全域 CORS，若服务未来要放到公网，这两项必须先处理。</p>
+  </div>
+</div>
+
+<h2><span class="num">04</span>建议的动手顺序</h2>
+<ol class="steps">
+  <li><strong>先修 P0（半天）</strong>：标题一行、两处窄屏断点、表格容器。都是低风险改动，改完用 320 / 375 / 1440 三个宽度回归一遍。</li>
+  <li><strong>再压首屏（一天）</strong>：视频降规格、字体分片、岛屿拆包。改完用 Chrome DevTools 的网络面板复核首页传输是否低于 1MB。</li>
+  <li><strong>然后收可访问性（半天）</strong>：对比度、触控尺寸、搜索焦点循环、主题按钮语义。</li>
+  <li><strong>最后做 SEO 与服务端加固</strong>：404 页、Article 结构化数据、注册开关、CORS 收敛、CSP。</li>
+  <li><strong>可选的长期项</strong>：搜索索引拆分与中文分词、长笔记分页、动效层合并。</li>
+</ol>
+
+<h2><span class="num">05</span>体检口径</h2>
+<ul style="font-size:13.5px;color:var(--muted)">
+  <li>基线数据来自 <code>npm run build</code> 与 <code>npm run check</code> 的实际输出；页面体积与 DOM 规模来自 <code>serve.js</code> 本地服务的真实响应。</li>
+  <li>窄屏与焦点行为使用本机 Chrome（headless，Playwright 驱动）在 320 / 375 / 1440px 三个视口实测，非推断。</li>
+  <li>对比度按 WCAG 2.x 相对亮度公式计算；触控尺寸取渲染后的实际盒子尺寸。</li>
+  <li>本轮只做诊断，没有修改站点任何文件；<code>dist/</code> 是重新构建的产物，与源码一致。</li>
+</ul>
+
+<footer>
+  <p>TURBO SPARK 个人站 · 优化体检报告 · 2026-11-27</p>
+</footer>
+
+</div>
+</body>
+</html>
