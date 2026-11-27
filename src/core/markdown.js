@@ -237,6 +237,7 @@ export function createEngine({ resolve, noteUrl }) {
     html = decorateCodeBlocks(html);
     html = html.replace(/<a href="(https?:\/\/[^"]+)"/g, '<a target="_blank" rel="noopener" href="$1"');
     html = decorateImages(html);
+    html = decorateTables(html);
 
     const warnings = [];
     if (hIndex !== headingLines.length) {
@@ -282,7 +283,12 @@ export function renderPlainMarkdown(markedInstance, source, { repoUrl, transform
     html = html.replace(/<img([^>]*?)\ssrc="(?!#|https?:|data:)([^"]+)"/g,
       (_, pre, src) => `<img${pre} src="${transformImage(decodeURIComponent(src))}"`);
   }
-  return decorateImages(html);
+  return decorateTables(decorateImages(html));
+}
+
+/** 宽表格独立滚动：容器负责横向滚动，避免窄屏把整页撑出横轴。 */
+function decorateTables(html) {
+  return html.replace(/<table\b[\s\S]*?<\/table>/g, (table) => `<div class="table-scroll">${table}</div>`);
 }
 
 export { yaml };
