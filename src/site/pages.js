@@ -153,7 +153,7 @@ export function reloadPage(ctx) {
       <p class="home-latin">${escapeHtml(p.person.handle.toUpperCase())} <span>/</span> XUZHOU</p>
       <p class="home-role">${escapeHtml(p.person.role)} · ${escapeHtml(p.person.location)}</p>
       <blockquote class="home-quote">
-        <p>把项目、笔记与工程判断，收进一个可回溯的档案。</p>
+        <p>把项目、技术记录与工程判断，收进一个可回溯的档案。</p>
         <cite>${escapeHtml(p.site.description)}</cite>
       </blockquote>
       <div class="home-actions">
@@ -161,7 +161,7 @@ export function reloadPage(ctx) {
         <a class="btn btn-ghost" href="${p.github}" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
       </div>
       <p class="home-stats">
-        <span><b>${stats.notes}</b> 篇笔记</span><i aria-hidden="true"></i>
+        <span><b>${stats.notes}</b> 篇技术记录</span><i aria-hidden="true"></i>
         <span><b>${totalProjects}</b> 个项目</span><i aria-hidden="true"></i>
         <span><b>${stats.wikiLinks.toLocaleString('en')}</b> 条双链</span><i aria-hidden="true"></i>
         <span><b>${stats.commits}</b> 次提交</span>
@@ -195,7 +195,7 @@ export function reloadPage(ctx) {
     <p class="home-now-k">RECENT NOTES <span>最近更新</span></p>
     ${recentUpdates.length ? recentUpdates.map((n) => `<a class="home-now-row" href="${noteUrl(ctx, n.id)}">
       <i style="--c:var(--accent)"></i><b>${escapeHtml(n.title)}</b><em>${escapeHtml(shortDay(n.mtime))}</em>
-    </a>`).join('') : '<p class="home-now-row"><b>笔记整理中</b></p>'}
+    </a>`).join('') : '<p class="home-now-row"><b>内容整理中</b></p>'}
   </div>
   ${latestUpdate ? `<div class="home-now-update">
     <div class="home-now-badge" aria-hidden="true"><span>TS</span><i></i></div>
@@ -223,14 +223,14 @@ export function reloadPage(ctx) {
 <section class="home-section home-kb">
   <header class="home-section-head">
     <div><p class="eyebrow">KNOWLEDGE BASE / 02</p><h2>技术主线</h2></div>
-    <a class="home-section-more" href="${ctx.url('knowledge', 'index.html')}">${stats.notes} 篇笔记 <span aria-hidden="true">→</span></a>
+    <a class="home-section-more" href="${ctx.url('knowledge', 'index.html')}">${stats.notes} 篇技术记录 <span aria-hidden="true">→</span></a>
   </header>
   <div class="home-kb-grid">${kbCards}</div>
 </section>
 
 <section class="home-cta">
   <p class="eyebrow">THE ARCHIVE CONTINUES</p>
-  <h2>项目是项目，笔记是笔记。<br>它们都在同一个档案里。</h2>
+  <h2>项目讲交付，技术记录讲方法。<br>两条线都收进同一个档案里。</h2>
   <a class="btn btn-primary" href="${ctx.url('archive.html')}">进入档案库 <span aria-hidden="true">→</span></a>
 </section>`;
 
@@ -250,10 +250,10 @@ export function archivePage(ctx) {
   const stats = ctx.stats;
 
   const statCards = [
-    { n: stats.notes, l: '篇知识库笔记', s: `${stats.headings} 个标题` },
+    { n: stats.notes, l: '篇技术记录', s: `${stats.headings} 个标题` },
     { n: stats.folders, l: '个知识分区', s: `${stats.wikiLinks} 条内链互联` },
     { n: stats.repos, l: '个开源仓库', s: `${stats.commits} 次提交` },
-    { n: stats.codeLines, l: '行笔记内代码', s: `${stats.snippets} 个代码块` },
+    { n: stats.codeLines, l: '行示例代码', s: `${stats.snippets} 个代码块` },
   ].map((s) => `<div class="stat"><div class="stat-n">${s.n.toLocaleString('en')}</div><div class="stat-l">${s.l}</div><div class="stat-s">${s.s}</div></div>`).join('');
 
   const projCards = featured.map((pr) => card({
@@ -274,7 +274,7 @@ export function archivePage(ctx) {
     return card({
       eyebrow: `${isProjectFolder(f.key) ? '项目档案' : '技术笔记'} · ${f.notes.length} 篇${f.indexId ? ' · 有索引' : ''}`,
       title: `<a href="${f.indexId ? noteUrl(ctx, f.indexId) : ctx.folderPageUrl(f.key)}">${escapeHtml(f.label)}</a>`,
-      desc: f.desc ? escapeHtml(f.desc) : '随手笔记归档。',
+      desc: f.desc ? escapeHtml(f.desc) : '该分区的技术记录归档。',
       meta: preview ? `<div class="mini-links">${preview}</div>` : '',
     });
   }).join('');
@@ -300,7 +300,7 @@ export function archivePage(ctx) {
   </div>
 </section>
 <section class="stats">${statCards}</section>
-<section class="band"><h2 class="band-title">精选项目</h2><p class="band-sub">每个项目都配一份可回溯的档案笔记：定位、实现、边界与不足。</p><div class="grid grid-2">${projCards}</div><p class="band-more"><a href="${ctx.url('projects', 'index.html')}">全部 ${ctx.projects.length} 个项目 →</a></p></section>
+<section class="band"><h2 class="band-title">精选项目</h2><p class="band-sub">每个项目都配一份可回溯的过程档案：定位、实现、边界与不足。</p><div class="grid grid-2">${projCards}</div><p class="band-more"><a href="${ctx.url('projects', 'index.html')}">全部 ${ctx.projects.length} 个项目 →</a></p></section>
 <section class="band"><h2 class="band-title">知识地图</h2><p class="band-sub">技术主线打底，项目档案落地，两边用双链互指。</p><div class="grid grid-3">${folderCards}</div><p class="band-more"><a href="${ctx.url('knowledge', 'index.html')}">知识库总览 →</a></p></section>`;
 
   return renderPageWrap(ctx, {
@@ -359,7 +359,7 @@ export function knowledgePage(ctx) {
   </section>`).join('');
   const kbJson = JSON.stringify({ groups }).replace(/</g, '\\u003c');
   const content = `
-<section class="page-head"><h1>知识库</h1><p class="page-sub">来自本地 Obsidian 库（构建时脱敏），共 ${ctx.notes.length} 篇公开笔记、${ctx.stats.folders} 个分区。双链、代码块、表格按原样保留并转为站内链接。</p></section>
+<section class="page-head"><h1>知识库</h1><p class="page-sub">覆盖语言与语法、后端服务、框架对照、数据库、计算机基础、DevOps、大数据与智能体工程等方向，共 ${ctx.notes.length} 篇技术记录、${ctx.stats.folders} 个分区。主题之间以双链互引，代码块与表格保留原貌。</p></section>
 ${mocHtml}
 <section class="kb-band"><div class="kb-root" id="kb-root">${groupsHtml}</div><script type="application/json" id="kb-root-data">${kbJson}</script></section>`;
   return renderPageWrap(ctx, {
@@ -439,7 +439,6 @@ function noteNav(ctx, note) {
 export function projectsPage(ctx) {
   const cats = ctx.profile.categories;
   const catNotes = ctx.profile.categoryNotes || {};
-  const localCount = ctx.projects.filter((p) => p.local).length;
   const projectCard = (pr) => card({
     eyebrow: `${pr.category} · ${pr.isGitHub ? '开源' : '内部交付'}${pr.stackTop ? ' · ' + pr.stackTop : ''}`,
     title: `<a href="${pr.pageHref}">${escapeHtml(pr.display)}</a>`,
@@ -447,7 +446,7 @@ export function projectsPage(ctx) {
     meta: `${pr.langBars || ''}${(pr.highlights || []).slice(0, 3).map((h) => `<span class="chip chip-ghost">${escapeHtml(h)}</span>`).join('')}`,
     links: [
       pr.repoUrl ? `<a href="${pr.repoUrl}" target="_blank" rel="noopener">GitHub</a>` : '',
-      pr.archiveHref ? `<a href="${pr.archiveHref}">档案笔记</a>` : '',
+      pr.archiveHref ? `<a href="${pr.archiveHref}">项目档案</a>` : '',
       `<a href="${pr.pageHref}">详情 →</a>`,
     ].filter(Boolean).join(''),
   });
@@ -494,7 +493,7 @@ export function projectsPage(ctx) {
   <ol class="pindex-list">${indexRows}</ol>
 </section>`;
   const content = `
-<section class="page-head"><h1>项目</h1><p class="page-sub">GitHub 上的 ${ctx.stats.repos} 个开源仓库，加上 ${localCount} 个本地工作项目档案。工作项目按脱敏口径整理：技术栈、模块与工程决策保留，公司与内网信息不公开。数据来自 <code>data/</code> 快照与 <code>profile.json</code>。</p></section>
+<section class="page-head"><h1>项目</h1><p class="page-sub">开源仓库与工作交付两条线：开源项目可以直接查看代码、提交与语言分布，工作项目呈现技术栈、模块职责与关键工程决策。共 ${ctx.projects.length} 个项目，按工作 / 个人 / 学习分类。</p></section>
 ${indexTable}
 ${blocks}
 <section class="band"><h2 class="band-title">开源语言分布</h2><div class="panel-table"><table><thead><tr><th>语言</th><th>仓库数</th><th>占比</th></tr></thead><tbody>${langRows}</tbody></table></div></section>`;
@@ -505,7 +504,7 @@ export function projectPage(ctx, pr) {
   if (pr.local) return localProjectPage(ctx, pr);
   const facts = [
     pr.repoUrl ? `<a class="btn btn-primary" href="${pr.repoUrl}" target="_blank" rel="noopener">GitHub 仓库 ↗</a>` : '',
-    pr.archiveHref ? `<a class="btn" href="${pr.archiveHref}">项目档案笔记</a>` : '',
+    pr.archiveHref ? `<a class="btn" href="${pr.archiveHref}">项目过程档案</a>` : '',
   ].join('');
   const stats = pr.repo ? `<div class="proj-stats">
       <div><b>${pr.repo.language || '—'}</b><span>主语言</span></div>
@@ -564,7 +563,7 @@ function localProjectPage(ctx, pr) {
   <div class="proj-facts">
     <span><b>角色</b>${escapeHtml(pr.role || '—')}</span>
     <span><b>周期</b>${escapeHtml(pr.period || '—')}</span>
-    <span class="proj-privacy-badge">脱敏档案</span>
+    <span class="proj-privacy-badge">工作档案</span>
   </div>
   <div class="note-chips">${stack}</div>
   ${stats ? `<div class="proj-stats">${stats}</div>` : ''}
@@ -573,7 +572,7 @@ function localProjectPage(ctx, pr) {
 ${modules ? `<section class="band"><h2 class="band-title">模块与职责</h2><div class="proj-modules">${modules}</div></section>` : ''}
 ${highlights ? `<section class="band"><h2 class="band-title">关键工作</h2><ul class="tick-list">${highlights}</ul></section>` : ''}
 ${challenges ? `<section class="band"><h2 class="band-title">难点与取舍</h2><div class="grid grid-2">${challenges}</div></section>` : ''}
-${noteLinks ? `<section class="band"><h2 class="band-title">相关笔记</h2><div class="mini-links">${noteLinks}</div></section>` : ''}
+${noteLinks ? `<section class="band"><h2 class="band-title">相关记录</h2><div class="mini-links">${noteLinks}</div></section>` : ''}
 <p class="proj-privacy">${escapeHtml(pr.privacy || '')}</p>`;
   return renderPageWrap(ctx, {
     title: `${pr.display} · 项目`,
@@ -627,24 +626,24 @@ export function aboutPage(ctx) {
       <tr><td>GitHub</td><td><a href="${p.github}" target="_blank" rel="noopener">${escapeHtml(p.person.handle)} ↗</a></td></tr>
       <tr><td>方向</td><td>${escapeHtml(p.person.role)}</td></tr>
       <tr><td>坐标</td><td>${escapeHtml(p.person.location)}</td></tr>
-      <tr><td>知识库</td><td>本地 Obsidian 库（构建时脱敏）</td></tr>
-      <tr><td>项目</td><td>${ctx.projects.length} 个 · 工作项目按脱敏口径整理</td></tr>
-      <tr><td>站点</td><td>本地静态站，<code>npm run dev</code> 起服务</td></tr>
+      <tr><td>知识库</td><td>语言、后端、框架、数据库、DevOps、大数据与智能体工程，${ctx.stats.folders} 个分区</td></tr>
+      <tr><td>项目</td><td>${ctx.projects.length} 个 · 开源仓库与工作交付</td></tr>
+      <tr><td>站点</td><td>静态生成 · 离线可读 · 明暗主题</td></tr>
     </tbody></table>
   </div>
   <div class="panel">
     <div class="panel-title">这个站是怎么来的</div>
     <ol class="steps">
-      <li>扫描 Obsidian 库，解析 frontmatter、双链 <code>[[ ]]</code>、代码块与表格。</li>
-      <li>拉取 GitHub 仓库元数据与 README，读取本地工作项目档案，统一分类成「项目」。</li>
-      <li>构建时脱敏：公司、内网地址、账号与私密笔记在产物中替换或跳过，<code>dist/</code> 只留可公开内容。</li>
-      <li>生成静态页面与搜索索引，全部产物在 <code>dist/</code>。</li>
-      <li>视觉取自《Persona 3 Reload》官网公开素材（© ATLUS / SEGA），仅作个人非商业展示。</li>
+      <li>从零搭静态站：不依赖站点框架，自己实现内容解析、Markdown 渲染、双链解析与页面模板。</li>
+      <li>两遍构建：第一遍收集标题锚点，第二遍校验跨页链接；失效锚点自动降级并进入构建报告。</li>
+      <li>内容分层：项目档案记录交付与决策，技术记录沉淀方法与结论，两边用双链互指。</li>
+      <li>视觉体系：设计令牌 + 明暗主题 + View Transition，主视觉素材来自《Persona 3 Reload》官网（© ATLUS / SEGA）。</li>
+      <li>交互与发布：筛选类交互用 React 岛屿，其余原生；PWA 离线可用，SemVer + CHANGELOG + 链接审计负责发布。</li>
     </ol>
   </div>
 </div>
-<section class="band"><h2 class="band-title">知识库体量</h2><div class="stats stats-4">${[
-    { n: ctx.stats.notes, l: '篇笔记' },
+<section class="band"><h2 class="band-title">知识库覆盖面</h2><div class="stats stats-4">${[
+    { n: ctx.stats.notes, l: '篇技术记录' },
     { n: ctx.stats.folders, l: '个分区' },
     { n: ctx.stats.headings, l: '个标题' },
     { n: ctx.stats.wikiLinks, l: '条双链' },
@@ -680,7 +679,7 @@ export function folderPage(ctx, f) {
 <section class="page-head">
   <div class="crumbs"><a href="${ctx.url('knowledge', 'index.html')}">知识库</a><span>/</span><span class="crumb-current">${escapeHtml(f.label)}</span></div>
   <h1>${escapeHtml(f.label)}</h1>
-  <p class="page-sub">${escapeHtml(KB_BLURB[f.key] || f.desc || `${f.notes.length} 篇笔记。`)}</p>
+  <p class="page-sub">${escapeHtml(KB_BLURB[f.key] || f.desc || `${f.notes.length} 篇技术记录。`)}</p>
 </section>
 <div class="flist">${items}</div>`;
   return renderPageWrap(ctx, {
@@ -787,7 +786,7 @@ export function esportsPage(ctx) {
 <section class="page-head esports-hero">
   <p class="eyebrow">ESPORTS / 电竞观察</p>
   <h1>电竞百科</h1>
-  <p class="page-sub">赛事体系、值得关注的战队与几个记得住的瞬间。不是资料库，是一份带观点的观赛笔记。</p>
+  <p class="page-sub">赛事体系、值得关注的战队与几个记得住的瞬间。不是资料库，是一份带观点的观赛记录。</p>
   <div class="game-hero-stats">
     <span><b>${e.titles.length}</b> 个项目</span>
     <span><b>${e.events.length}</b> 项赛事</span>
@@ -948,7 +947,7 @@ export function privatePage(ctx) {
 <section class="page-head private-head">
   <p class="eyebrow">PRIVATE ARCHIVE / 00</p>
   <h1>私密<span class="dot">.</span></h1>
-  <p class="page-sub">游戏与电竞的私人记录，收在「私密」入口下。主站只讲工程、项目与笔记，这两块爱好单独放在这里。</p>
+  <p class="page-sub">游戏与电竞的私人记录，收在「私密」入口下。主站聚焦工程、项目与技术记录，这两块爱好单独放在这里。</p>
 </section>
 <div class="private-grid">${cards}</div>
 ${playing.length ? `<section class="private-now-box"><p class="eyebrow">NOW PLAYING</p><div class="private-now-list">${nowRows}</div></section>` : ''}
@@ -1043,14 +1042,14 @@ export function updatesPage(ctx) {
     ${nowCards}
   </section>
   <footer class="upd-quote">
-    <p>把项目、笔记与工程判断，收进一个可回溯的档案。</p>
+    <p>把项目、技术记录与工程判断，收进一个可回溯的档案。</p>
     <span>THE ARCHIVE CONTINUES · ${escapeHtml(yearOf(latest && latest.date))}</span>
   </footer>
 </div>`;
 
   return renderPageWrap(ctx, {
     title: '更新公告 · ' + ctx.profile.site.title,
-    desc: '站点更新公告：功能、内容与体验改进的时间线，以及最近在玩与最近更新的笔记。',
+    desc: '站点更新公告：功能、内容与体验改进的时间线，以及最近在玩与最近更新。',
     section: 'updates',
     bodyClass: 'page-updates',
     content,
@@ -1061,7 +1060,7 @@ export function notFoundPage(ctx) {
   const p = ctx.profile;
   const entries = [
     ['首页', ctx.url(), '回到主视觉与最新更新'],
-    ['知识库', ctx.url('knowledge', 'index.html'), '93 篇笔记的四级索引'],
+    ['知识库', ctx.url('knowledge', 'index.html'), '按语言、后端、数据库与工程实践组织'],
     ['项目档案', ctx.url('projects', 'index.html'), '交付记录与工程判断'],
     ['档案库', ctx.url('archive.html'), '按时间与分区归档'],
   ].map(([label, href, note]) => `<a class="card" href="${href}">
@@ -1073,7 +1072,7 @@ export function notFoundPage(ctx) {
 <section class="page-head">
   <p class="eyebrow"><span aria-hidden="true">✦</span> 404 / NOT FOUND</p>
   <h1>这页没有档案</h1>
-  <p class="page-sub">链接可能改名了，或者这条笔记还没有公开。从下面任意入口重新开始。</p>
+  <p class="page-sub">链接可能改名了，或者这条记录还没有公开。从下面任意入口重新开始。</p>
 </section>
 <div class="grid grid-2">${entries}</div>`;
   return renderPageWrap(ctx, {
