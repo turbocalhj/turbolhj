@@ -89,10 +89,10 @@ function search(query, limit) {
 
 /* ---------- 简易限流：每个 IP 每分钟最多 5 次提交 ---------- */
 const buckets = new Map();
-function allow(ip) {
+function allow(ip, max = 5) {
   const now = Date.now();
   const list = (buckets.get(ip) || []).filter((t) => now - t < 60_000);
-  if (list.length >= 5) { buckets.set(ip, list); return false; }
+  if (list.length >= max) { buckets.set(ip, list); return false; }
   list.push(now);
   buckets.set(ip, list);
   return true;
@@ -100,13 +100,15 @@ function allow(ip) {
 
 function json(res, status, payload) {
   const body = JSON.stringify(payload);
-  res.writeHead(status, {
+  const headers = {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
-    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-  });
+  };
+  // 账号与后台接口不开放跨域；公开查询接口保留只读跨域
+  if (!res.tsPrivateApi) headers['Access-Control-Allow-Origin'] = '*';
+  res.writeHead(status, headers);
   res.end(body);
 }
 
@@ -145,6 +147,9 @@ async function handleApi(req, res, url) {
     });
   }
   if (url.pathname === '/api/search') {
+    if (!allow('search:' + (req.socket.remoteAddress || 'unknown'), 60)) {
+      return json(res, 429, { error: 'too many requests' });
+    }
     const q = url.searchParams.get('q') || '';
     return json(res, 200, { q, results: search(q, url.searchParams.get('limit')) });
   }
@@ -249,6 +254,7 @@ function runBuild() {
 
 async function handleAccountApi(req, res, url) {
   try {
+    res.tsPrivateApi = true; // 账号接口不回 CORS 通配，避免被任意站点探测
     const mutating = req.method !== 'GET' && req.method !== 'HEAD';
     if (mutating && !sameOrigin(req)) return json(res, 403, { error: '跨站请求被拒绝' });
     if (mutating && !String(req.headers['content-type'] || '').includes('application/json')) {
@@ -261,11 +267,16 @@ async function handleAccountApi(req, res, url) {
     }
 
     if (url.pathname === '/api/auth/register' && req.method === 'POST') {
+      if (process.env.ALLOW_REGISTER === '0') return json(res, 403, { error: '注册已关闭' });
       if (!auth.rateLimit(`reg:${ip}`, 5, 60_000)) return json(res, 429, { error: '操作过于频繁' });
       const body = await readBody(req);
       const isFirst = auth.countUsers() === 0;
+      // 首个注册者默认成为管理员；设了 ADMIN_SETUP_TOKEN 时必须带对口令
+      if (isFirst && process.env.ADMIN_SETUP_TOKEN && String(body.setupToken || '') !== process.env.ADMIN_SETUP_TOKEN) {
+        return json(res, 403, { error: '管理员初始化口令不正确' });
+      }
       const isAdmin = isFirst || (process.env.ADMIN_EMAIL && String(body.email || '').toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase());
-      const user = auth.createUser({
+      const user = await auth.createUser({
         email: body.email,
         password: body.password,
         name: body.name,
@@ -278,7 +289,7 @@ async function handleAccountApi(req, res, url) {
     if (url.pathname === '/api/auth/login' && req.method === 'POST') {
       if (!auth.rateLimit(`login:${ip}`, 8, 60_000)) return json(res, 429, { error: '操作过于频繁' });
       const body = await readBody(req);
-      const user = auth.verifyPassword(body.email, body.password);
+      const user = await auth.verifyPassword(body.email, body.password);
       if (!user) return json(res, 401, { error: '邮箱或密码不正确' });
       auth.issueSession(res, user, req.headers['x-forwarded-proto'] === 'https');
       return json(res, 200, { user });
@@ -430,7 +441,7 @@ const server = http.createServer(async (req, res) => {  const url = new URL(req.
   }
 });
 
-auth.ensureAdminByEnv();
+auth.ensureAdminByEnv().catch((err) => console.error('[auth] 初始化管理员失败:', err.message));
 
 server.listen(PORT, HOST, () => {
   console.log(`站点服务已启动 → http://${HOST}:${PORT}/`);
