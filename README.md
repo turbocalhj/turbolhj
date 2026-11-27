@@ -20,6 +20,15 @@ npm run dev        # 构建 + 起本地服务 → http://localhost:5173
 | `npm run check` | 审计产物里的每一个 `<a href>`：内链、页内锚点、静态资产 |
 | `npm run refresh` | 重新抓取 GitHub 元数据与 README 快照到 `data/` |
 
+## 工程文档
+
+| 文档 | 内容 |
+|---|---|
+| [`docs/api.md`](docs/api.md) | 账号、后台与公开接口：字段、状态码、限流、示例 |
+| [`docs/devlog.md`](docs/devlog.md) | 开发日志：每次合并记录改动、决策与验证 |
+| [`CHANGELOG.md`](CHANGELOG.md) | 版本迭代记录（SemVer + git tag） |
+| [`.trae/skills/`](.trae/skills/) | 可复用开发流程：发布、图层 UI、内容管线、账号后台、并行 git |
+
 ## 技术栈
 
 | 层 | 选用 | 说明 |
