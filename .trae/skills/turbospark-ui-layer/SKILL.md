@@ -55,6 +55,7 @@ description: 以「只加不减」的图层方式为 TURBO SPARK 增加视觉功
 - 动效只做 hover 位移、滚动揭示、View Transition；不做跑马灯、漂浮、自定义光标。
 - 图片/视频封面无版权素材时用 CSS 渐变 + 网格 + 大字号排版，不热链版权图。
 - 浅色主题下卡片用 `var(--card)` + 细边框 + 轻阴影，不要纯白大平面。
+- **深色主视觉上的玻璃卡必须固定深色**：首页 hero 的时钟/入口卡文字写死白色，浅色主题的 `.glass` 覆盖要排除 `.section-home`，否则白字白底。
 - 新图层 JS 示例守卫：
   ```js
   var nodes = document.querySelectorAll('.your-root');
