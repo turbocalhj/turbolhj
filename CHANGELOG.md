@@ -2,6 +2,12 @@
 
 本项目从 v1.1.0 起遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；正式版本在合并 main 后打 `vX.Y.Z` tag。
 
+## [1.1.1] - 2026-11-27
+
+### Fixed
+
+- 浅色主题下首页时钟与站点入口玻璃卡被反转为浅色底，白字几乎不可读；现固定为深色玻璃，主视觉上的信息在明暗主题下都清晰。
+
 ## [1.1.0] - 2026-11-27
 
 ### Added

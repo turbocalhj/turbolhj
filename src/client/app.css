@@ -1663,6 +1663,11 @@ html[data-theme='light'] .panel-table { border-color: var(--line); background: r
 html[data-theme='light'] .panel-table th { background: rgba(235, 231, 220, 0.7); color: var(--muted); }
 html[data-theme='light'] .panel-table tr:hover td { background: rgba(10, 106, 158, 0.04); }
 html[data-theme='light'] .glass { border-color: var(--line); background: rgba(255, 253, 247, 0.7); }
+/* 首页主视觉始终是深色视频：时钟与入口玻璃卡在浅色主题下也保持深色，避免白字白底 */
+html[data-theme='light'] .section-home .glass {
+  border-color: rgba(158, 195, 240, 0.18);
+  background: linear-gradient(158deg, rgba(18, 34, 58, 0.72), rgba(6, 13, 26, 0.62));
+}
 html[data-theme='light'] .btn:hover { background: rgba(10, 106, 158, 0.08); }
 html[data-theme='light'] .search-btn,
 html[data-theme='light'] .theme-btn { background: rgba(255, 253, 247, 0.6); }
