@@ -27,10 +27,21 @@ export function makeUrl(base) {
 const NAV = [
   { key: 'home', en: 'HOME', label: '主页', file: 'index.html' },
   { key: 'projects', en: 'PROJECTS', label: '项目', file: 'projects/index.html' },
-  { key: 'games', en: 'GAMES', label: '游戏库', file: 'games/index.html' },
-  { key: 'esports', en: 'ESPORTS', label: '电竞', file: 'esports/index.html' },
+  { key: 'acg', en: 'ACG', label: 'ACG', file: 'acg/index.html' },
+  {
+    key: 'private',
+    en: 'PRIVATE',
+    label: '私密',
+    file: 'private.html',
+    children: [
+      { key: 'games', en: 'GAMES', label: '游戏库', file: 'games/index.html', desc: '游戏评分 · 游玩记录' },
+      { key: 'esports', en: 'ESPORTS', label: '电竞', file: 'esports/index.html', desc: '赛事体系 · 战队与里程碑' },
+    ],
+  },
   { key: 'knowledge', en: 'KNOWLEDGE', label: '知识库', file: 'knowledge/index.html' },
   { key: 'archive', en: 'ARCHIVE', label: '档案库', file: 'archive.html' },
+  { key: 'updates', en: 'UPDATES', label: '更新', file: 'updates.html' },
+  { key: 'links', en: 'LINKS', label: '友链', file: 'links/index.html' },
   { key: 'about', en: 'ABOUT', label: '关于', file: 'about.html' },
 ];
 
@@ -46,11 +57,34 @@ const WAVES = `<svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 
 
 export function renderPage({ ctx, title, desc, section, content, sidebar, toc, breadcrumb, bodyClass = '', scripts = [], jsonLd = null, noindex = false, layers = true }) {
   const { url } = ctx;
+  const assetVersion = (rel) => (ctx.assetVersion ? ctx.assetVersion(rel) : '0');
   const pageHref = (file) => url(file.split('/').filter(Boolean));
   const nav = NAV.map((n) => {
-    const active = n.key === section;
-    return `<a class="nav-link${active ? ' is-active' : ''}" href="${pageHref(n.file)}"${active ? ' aria-current="page"' : ''}><span class="nav-cn">${n.label}</span><span class="nav-en">${n.en}</span></a>`;
-  }).join('');
+    if (!n.children) {
+      const active = n.key === section;
+      return `<a class="nav-link${active ? ' is-active' : ''}" href="${pageHref(n.file)}"${active ? ' aria-current="page"' : ''}><span class="nav-cn">${n.label}</span></a>`;
+    }
+    const childActive = n.children.some((c) => c.key === section);
+    const active = n.key === section || childActive;
+    const children = n.children.map((c) => `<a class="nav-drop-link" href="${pageHref(c.file)}">
+        <b>${c.label}</b><em>${c.en} · ${c.desc}</em><span class="nav-drop-arrow" aria-hidden="true">↗</span>
+      </a>`).join('');
+    return `<div class="nav-group${active ? ' is-active' : ''}">
+      <a class="nav-link nav-trigger" href="${pageHref(n.file)}"${n.key === section ? ' aria-current="page"' : ''} aria-haspopup="true"><span class="nav-cn">${n.label}<span class="nav-caret" aria-hidden="true">▾</span></span></a>
+      <div class="nav-drop" role="group" aria-label="${n.label}内容">
+        <p class="nav-drop-kicker">${n.en} ARCHIVE</p>
+        ${children}
+      </div>
+    </div>`;
+  }).join('') + `<a class="nav-link nav-ext" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span class="nav-cn">GitHub<span class="nav-ext-arrow" aria-hidden="true">↗</span></span></a>`;
+
+  const mobileNav = NAV.map((n) => {
+    if (!n.children) {
+      return `<a class="nav-panel-link${n.key === section ? ' is-active' : ''}" href="${pageHref(n.file)}"><span>${n.label}</span><em>${n.en}</em></a>`;
+    }
+    const kids = n.children.map((c) => `<a class="nav-panel-sub" href="${pageHref(c.file)}"><b>${c.label}</b><em>${c.en}</em></a>`).join('');
+    return `<div class="nav-panel-group"><a class="nav-panel-k" href="${pageHref(n.file)}">${n.label} / ${n.en} ↗</a>${kids}</div>`;
+  }).join('') + `<a class="nav-panel-link" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span>GitHub</span><em>↗</em></a>`;
 
   const tocHtml = toc && toc.length
     ? `<aside class="toc" aria-label="目录"><div class="toc-title">本页目录</div><nav class="toc-list">${toc
@@ -67,7 +101,8 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
 ${noindex ? '<meta name="robots" content="noindex,nofollow">' : ''}
 <meta name="description" content="${escapeHtml(desc || ctx.profile.site.description)}">
 <meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#081226">
+<meta name="theme-color" content="#081226" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f2efe8" media="(prefers-color-scheme: light)">
 <meta name="view-transition" content="same-origin">
 <link rel="canonical" href="__CANONICAL__">
 <meta property="og:type" content="website">
@@ -94,9 +129,10 @@ ${noindex ? '<meta name="robots" content="noindex,nofollow">' : ''}
   }).replace(/</g, '\\u003c')}</script>
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>` : ''}
 <link rel="icon" href="${url('assets', 'p3r', 'favicon.ico')}" sizes="any">
-<link rel="stylesheet" href="${url('assets', 'app.css')}">
-${layers ? LAYER_CSS.map((f) => `<link rel="stylesheet" href="${url('assets', 'layers', f)}">`).join('\n') : ''}
+<link rel="stylesheet" href="${url('assets', 'app.css')}?v=${assetVersion('src/client/app.css')}">
+${layers ? LAYER_CSS.map((f) => `<link rel="stylesheet" href="${url('assets', 'layers', f)}?v=${assetVersion('src/client/layers/' + f)}">`).join('\n') : ''}
 <link rel="preload" href="${url('assets', 'fonts', 'Urbanist-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${url('assets', 'fonts', 'NotoSansSC-subset.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="${url('manifest.webmanifest')}">
 ${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title="${escapeHtml(ctx.profile.site.title)} · 笔记" href="${url('feed.xml')}">` : ''}
 <script type="speculationrules">
@@ -104,7 +140,7 @@ ${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title=
 </script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<script>try{var t=localStorage.getItem('lhj-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{var t=localStorage.getItem('lhj-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t;}catch(e){}</script>
 <script>try{if(!sessionStorage.getItem('mm-boot')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('is-booting');}catch(e){}</script>
 </head>
 <body class="section-${section} ${bodyClass}" data-base="${url()}" data-search-index="${url('assets', 'search-index.json')}">
@@ -131,10 +167,14 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
         <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.6"/><path d="M13.2 13.2 17.4 17.4"/></svg>
         <span>搜索</span><kbd>/</kbd>
       </button>
-      <button class="theme-btn" type="button" id="theme-toggle" aria-label="切换深浅色"></button>
+      <button class="theme-btn" type="button" id="theme-toggle" aria-label="切换主题" title="切换主题"></button>
+      <button class="nav-toggle" type="button" id="nav-toggle" aria-expanded="false" aria-controls="nav-panel" aria-label="打开导航"><span></span><span></span></button>
     </div>
   </div>
 </header>
+<div class="nav-panel" id="nav-panel" hidden>
+  <nav class="nav-panel-inner" aria-label="移动导航">${mobileNav}</nav>
+</div>
 <div class="page${sidebar ? ' has-sidebar' : ''}${toc && toc.length ? ' has-toc' : ''}">
   ${sidebar || ''}
   <main id="main">
@@ -164,13 +204,13 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
   <div class="search-box" role="dialog" aria-modal="true" aria-label="搜索知识库">
     <div class="search-head"><span>SEARCH / 知识库</span><kbd>Esc</kbd></div>
     <input type="search" id="search-input" placeholder="搜索笔记标题、正文、标签…" autocomplete="off" spellcheck="false">
-    <div class="search-results" id="search-results"></div>
+    <div class="search-results" id="search-results" aria-live="polite"></div>
     <div class="search-hint"><kbd>↑↓</kbd> 选择 <kbd>Enter</kbd> 打开</div>
   </div>
 </div>
 <button class="back-to-top" id="back-to-top" type="button" aria-label="回到顶部">↑</button>
-<script src="${url('assets', 'app.js')}" defer></script>
-${layers ? LAYER_JS.map((f) => `<script src="${url('assets', 'layers', f)}" defer></script>`).join('\n') : ''}
+<script src="${url('assets', 'app.js')}?v=${assetVersion('src/client/app.js')}" defer></script>
+${layers ? LAYER_JS.map((f) => `<script src="${url('assets', 'layers', f)}?v=${assetVersion('src/client/layers/' + f)}" defer></script>`).join('\n') : ''}
 ${scripts.map((s) => `<script src="${s}" defer></script>`).join('\n')}
 </body>
 </html>`;

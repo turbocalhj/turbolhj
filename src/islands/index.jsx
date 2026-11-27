@@ -1,4 +1,4 @@
-import { createRoot } from 'react-dom/client';
+import { render } from 'preact';
 import KnowledgeExplorer from './knowledge.jsx';
 import GameLibrary from './games.jsx';
 import EsportsBoard from './esports.jsx';
@@ -14,7 +14,7 @@ function mount(id, Component) {
   } catch (e) {
     return;
   }
-  createRoot(el).render(<Component {...data} />);
+  render(<Component {...data} />, el);
 }
 
 mount('kb-root', KnowledgeExplorer);

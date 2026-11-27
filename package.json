@@ -17,6 +17,7 @@
     "js-yaml": "^4.1.0",
     "marked": "^18.0.2",
     "marked-highlight": "^2.2.2",
+    "preact": "^11.2.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

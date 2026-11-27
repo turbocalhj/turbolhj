@@ -42,8 +42,11 @@ function save() {
   fs.renameSync(tmp, ACCOUNTS);
 }
 
+/** 异步 scrypt：登录/注册不再阻塞事件循环。 */
 function hash(password, salt) {
-  return crypto.scryptSync(password, salt, 64).toString('hex');
+  return new Promise((resolve, reject) => {
+    crypto.scrypt(password, salt, 64, (err, key) => (err ? reject(err) : resolve(key.toString('hex'))));
+  });
 }
 
 function publicUser(user) {
@@ -58,7 +61,7 @@ export function countUsers() {
   return db.users.length;
 }
 
-export function createUser({ email, password, name, role = 'user' }) {
+export async function createUser({ email, password, name, role = 'user' }) {
   const normalized = String(email || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(normalized)) throw new Error('邮箱格式不正确');
   if (String(password || '').length < 8) throw new Error('密码至少 8 位');
@@ -70,7 +73,7 @@ export function createUser({ email, password, name, role = 'user' }) {
     name: String(name || '').trim().slice(0, 40) || normalized.split('@')[0],
     role,
     salt,
-    hash: hash(password, salt),
+    hash: await hash(password, salt),
     createdAt: new Date().toISOString(),
     sessionVersion: 1,
   };
@@ -79,31 +82,31 @@ export function createUser({ email, password, name, role = 'user' }) {
   return publicUser(user);
 }
 
-export function verifyPassword(email, password) {
+export async function verifyPassword(email, password) {
   const user = findUser(email);
   if (!user) return null;
-  const attempt = Buffer.from(hash(String(password || ''), user.salt), 'hex');
+  const attempt = Buffer.from(await hash(String(password || ''), user.salt), 'hex');
   const expected = Buffer.from(user.hash, 'hex');
   if (attempt.length !== expected.length) return null;
   return crypto.timingSafeEqual(attempt, expected) ? publicUser(user) : null;
 }
 
-export function setPassword(userId, password) {
+export async function setPassword(userId, password) {
   const user = db.users.find((u) => u.id === userId);
   if (!user) throw new Error('用户不存在');
   if (String(password || '').length < 8) throw new Error('密码至少 8 位');
   user.salt = crypto.randomBytes(16).toString('hex');
-  user.hash = hash(password, user.salt);
+  user.hash = await hash(password, user.salt);
   user.sessionVersion += 1;
   save();
 }
 
-export function ensureAdminByEnv() {
+export async function ensureAdminByEnv() {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
   if (!email || !password) return null;
   if (findUser(email)) return null;
-  const user = createUser({ email, password, name: '站长', role: 'admin' });
+  const user = await createUser({ email, password, name: '站长', role: 'admin' });
   console.log(`[auth] 已根据环境变量创建管理员：${user.email}`);
   return user;
 }

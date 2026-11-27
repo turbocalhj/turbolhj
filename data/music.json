@@ -1,0 +1,4 @@
+{
+  "note": "把 mp3 / m4a / ogg 放进 src/assets/audio/，再在 tracks 里按文件名登记即可。播放器功能暂缓，先保留配置位。",
+  "tracks": []
+}

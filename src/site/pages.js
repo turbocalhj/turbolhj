@@ -28,6 +28,16 @@ function tagChips(tags, ctx, currentId) {
     .map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join('');
 }
 
+/** 摘要按句读收口，避免 description 断在半句。 */
+function clipSummary(text, max = 120) {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  const head = t.slice(0, max);
+  const at = Math.max(...['。', '！', '？', '；', '. '].map((p) => head.lastIndexOf(p)));
+  if (at >= max * 0.55) return head.slice(0, at + 1).trim();
+  return head.replace(/[，、；：,.．\s]+$/, '') + '…';
+}
+
 function card({ eyebrow, title, desc, meta, links, cls = '' }) {
   return `<article class="card ${cls}">
   ${eyebrow ? `<div class="card-eyebrow">${eyebrow}</div>` : ''}
@@ -85,6 +95,16 @@ export function reloadPage(ctx) {
   const techFolders = ctx.folders
     .filter((f) => f.key !== '根目录' && !isProjectFolder(f.key))
     .slice(0, 4);
+  const playing = (ctx.games || []).filter((g) => g.status === '在玩').slice(0, 3);
+  const recentUpdates = [...(ctx.notes || [])]
+    .filter((n) => !n.isIndex)
+    .sort((a, b) => b.mtime - a.mtime)
+    .slice(0, 3);
+  const latestUpdate = ctx.updates && Array.isArray(ctx.updates.entries) ? ctx.updates.entries[0] : null;
+  const shortDay = (v) => {
+    const d = new Date(v);
+    return `${d.getMonth() + 1}.${String(d.getDate()).padStart(2, '0')}`;
+  };
 
   const icon = {
     projects: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>',
@@ -123,9 +143,7 @@ export function reloadPage(ctx) {
   const content = `
 <section class="home-hero">
   <div class="wallpaper" aria-hidden="true">
-    <video class="wallpaper-video" autoplay muted loop playsinline preload="metadata" poster="${ctx.url('assets', 'p3r', 'hero-poster.webp')}">
-      <source src="${ctx.url('assets', 'p3r', 'hero.mp4')}" type="video/mp4">
-    </video>
+    <video class="wallpaper-video" muted loop playsinline preload="none" data-src="${ctx.url('assets', 'p3r', 'hero.mp4')}" poster="${ctx.url('assets', 'p3r', 'hero-poster.webp')}"></video>
     <div class="wallpaper-shards"></div>
     <div class="wallpaper-veil"></div>
   </div>
@@ -165,6 +183,34 @@ export function reloadPage(ctx) {
       </nav>
     </aside>
   </div>
+</section>
+
+<section class="home-now" aria-label="最近状态">
+  <div class="home-now-col">
+    <p class="home-now-k">NOW PLAYING <span>近期在玩</span></p>
+    ${playing.length ? playing.map((g) => `<a class="home-now-row" href="${ctx.url('games', g.slug)}.html">
+      <i style="--c:${g.accent || '#029eeb'}"></i><b>${escapeHtml(g.name)}</b><em>${escapeHtml(g.status || '')}</em>
+    </a>`).join('') : '<p class="home-now-row"><b>暂时没有标记在玩的游戏</b></p>'}
+  </div>
+  <div class="home-now-col">
+    <p class="home-now-k">RECENT NOTES <span>最近更新</span></p>
+    ${recentUpdates.length ? recentUpdates.map((n) => `<a class="home-now-row" href="${noteUrl(ctx, n.id)}">
+      <i style="--c:var(--accent)"></i><b>${escapeHtml(n.title)}</b><em>${escapeHtml(shortDay(n.mtime))}</em>
+    </a>`).join('') : '<p class="home-now-row"><b>笔记整理中</b></p>'}
+  </div>
+  ${latestUpdate ? `<div class="home-now-update">
+    <div class="home-now-badge" aria-hidden="true"><span>TS</span><i></i></div>
+    <div class="home-now-upbody">
+      <p class="home-now-k">NOTICE <span>公告</span></p>
+      <a class="home-now-title" href="${ctx.url('updates.html')}">${escapeHtml(latestUpdate.title || '')}</a>
+      <p class="home-now-sum">${escapeHtml(latestUpdate.summary || '')}</p>
+      <div class="home-now-links">
+        <a href="${ctx.url('updates.html')}">更新日志 <i aria-hidden="true">→</i></a>
+        <a href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="${ctx.url('feed.xml')}">RSS ↗</a>
+      </div>
+    </div>
+  </div>` : ''}
 </section>
 
 <section class="home-section" id="works">
@@ -271,7 +317,9 @@ export function knowledgePage(ctx) {
   let mocHtml = '';
   if (moc) {
     const r = ctx.engine.render(moc.body);
-    mocHtml = `<div class="prose">${r.html}</div>`;
+    // 页头已有 h1「知识库」，索引笔记的标题降一级，保持单一主标题
+    const body = r.html.replace(/<h1(\s|>)/g, '<h2$1').replace(/<\/h1>/g, '</h2>');
+    mocHtml = `<div class="prose">${body}</div>`;
   }
   const folderData = (f) => ({
     key: f.key,
@@ -356,7 +404,7 @@ export function notePage(ctx, note, rendered) {
   const plainText = (rendered.sections.find((s) => s.t)?.t || '').replace(/\s+/g, ' ').trim();
   return renderPageWrap(ctx, {
     title: `${note.title} · 知识库`,
-    desc: plainText.slice(0, 120),
+    desc: clipSummary(plainText, 120),
     section: 'knowledge',
     content,
     sidebar: buildSidebar(ctx, note.id),
@@ -367,7 +415,7 @@ export function notePage(ctx, note, rendered) {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
       headline: note.title,
-      description: plainText.slice(0, 140),
+      description: clipSummary(plainText, 140),
       url: '__CANONICAL__',
       mainEntityOfPage: '__CANONICAL__',
       inLanguage: 'zh-CN',
@@ -411,15 +459,29 @@ export function projectsPage(ctx) {
   }).join('');
 
   const langRows = ctx.langStats.map(([lang, n]) => `<tr><td>${escapeHtml(lang)}</td><td>${n}</td><td><div class="bar"><i style="width:${Math.round((n / ctx.langStats[0][1]) * 100)}%"></i></div></td></tr>`).join('');
-  // 编辑式索引：编号、项目名、分类、技术栈、年份、箭头，整行为链接
+  // GitHub 仓库列表式索引：编号、仓库名、描述、语言色点、提交数、更新时间
+  const LANG_COLOR = {
+    JavaScript: '#f1e05a', TypeScript: '#3178c6', Python: '#3572a5', Java: '#b07219',
+    Go: '#00add8', Vue: '#41b883', HTML: '#e34c26', CSS: '#563d7c', 'C++': '#f34b7d',
+    'C#': '#178600', Rust: '#dea584', PHP: '#4f5d95', Dart: '#00b4ab', Shell: '#89e051',
+    'Jupyter Notebook': '#da5b0b', Kotlin: '#a97bff', Swift: '#f05138', Ruby: '#701516',
+  };
+  const langColor = (lang) => LANG_COLOR[lang] || '#8b949e';
   const indexRows = ctx.projects.map((pr, i) => {
-    const year = (pr.pushedShort || '').slice(0, 4) || '—';
-    return `<li class="pindex-row"><a class="pindex-link" href="${pr.pageHref}">
+    const lang = pr.stackTop || (pr.repo && pr.repo.language) || '—';
+    const topics = (pr.highlights || []).slice(0, 2);
+    return `<li class="pindex-row" style="--pindex-lang:${langColor(lang)}"><a class="pindex-link" href="${pr.pageHref}">
       <span class="pindex-no">${String(i + 1).padStart(2, '0')}</span>
-      <span class="pindex-name">${escapeHtml(pr.display)}</span>
-      <span class="pindex-cat">${escapeHtml(pr.category)}</span>
-      <span class="pindex-stack">${escapeHtml(pr.stackTop || '—')}</span>
-      <span class="pindex-year">${escapeHtml(year)}</span>
+      <span class="pindex-main">
+        <span class="pindex-top"><b class="pindex-name">${escapeHtml(pr.display)}</b><em class="pindex-kind">${pr.isGitHub ? 'GITHUB' : 'LOCAL'}</em><span class="pindex-cat">${escapeHtml(pr.category)}</span></span>
+        <span class="pindex-desc">${escapeHtml(pr.tagline || '暂无简介')}</span>
+        ${topics.length ? `<span class="pindex-topics">${topics.map((t) => `<i>${escapeHtml(t)}</i>`).join('')}</span>` : ''}
+      </span>
+      <span class="pindex-meta">
+        <span class="pindex-lang"><i></i>${escapeHtml(lang)}</span>
+        ${pr.commitCount != null ? `<span class="pindex-commits">${pr.commitCount} commits</span>` : ''}
+        <span class="pindex-date">${escapeHtml(pr.pushedShort || '—')}</span>
+      </span>
       <span class="pindex-arrow" aria-hidden="true">↗</span>
     </a></li>`;
   }).join('');
@@ -429,6 +491,7 @@ export function projectsPage(ctx) {
     <h2 class="pindex-title" id="pindex-title"><span class="pindex-title-cn">项目索引 · </span>INDEX <i>/</i> SELECTED &amp; ARCHIVED WORKS</h2>
     <p class="pindex-total"><b>${ctx.projects.length}</b> 个项目</p>
   </header>
+  <div class="pindex-cols" aria-hidden="true"><span>NO.</span><span>REPOSITORY</span><span>LANG / COMMITS / UPDATED</span><span></span></div>
   <ol class="pindex-list">${indexRows}</ol>
 </section>`;
   const content = `
@@ -773,6 +836,134 @@ ${blocks}
   });
 }
 
+export function acgPage(ctx) {
+  const data = ctx.acg || {};
+  const items = Array.isArray(data.items) ? data.items : [];
+  const shelf = items.map((it, i) => `<a class="acg-shelf-link" href="#${escapeHtml(it.id)}" style="--c:${it.accent}">
+      <span>${String(i + 1).padStart(2, '0')}</span><b>${escapeHtml(it.cn)}</b><em>${escapeHtml(it.en)}</em>
+    </a>`).join('');
+
+  const chapters = items.map((it, i) => `<article class="acg-chapter" id="${escapeHtml(it.id)}" data-medium="${escapeHtml(it.medium || 'anime')}" style="--acg:${it.accent};--acg2:${it.accent2}">
+    <div class="acg-poster" aria-hidden="true">
+      <span class="acg-poster-no">${String(i + 1).padStart(2, '0')}</span>
+      <span class="acg-poster-title">${escapeHtml(it.en)}</span>
+      <span class="acg-poster-jp">${escapeHtml(it.jp)}</span>
+      <span class="acg-poster-line"></span>
+    </div>
+    <div class="acg-copy">
+      <p class="acg-kicker">${escapeHtml(it.kind)} / ${escapeHtml(it.year)} <i>${it.medium === 'game' ? 'GAME' : 'ANIME'}</i></p>
+      <h2 class="acg-title">${escapeHtml(it.cn)}<em>${escapeHtml(it.sub)}</em></h2>
+      <p class="acg-sum">${escapeHtml(it.summary)}</p>
+      <dl class="acg-facts">
+        <div><dt>制作</dt><dd>${escapeHtml(it.studio)}</dd></div>
+        <div><dt>监督 / 导演</dt><dd>${escapeHtml(it.director)}</dd></div>
+        <div><dt>首播 / 发售</dt><dd>${escapeHtml(it.date)}</dd></div>
+        <div><dt>平台</dt><dd>${escapeHtml(it.platform)}</dd></div>
+      </dl>
+      <div class="acg-tags">${(it.tags || []).map((t) => `<span>${escapeHtml(t)}</span>`).join('')}</div>
+      <div class="acg-actions">
+        <a class="btn acg-official" href="${it.official}" target="_blank" rel="noopener">官方网站 ↗</a>
+        <p class="acg-note">${escapeHtml(it.note || '')}</p>
+      </div>
+    </div>
+  </article>`).join('');
+
+  const content = `
+<section class="acg-hero">
+  <p class="eyebrow">ACG / SCREEN &amp; BEYOND</p>
+  <h1>屏幕之外<span class="dot">.</span></h1>
+  <p class="acg-lead">四部反复重看的作品：异世界、夜之城、交界地与死亡回归。硬信息取自官方网站，简介与判断是本站自写。</p>
+  <nav class="acg-shelf" aria-label="ACG 目录">${shelf}</nav>
+</section>
+<div class="acg-bar">
+  <div class="acg-filter" role="group" aria-label="按类型筛选">
+    <button type="button" class="acg-chip is-active" data-acg-filter="*">全部<em>${items.length}</em></button>
+    <button type="button" class="acg-chip" data-acg-filter="anime">动画<em>${items.filter((i) => i.medium === 'anime').length}</em></button>
+    <button type="button" class="acg-chip" data-acg-filter="game">游戏<em>${items.filter((i) => i.medium === 'game').length}</em></button>
+  </div>
+  <p class="acg-count">${items.length} ENTRIES</p>
+</div>
+<div class="acg-chapters">${chapters}</div>
+<section class="acg-order">
+  <p class="eyebrow">WATCH / PLAY ORDER</p>
+  <h2>如果只从这里开始<span>.</span></h2>
+  <ol class="acg-order-list">
+    <li><b>01</b><span><strong>无职转生</strong>：想先看「慢慢变好」的故事。</span></li>
+    <li><b>02</b><span><strong>赛博朋克：边缘行者</strong>：只有一个晚上，想被霓虹和结局撞一下。</span></li>
+    <li><b>03</b><span><strong>艾尔登法环</strong>：想把一百小时交给一张地图。</span></li>
+    <li><b>04</b><span><strong>Re:Zero</strong>：想看「重来」到底要付多少代价。</span></li>
+  </ol>
+</section>`;
+
+  return renderPageWrap(ctx, {
+    title: 'ACG · ' + ctx.profile.site.title,
+    desc: 'ACG 分区：无职转生、赛博朋克：边缘行者、艾尔登法环与 Re:Zero 的官方信息与个人记录。',
+    section: 'acg',
+    bodyClass: 'page-acg',
+    content,
+  });
+}
+
+export function privatePage(ctx) {
+  const games = ctx.games || [];
+  const esports = ctx.esports || {};
+  const events = Array.isArray(esports.events) ? esports.events.length : 0;
+  const teams = Array.isArray(esports.teams) ? esports.teams.length : 0;
+  const playing = games.filter((g) => g.status === '在玩').slice(0, 3);
+
+  const cards = [
+    {
+      no: '01',
+      key: 'GAMES / 游戏库',
+      title: '游戏库',
+      desc: '评分、状态与主观记录。按类型、平台与游玩进度筛。',
+      meta: `${games.length} 款 · ${playing.length ? `${playing.length} 款在玩` : '持续更新'}`,
+      href: ctx.url('games', 'index.html'),
+    },
+    {
+      no: '02',
+      key: 'ESPORTS / 电竞',
+      title: '电竞',
+      desc: '赛事体系、战队观察与时间线。只写公开赛制与里程碑。',
+      meta: `${events} 项赛事 · ${teams} 支战队`,
+      href: ctx.url('esports', 'index.html'),
+    },
+  ].map((c) => `<a class="private-card" href="${c.href}">
+      <span class="private-no">${c.no}</span>
+      <div class="private-body">
+        <p class="eyebrow">${c.key}</p>
+        <h2>${c.title}</h2>
+        <p>${c.desc}</p>
+      </div>
+      <span class="private-meta">${c.meta} <i aria-hidden="true">↗</i></span>
+    </a>`).join('');
+
+  const nowRows = playing.map((g) => `<a class="private-now" href="${ctx.url('games', g.slug)}.html">
+      <span class="private-now-dot" style="--c:${g.accent || '#029eeb'}"></span>
+      <b>${escapeHtml(g.name)}</b>
+      <em>${escapeHtml(g.status || '')}</em>
+      <span aria-hidden="true">→</span>
+    </a>`).join('');
+
+  const content = `
+<section class="page-head private-head">
+  <p class="eyebrow">PRIVATE ARCHIVE / 00</p>
+  <h1>私密<span class="dot">.</span></h1>
+  <p class="page-sub">游戏与电竞的私人记录，收在「私密」入口下。主站只讲工程、项目与笔记，这两块爱好单独放在这里。</p>
+</section>
+<div class="private-grid">${cards}</div>
+${playing.length ? `<section class="private-now-box"><p class="eyebrow">NOW PLAYING</p><div class="private-now-list">${nowRows}</div></section>` : ''}
+<p class="private-foot">入口在导航「私密」上：桌面端悬浮展开，移动端点击进入本页。它与后台的私密内容无关，只是把爱好从主站动线里抽出来。</p>`;
+
+  return renderPageWrap(ctx, {
+    title: '私密 · ' + ctx.profile.site.title,
+    desc: '私密档案：游戏库与电竞观察，挂在导航「私密」入口下。',
+    section: 'private',
+    bodyClass: 'page-private',
+    content,
+  });
+}
+
 export function updatesPage(ctx) {
   const data = ctx.updates || {};
   const entries = Array.isArray(data.entries) ? data.entries.slice() : [];
@@ -867,6 +1058,34 @@ export function updatesPage(ctx) {
   });
 }
 
+export function notFoundPage(ctx) {
+  const p = ctx.profile;
+  const entries = [
+    ['首页', ctx.url(), '回到主视觉与最新更新'],
+    ['知识库', ctx.url('knowledge', 'index.html'), '93 篇笔记的四级索引'],
+    ['项目档案', ctx.url('projects', 'index.html'), '交付记录与工程判断'],
+    ['档案库', ctx.url('archive.html'), '按时间与分区归档'],
+  ].map(([label, href, note]) => `<a class="card" href="${href}">
+      <div class="card-eyebrow">GO TO</div>
+      <h2 class="card-title">${label}</h2>
+      <p class="card-desc">${note}</p>
+    </a>`).join('');
+  const content = `
+<section class="page-head">
+  <p class="eyebrow"><span aria-hidden="true">✦</span> 404 / NOT FOUND</p>
+  <h1>这页没有档案</h1>
+  <p class="page-sub">链接可能改名了，或者这条笔记还没有公开。从下面任意入口重新开始。</p>
+</section>
+<div class="grid grid-2">${entries}</div>`;
+  return renderPageWrap(ctx, {
+    title: `页面未找到 · ${p.site.title}`,
+    desc: '页面不存在，可从首页、知识库、项目档案或档案库继续浏览。',
+    section: '404',
+    content,
+    noindex: true,
+  });
+}
+
 export function authPage(ctx, mode = 'login') {
   const isReg = mode === 'register';
   const content = `
@@ -885,7 +1104,7 @@ export function authPage(ctx, mode = 'login') {
     title: isReg ? '注册' : '登录',
     section: 'account',
     content,
-    scripts: [ctx.url('assets', 'auth.js')],
+    scripts: [`${ctx.url('assets', 'auth.js')}?v=${ctx.assetVersion ? ctx.assetVersion('src/client/auth.js') : '0'}`],
     bodyClass: 'page-auth',
     noindex: true,
     layers: false,
@@ -938,7 +1157,7 @@ export function adminPage(ctx) {
     title: '后台管理',
     section: 'account',
     content,
-    scripts: [ctx.url('assets', 'admin.js')],
+    scripts: [`${ctx.url('assets', 'admin.js')}?v=${ctx.assetVersion ? ctx.assetVersion('src/client/admin.js') : '0'}`],
     bodyClass: 'page-admin',
     noindex: true,
     layers: false,

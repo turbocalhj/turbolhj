@@ -62,6 +62,13 @@ const server = http.createServer((req, res) => {
   let file = resolveTarget(url.pathname);
   if (!file && url.pathname.endsWith('/')) file = resolveTarget(path.join(url.pathname, 'index.html'));
   if (!file) {
+    const custom = path.join(DIST, '404.html');
+    if (fs.existsSync(custom)) {
+      res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...SECURITY_HEADERS });
+      fs.createReadStream(custom).pipe(res);
+      console.log(`404 ${url.pathname}`);
+      return;
+    }
     res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...SECURITY_HEADERS });
     res.end(`<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">

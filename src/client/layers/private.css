@@ -1,0 +1,125 @@
+/* 私密档案汇页：游戏库与电竞的入口，只新增 .private-* 样式 */
+
+.private-head { padding-bottom: 24px; }
+.private-head h1 { margin: 8px 0 0; }
+
+.private-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 26px 0 22px;
+}
+
+.private-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 4px 16px;
+  padding: 26px 26px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), border-color 0.3s ease, background 0.3s ease;
+}
+
+.private-card::after {
+  content: '';
+  position: absolute;
+  right: -18%;
+  bottom: -70%;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(2, 158, 235, 0.32), transparent 65%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.private-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+  background: rgba(2, 158, 235, 0.05);
+}
+
+.private-no {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--accent-soft);
+  padding-top: 4px;
+}
+
+.private-body { min-width: 0; }
+.private-body .eyebrow { margin: 0 0 6px; }
+.private-body h2 { margin: 0; font-size: clamp(24px, 2.8vw, 34px); letter-spacing: -0.01em; }
+.private-body p:last-child { margin: 10px 0 0; font-size: 13px; line-height: 1.85; color: var(--muted); }
+
+.private-meta {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.private-meta i { font-style: normal; color: var(--accent-soft); font-size: 13px; }
+
+.private-now-box {
+  margin: 6px 0 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+}
+
+.private-now-list { margin-top: 10px; }
+
+.private-now {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.private-now:last-child { border-bottom: 0; }
+.private-now b { font-weight: 600; }
+.private-now em { font-style: normal; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em; color: var(--faint); }
+.private-now > span:last-child { color: var(--faint); }
+.private-now:hover > span:last-child { color: var(--accent-soft); }
+
+.private-now-dot {
+  width: 6px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--c, var(--accent));
+}
+
+.private-foot {
+  max-width: 68ch;
+  margin: 18px 0 0;
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--faint);
+}
+
+html[data-theme='light'] .private-card { background: rgba(255, 253, 247, 0.72); }
+html[data-theme='light'] .private-card:hover { background: rgba(10, 106, 158, 0.05); }
+
+@media (max-width: 760px) {
+  .private-grid { grid-template-columns: minmax(0, 1fr); }
+  .private-card { padding: 22px 20px 16px; grid-template-columns: 34px minmax(0, 1fr); }
+  .private-now { grid-template-columns: 8px minmax(0, 1fr) auto; }
+  .private-now > span:last-child { display: none; }
+}
