@@ -33,6 +33,20 @@ description: 以「只加不减」的图层方式为 TURBO SPARK 增加视觉功
 - **首页 NOW 带**：在玩 / 最近笔记 / 公告卡（TS 徽标 + 标题 + 摘要 + 更新日志/GitHub/RSS 胶囊）。
 - **公告卡**：参考个人博客的「头像 + 公告 + 社交」，改造成本站的 TS 徽标，不搬动漫/霓虹风格。
 
+## 全站背景（v1.2.0）
+
+- 背景结构：`layout.js` 在 `<body>` 首个子节点输出 `.site-bg > img`（`position: fixed; inset: 0; z-index: -1`），`body` 与 `html` 不再铺底色，改由 `.site-bg` 兜底 `#040915`。
+- 素材：`src/assets/global-bg.jpg`（1920×1080 JPEG，来自视频关键帧）；新增图片必须同时进 `<link rel="preload" as="image">` 与 `og:image`，并带 `?v=<assetVersion>`。
+- 首页清晰、内页模糊的规则写在 `body:not(.section-home)`：
+  ```css
+  body:not(.section-home) .site-bg img { filter: blur(20px) brightness(0.42); transform: scale(1.08); }
+  html[data-theme='light'] body:not(.section-home) .site-bg img { filter: blur(22px) brightness(1.1) saturate(0.55); opacity: 0.42; }
+  ```
+  模糊必须配 `scale(1.08)`，否则边缘会露出底色。
+- 首页内容区要保证背景可见：区块用全宽 + `padding: max(32px, calc((100% - var(--w)) / 2))`，蒙版用半透明深色 + `backdrop-filter`，不要用不透明面板铺满。
+- **明亮背景上的顶栏必须接近不透明**：首页滚动后的 `.section-home .topbar.is-solid` 用 `rgba(6,12,24,.9)`，浅色 `rgba(244,241,233,.94)`；`.66` 级别会透出亮色导致白字失效。
+- 验证前清 Service Worker（`navigator.serviceWorker.getRegistrations()` + `caches.keys()`），否则看到的是旧 CSS。
+
 ## 开发步骤
 
 1. 开分支：`git switch -c feat/<name>`。

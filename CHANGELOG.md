@@ -2,6 +2,23 @@
 
 本项目从 v1.1.0 起遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/) 与 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；正式版本在合并 main 后打 `vX.Y.Z` tag。
 
+## [1.2.0] - 2026-11-27
+
+### Added
+
+- 全站固定高清背景：从首页主视觉视频中提取 1920×1080 关键帧（JPEG，约 144 KB），以 `.site-bg` 固定在视口底层，并在 `<head>` 预加载。
+- 首页各区块与滚动后顶栏改为磨砂玻璃层，背景图完整可见；明暗主题各有一套蒙版。
+
+### Changed
+
+- 首页去掉自动播放的背景视频，改用静态高清图，减少首屏解码与带宽。
+- 子页面背景统一做模糊 + 深色压暗处理（浅色主题为浅色磨砂），内容仍以原有卡片层级呈现。
+- `og:image` / `twitter:image` 指向新的全局背景图，并携带内容哈希。
+
+### Removed
+
+- `src/assets/p3r/hero.mp4` 与 `hero-poster.webp`，及相关懒加载逻辑。
+
 ## [1.1.1] - 2026-11-27
 
 ### Fixed
