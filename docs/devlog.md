@@ -3,6 +3,31 @@
 > 规则：每一次合并回 main 的功能/修复/重构，都在这里追加一条；写清「改了什么、为什么、怎么验证、影响面」。
 > 对外公告仍写在 `data/updates.json`（站点 `/updates.html`），本文件面向开发过程。
 
+## 2026-11-27 · 通栏布局与 P3R 氛围层
+
+### 改动
+
+- 新增 `src/client/layers/wide-layout.css`：桌面端顶栏、页脚与移动抽屉改为通栏，左右留白收敛到 `clamp(24px, 3.2vw, 64px)`；`--w` 1240 → 1480，内容区随视口加宽；带侧栏页 1560、带 TOC 页 1440。
+- 新增 `p3r-cursor.css` / `p3r-cursor.js`：fine pointer 设备进入站点后以蓝色四角准星替换原生指针，中心点 + 辉光，hover 可交互元素放大并旋转 45°，按下收缩；输入框保留原生光标。
+- 新增 `p3r-flow.css` / `p3r-flow.js`：在固定背景图之上叠加三束斜向蓝色流光、下扫光带与轻扫描线；首页清晰显示，内页降低透明度，浅色主题切换为 multiply。
+- 新增 `turbospark-p3r-atmosphere` skill，固化三项做法与验收方式。
+
+### 原因
+
+- 1920px 屏下原 `--w: 1240px` 让顶栏两侧各留 340px，视觉重心过度居中；参照 blog.ayeez.cn 的低留白布局，改为顶栏通栏 + 更宽内容区。
+- 用户要求复刻参考站的准星指针与动态流光，但颜色改用本站 P3R 蓝，而不是参考站的绿色。
+
+### 验证
+
+- `node build.js` 退出码 0；`npm run check` 通过。
+- 无头 Chrome 实测：1920 顶栏宽 1920、左右 61.44px，内容区 1480；1440 内容区两侧 32px；390 无横向溢出；暗/明两套主题均正常；`.ts-flow` 1 个、光束 3 条、`.ts-cursor` 已挂载并跟随指针。
+- 触摸与 `prefers-reduced-motion` 下不启用准星，流光仅保留静态光。
+
+### 影响面
+
+- 只新增 `layers` 文件，未改 `app.css`、`layout.js`、`pages.js`、`build.js`。
+- 光标与流光为纯装饰层，不接管链接、表单或焦点；`html.ts-cursor-on` 仅在 fine pointer 且非 reduced-motion 时添加。
+
 ## 2026-11-27 · v1.2.1
 
 ### 改动
