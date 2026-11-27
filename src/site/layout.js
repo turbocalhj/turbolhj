@@ -187,7 +187,7 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
   <div class="footer-inner">
     <img class="footer-mark" src="${url('assets', 'p3r', 'memento-mori.svg')}" alt="Memento Mori" width="150" height="18">
     <div class="footer-row">
-      <span class="footer-note">本地构建 · 笔记与项目分离归档 · 构建时脱敏</span>
+      <span class="footer-note">${ctx.version ? `<b class="footer-ver">v${escapeHtml(ctx.version)}</b> · ` : ''}本地构建 · 笔记与项目分离归档 · 构建时脱敏</span>
       <nav class="footer-nav" aria-label="页脚导航">
         <a href="${url('archive.html')}">档案库</a>
         <a href="${url('projects', 'index.html')}">项目</a>

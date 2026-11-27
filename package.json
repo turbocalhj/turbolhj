@@ -1,6 +1,6 @@
 {
   "name": "lhj-personal-site",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "本地个人网站：Obsidian 知识库 + GitHub 项目",
