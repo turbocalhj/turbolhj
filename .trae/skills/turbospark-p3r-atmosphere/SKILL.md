@@ -30,13 +30,16 @@ description: 为 TURBO SPARK 增加 P3R 主题氛围层：通栏低留白布局�
 
 ## 动态流光（p3r-flow.css/js）
 
-- JS 注入 `.ts-flow`（3 × `.ts-flow-beam` + `.ts-flow-sweep` + `.ts-flow-scan`），`position: fixed; inset: 0; z-index: -1`；DOM 追加在 `.site-bg` 之后即可叠在背景图上。
-- beam：`rotate(-14deg) translate3d(0 → 200vw)` 斜扫，三束 17/23/29s 错峰、不同宽度与透明度；sweep 11s 从 -30% 扫到 110%。
-- 首页 `opacity: 1`；`body:not(.section-home) .ts-flow` 收敛到 0.4；浅色主题 0.32 / 内页 0.16，beam 与扫描线用 `mix-blend-mode: multiply`。
-- 只动画 `transform` / `opacity`，`filter: blur()` 控制在 26px 内；reduced-motion 关闭动画、保留一条静态光。
+- JS 注入 `.ts-flow`：`.ts-flow-glow` + 3 × `.ts-flow-beam` + `.ts-flow-sweep` + `.ts-flow-scan`；`position: fixed; inset: 0; z-index: 4; pointer-events: none`。
+- **不要用 `z-index: -1`**：首页 `.home-hero` 有多层暗色蒙版，会把流光压到完全不可见。放在内容上层（4）再用低透明度控制可读性，顶栏 z-index 900 仍在其上。
+- 必须有**常驻光晕** `.ts-flow-glow`（多个 radial-gradient + blur + 缓慢漂移），否则光束扫出视口的时段画面里没有任何流光。
+- beam：窄光束（16–32vw）+ `rotate(-12deg) translate3d(0 → 180vw)`，13/18/24s 错峰；sweep 9s 从 -30% 扫到 110%；scan 为 1px/4px 的极淡横纹。
+- 首页不降透明度；`body:not(.section-home) .ts-flow` 收敛到 0.32；浅色主题 0.24 / 内页 0.12，光晕与光束用 `mix-blend-mode: multiply`。
+- 只动画 `transform` / `opacity`；reduced-motion 关闭动画，但保留可见的静态光晕（opacity 0.55），不能直接隐藏。
 
 ## 验证
 
 - `node build.js && npm run check`。
 - 无头 Chrome 取：`.topbar-inner` 宽度应等于 `innerWidth`；`.page` 宽度符合预期；`scrollWidth - innerWidth === 0`；`.ts-flow` 1、光束 3、`.ts-cursor` 1 且 `is-visible`。
+- **流光必须截图并做视觉确认**（可用 analyzeImage）：只看 DOM 挂载和 computed z-index 不够，必须确认画面里真的能看到光晕/光带，且文字仍可读。
 - 至少覆盖 1920 / 1440 / 390 三档与暗/明两套主题；验证前清 Service Worker，避免旧 CSS 干扰。
