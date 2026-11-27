@@ -1,0 +1,109 @@
+/* ==========================================================================
+   P3R 蓝色动态流光（Ambient flow）
+   在固定背景图之上叠三束斜向流光 + 一条下扫光带 + 轻扫描线。
+   颜色取自当前主题蓝（--accent / --accent-soft），内页自动收敛。
+   ========================================================================== */
+
+.ts-flow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ts-flow-beam {
+  position: absolute;
+  left: -30vw;
+  top: -40%;
+  width: 48vw;
+  height: 180%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(2, 158, 235, 0) 24%,
+    rgba(2, 158, 235, 0.1) 38%,
+    rgba(127, 212, 255, 0.3) 50%,
+    rgba(2, 158, 235, 0.1) 62%,
+    transparent 78%
+  );
+  filter: blur(26px);
+  will-change: transform, opacity;
+  animation: ts-flow-beam 17s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.ts-flow-beam:nth-child(2) {
+  width: 26vw;
+  height: 190%;
+  opacity: 0.55;
+  animation-duration: 23s;
+  animation-delay: -9s;
+}
+
+.ts-flow-beam:nth-child(3) {
+  width: 68vw;
+  opacity: 0.35;
+  animation-duration: 29s;
+  animation-delay: -17s;
+}
+
+@keyframes ts-flow-beam {
+  0% { transform: rotate(-14deg) translate3d(0, 0, 0); opacity: 0; }
+  14% { opacity: 0.9; }
+  78% { opacity: 0.55; }
+  100% { transform: rotate(-14deg) translate3d(200vw, 0, 0); opacity: 0; }
+}
+
+/* 缓慢下扫的水平光带 */
+.ts-flow-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -30%;
+  height: 220px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(127, 212, 255, 0.08) 40%,
+    rgba(127, 212, 255, 0.16) 50%,
+    rgba(127, 212, 255, 0.08) 60%,
+    transparent 100%
+  );
+  filter: blur(12px);
+  animation: ts-flow-sweep 11s ease-in-out infinite;
+}
+
+@keyframes ts-flow-sweep {
+  0% { top: -30%; opacity: 0; }
+  16% { opacity: 0.85; }
+  82% { opacity: 0.45; }
+  100% { top: 110%; opacity: 0; }
+}
+
+/* 很轻的扫描线纹理 */
+.ts-flow-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(127, 212, 255, 0.045) 0 1px,
+    transparent 1px 4px
+  );
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+
+/* 内页背景已模糊压暗，流光随之收敛 */
+body:not(.section-home) .ts-flow { opacity: 0.4; }
+
+html[data-theme='light'] .ts-flow { opacity: 0.32; }
+html[data-theme='light'] body:not(.section-home) .ts-flow { opacity: 0.16; }
+html[data-theme='light'] .ts-flow-beam { mix-blend-mode: multiply; }
+html[data-theme='light'] .ts-flow-scan { opacity: 0.2; mix-blend-mode: multiply; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-flow-beam { animation: none; opacity: 0.16; transform: rotate(-14deg) translate3d(60vw, 0, 0); }
+  .ts-flow-beam:nth-child(2),
+  .ts-flow-beam:nth-child(3) { display: none; }
+  .ts-flow-sweep { display: none; }
+}

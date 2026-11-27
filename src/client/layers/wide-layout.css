@@ -1,0 +1,45 @@
+/* ==========================================================================
+   通栏布局图层（Wide layout）
+   参照 blog.ayeez.cn：顶栏与页脚贴边，收窄两侧留白，内容区加宽。
+   仅覆盖尺寸，不改颜色与结构；移动端（≤900px）保持原样。
+   ========================================================================== */
+
+@media (min-width: 901px) {
+  :root { --w: 1480px; }
+
+  .topbar-inner,
+  .footer-inner,
+  .nav-panel-inner {
+    width: 100%;
+    max-width: none;
+    padding-left: clamp(24px, 3.2vw, 64px);
+    padding-right: clamp(24px, 3.2vw, 64px);
+  }
+
+  .topbar-inner { gap: clamp(20px, 2.4vw, 44px); }
+
+  .nav { gap: 8px; }
+  .nav-link { padding: 9px 13px; }
+
+  .page { width: min(1480px, calc(100% - 64px)); }
+
+  .page.has-sidebar,
+  .page.has-sidebar.has-toc { width: min(1560px, calc(100% - 64px)); }
+
+  .page.has-toc:not(.has-sidebar) { width: min(1440px, calc(100% - 64px)); }
+}
+
+/* 901–1180：通栏后仍要保证导航不拥挤，收紧单项内边距 */
+@media (min-width: 901px) and (max-width: 1180px) {
+  .topbar-inner { gap: 16px; }
+  .brand-sub { display: none; }
+  .nav { gap: 2px; }
+  .nav-link { padding: 8px 7px; }
+  .nav-cn { font-size: 12.5px; }
+}
+
+/* 超宽屏再把导航间距拉开，避免全部挤在右侧 */
+@media (min-width: 1600px) {
+  .topbar-inner { gap: 56px; }
+  .nav { gap: 10px; }
+}

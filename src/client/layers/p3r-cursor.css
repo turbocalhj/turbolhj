@@ -1,0 +1,90 @@
+/* ==========================================================================
+   P3R 蓝色准星光标（Custom cursor）
+   进入站点后以四角准星替换原生指针；输入框保留原生 text 光标。
+   仅在 hover + fine pointer 设备启用，由 p3r-cursor.js 注入。
+   ========================================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+  html.ts-cursor-on,
+  html.ts-cursor-on body,
+  html.ts-cursor-on a,
+  html.ts-cursor-on button,
+  html.ts-cursor-on [role='button'],
+  html.ts-cursor-on summary,
+  html.ts-cursor-on label,
+  html.ts-cursor-on .panel { cursor: none; }
+
+  html.ts-cursor-on input,
+  html.ts-cursor-on textarea,
+  html.ts-cursor-on select,
+  html.ts-cursor-on [contenteditable='true'] { cursor: auto; }
+}
+
+.ts-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10001;
+  width: 36px;
+  height: 36px;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+  scale: var(--ts-cursor-scale, 1);
+  rotate: var(--ts-cursor-rotate, 0deg);
+  transition: opacity 0.16s ease;
+}
+
+.ts-cursor.is-visible { opacity: 1; }
+.ts-cursor.is-hot { --ts-cursor-scale: 1.45; --ts-cursor-rotate: 45deg; }
+.ts-cursor.is-down { --ts-cursor-scale: 0.82; }
+
+.ts-cursor i {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-style: solid;
+  border-color: var(--accent-soft);
+  filter: drop-shadow(0 0 6px rgba(2, 158, 235, 0.8));
+  transition: border-color 0.2s ease;
+}
+
+.ts-cursor i:nth-child(1) { left: 0; top: 0; border-width: 1.5px 0 0 1.5px; }
+.ts-cursor i:nth-child(2) { right: 0; top: 0; border-width: 1.5px 1.5px 0 0; }
+.ts-cursor i:nth-child(3) { right: 0; bottom: 0; border-width: 0 1.5px 1.5px 0; }
+.ts-cursor i:nth-child(4) { left: 0; bottom: 0; border-width: 0 0 1.5px 1.5px; }
+
+.ts-cursor b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  box-shadow: 0 0 8px var(--accent), 0 0 20px rgba(2, 158, 235, 0.55);
+}
+
+/* hover 可交互元素时出现的外圈 */
+.ts-cursor::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 1px solid rgba(127, 212, 255, 0.45);
+  opacity: 0;
+  scale: 0.72;
+  transition: opacity 0.2s ease, scale 0.28s var(--ease);
+}
+
+.ts-cursor.is-hot::before { opacity: 0.9; scale: 1.05; }
+.ts-cursor.is-down::before { opacity: 0.5; scale: 0.6; }
+
+html[data-theme='light'] .ts-cursor i { border-color: var(--accent); filter: drop-shadow(0 0 5px rgba(10, 134, 196, 0.55)); }
+html[data-theme='light'] .ts-cursor b { background: var(--accent); box-shadow: 0 0 7px rgba(10, 134, 196, 0.6); }
+html[data-theme='light'] .ts-cursor::before { border-color: rgba(10, 134, 196, 0.4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-cursor { display: none; }
+}
