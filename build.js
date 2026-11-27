@@ -43,6 +43,7 @@ function cleanDist(dir) {
 }
 
 const profile = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/profile.json'), 'utf8'));
+const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 const SITE_URL = String(profile.siteUrl || '').replace(/\/+$/, '');
 const ghRepos = readJson('data/github.json', []);
 const ghExtra = readJson('data/github-extra.json', { repos: {} });
@@ -110,6 +111,7 @@ const engine = createEngine({
   noteUrl: (id) => noteUrl(ctx, id),
 });
 ctx.engine = engine;
+ctx.version = pkg.version;
 
 /** 资源内容指纹：给 app.css / app.js / 图层加 ?v=，改版后不会被浏览器旧缓存挡住。 */
 const assetVersions = new Map();
