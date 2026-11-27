@@ -3,6 +3,33 @@
 > 规则：每一次合并回 main 的功能/修复/重构，都在这里追加一条；写清「改了什么、为什么、怎么验证、影响面」。
 > 对外公告仍写在 `data/updates.json`（站点 `/updates.html`），本文件面向开发过程。
 
+## 2026-11-27 · v1.2.0
+
+### 改动
+
+- 首页删除背景视频 `.wallpaper-video` 与相关懒加载逻辑，改为全站固定背景图 `.site-bg`（`position: fixed; z-index: -1`），`body` 背景设为 `transparent`。
+- 背景图取自 `hero.mp4` 4.9s 帧，1920×1080，JPEG quality 90，约 144 KB；`layout.js` 在 `<head>` 预加载并在 body 首个子节点输出，`og:image` 同步替换。
+- 首页主视觉 `.home-hero` / `.wallpaper` 透明化，背景完整呈现；`.home-section`、`.home-now` 改为全宽 + 磨砂蒙版。
+- 内页 `body:not(.section-home) .site-bg img` 统一 `blur(20px) brightness(.42)`，浅色主题改为浅色低饱和 + 浅色蒙版。
+- 首页滚动后顶栏 `.section-home .topbar.is-solid` 由 `rgba(6,12,24,.66)` 提升到 `.9`，浅色为 `rgba(244,241,233,.94)`。
+
+### 原因
+
+- 背景视频体积大、移动端耗电且有自动播放限制；参考 `blog.ayeez.cn` 的固定背景做法，改成一张图即可获得稳定的视觉锚点。
+- 首页需要「完整清晰」，内页需要「退到幕后」，用同一张图 + 不同滤镜实现，避免维护两套素材。
+- 明亮背景上滚动时，原顶栏半透明底色不足，白字对比不够。
+
+### 验证
+
+- `node build.js` 退出码 0；`npm run check`：156 个 HTML、21,017 个链接全部可达。
+- Playwright：1440px 首页（背景清晰 / 文案可读）、1440px 项目页暗色（模糊压暗）、1440px 浅色项目页（浅色磨砂）、390px 首页滚动到 NOW 区（顶栏实心、对比达标）。
+- 旧 Service Worker 会缓存样式，验证前需 `unregister` + 清 Cache Storage，避免旧 CSS 干扰。
+
+### 影响面
+
+- 仅视觉层与首页 hero 结构；内容、路由、账号/后台接口未变。
+- 删除 `src/assets/p3r/hero.mp4`、`hero-poster.webp`，需要旧视频可从 Git 历史恢复。
+
 ## 2026-11-27 · v1.1.1
 
 ### 修复

@@ -111,12 +111,12 @@ ${noindex ? '<meta name="robots" content="noindex,nofollow">' : ''}
 <meta property="og:description" content="${escapeHtml(desc || ctx.profile.site.description)}">
 <meta property="og:url" content="__CANONICAL__">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="__SITE_URL__${url('assets', 'p3r', 'hero-poster.webp')}">
+<meta property="og:image" content="__SITE_URL__${url('assets', 'global-bg.jpg')}?v=${assetVersion('src/assets/global-bg.jpg')}">
 <meta property="og:image:alt" content="${escapeHtml(ctx.profile.site.title)} · ${escapeHtml(ctx.profile.site.tagline)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(title)}">
 <meta name="twitter:description" content="${escapeHtml(desc || ctx.profile.site.description)}">
-<meta name="twitter:image" content="__SITE_URL__${url('assets', 'p3r', 'hero-poster.webp')}">
+<meta name="twitter:image" content="__SITE_URL__${url('assets', 'global-bg.jpg')}?v=${assetVersion('src/assets/global-bg.jpg')}">
 <meta name="twitter:image:alt" content="${escapeHtml(ctx.profile.site.title)} · ${escapeHtml(ctx.profile.site.tagline)}">
 <script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org',
@@ -129,6 +129,7 @@ ${noindex ? '<meta name="robots" content="noindex,nofollow">' : ''}
   }).replace(/</g, '\\u003c')}</script>
 ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>` : ''}
 <link rel="icon" href="${url('assets', 'p3r', 'favicon.ico')}" sizes="any">
+<link rel="preload" as="image" href="${url('assets', 'global-bg.jpg')}?v=${assetVersion('src/assets/global-bg.jpg')}" fetchpriority="high">
 <link rel="stylesheet" href="${url('assets', 'app.css')}?v=${assetVersion('src/client/app.css')}">
 ${layers ? LAYER_CSS.map((f) => `<link rel="stylesheet" href="${url('assets', 'layers', f)}?v=${assetVersion('src/client/layers/' + f)}">`).join('\n') : ''}
 <link rel="preload" href="${url('assets', 'fonts', 'Urbanist-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
@@ -144,6 +145,7 @@ ${ctx.profile.siteUrl ? `<link rel="alternate" type="application/rss+xml" title=
 <script>try{if(!sessionStorage.getItem('mm-boot')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('is-booting');}catch(e){}</script>
 </head>
 <body class="section-${section} ${bodyClass}" data-base="${url()}" data-search-index="${url('assets', 'search-index.json')}">
+<div class="site-bg" aria-hidden="true"><img src="${url('assets', 'global-bg.jpg')}?v=${assetVersion('src/assets/global-bg.jpg')}" alt="" fetchpriority="high" decoding="async"></div>
 <div class="boot" id="boot" aria-hidden="true">
   <div class="boot-inner">
     <img class="boot-mark" src="${url('assets', 'p3r', 'memento-mori.svg')}" alt="Memento Mori" width="251" height="30">

@@ -143,7 +143,6 @@ export function reloadPage(ctx) {
   const content = `
 <section class="home-hero">
   <div class="wallpaper" aria-hidden="true">
-    <video class="wallpaper-video" muted loop playsinline preload="none" data-src="${ctx.url('assets', 'p3r', 'hero.mp4')}" poster="${ctx.url('assets', 'p3r', 'hero-poster.webp')}"></video>
     <div class="wallpaper-shards"></div>
     <div class="wallpaper-veil"></div>
   </div>

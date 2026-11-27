@@ -42,26 +42,7 @@
     }
   }
 
-  /* ---------- 首页背景视频：只在桌面、非省流时加载 ---------- */
-  const heroVideo = $('.wallpaper-video');
-  if (heroVideo) {
-    const wide = window.matchMedia('(min-width: 900px)').matches;
-    const saveData = !!(navigator.connection && navigator.connection.saveData);
-    if (reduceMotion || !wide || saveData) {
-      heroVideo.removeAttribute('autoplay');
-    } else {
-      const src = heroVideo.dataset.src;
-      if (src) {
-        const s = document.createElement('source');
-        s.src = src;
-        s.type = 'video/mp4';
-        heroVideo.appendChild(s);
-        heroVideo.load();
-        const playing = heroVideo.play();
-        if (playing && playing.catch) playing.catch(() => {});
-      }
-    }
-  }
+
 
   /* ---------- PWA：注册离线服务 ---------- */
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
