@@ -7,7 +7,7 @@ import { createEngine, renderPlainMarkdown, escapeHtml } from './src/core/markdo
 import { loadVault, createLinkIndex } from './src/core/vault.js';
 import { createRedactor, isPrivateNote } from './src/core/privacy.js';
 import { renderPage, makeUrl } from './src/site/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, tutorialsPage, linksPage, acgPage, privatePage, updatesPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, tutorialsPage, achievementsPage, linksPage, acgPage, privatePage, updatesPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -53,6 +53,7 @@ const linksData = readJson('data/links.json', { groups: [] });
 const updatesData = readJson('data/updates.json', { updated: '', entries: [] });
 const acgData = readJson('data/acg.json', { items: [] });
 const tutorialsData = readJson('data/tutorials.json', { pageSize: 12, items: [] });
+const achievementsData = readJson('data/achievements.json', { games: [], items: [] });
 
 function readJson(rel, fallback) {
   try {
@@ -343,6 +344,7 @@ ctx.esports = esportsData;
 ctx.updates = updatesData;
 ctx.acg = acgData;
 ctx.tutorials = tutorialsData;
+ctx.achievements = achievementsData;
 ctx.links = linksData;
 ctx.featuredProjects = projects
   .filter((p) => p.featured)
@@ -385,6 +387,7 @@ for (let i = 1; i <= tutorialTotalPages; i++) {
   const rel = i === 1 ? path.join('tutorials', 'index.html') : path.join('tutorials', 'page', `${i}.html`);
   writeFile(rel, tutorialsPage(ctx, i));
 }
+writeFile(path.join('achievements', 'index.html'), achievementsPage(ctx));
 writeFile(path.join('links', 'index.html'), linksPage(ctx));
 writeFile(path.join('acg', 'index.html'), acgPage(ctx));
 writeFile('private.html', privatePage(ctx));
@@ -411,6 +414,10 @@ if (fs.existsSync(layersDir)) {
   }
 }
 fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });
+const achievementsImages = path.join(ROOT, 'src/static/achievements');
+if (fs.existsSync(achievementsImages)) {
+  fs.cpSync(achievementsImages, path.join(DIST, 'assets/achievements'), { recursive: true });
+}
 fs.copyFileSync(path.join(ROOT, 'src/static/manifest.webmanifest'), path.join(DIST, 'manifest.webmanifest'));
 const buildId = crypto.createHash('sha1')
   .update(fs.readFileSync(path.join(ROOT, 'src/client/app.css')))
