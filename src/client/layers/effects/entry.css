@@ -273,8 +273,16 @@ html.entry-open .entry-cover { display: block; }
   color: var(--accent-soft);
   text-shadow: 0 0 18px rgba(2, 158, 235, 0.45);
 }
-html[data-theme='light'] .home-motto { color: rgba(8, 34, 58, 0.62); }
-html[data-theme='light'] .home-motto p:nth-child(2) { color: var(--accent); }
+html[data-theme='light'] .home-motto { color: rgba(12, 38, 64, 0.82); text-shadow: none; }
+html[data-theme='light'] .home-motto p:nth-child(2) { color: #0a6a9e; text-shadow: none; }
+
+/* 浅色主题：三行简介改成浅色磨砂底板，避免深字压在深色面板上看不清 */
+html[data-theme='light'] .home-motto-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(226, 240, 250, 0.8));
+  border-left-color: rgba(10, 106, 158, 0.5);
+  box-shadow: 0 10px 30px rgba(30, 60, 90, 0.12);
+  backdrop-filter: blur(8px);
+}
 
 /* hero 左侧空白处的三行简介 */
 .home-motto-panel {

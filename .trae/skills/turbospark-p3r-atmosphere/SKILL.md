@@ -43,6 +43,7 @@ description: 为 TURBO SPARK 增加 P3R 主题氛围层：通栏低留白布局�
 - **排除动态/非正文内容**：`.home-clock`（时间由 app.js 更新，不能拆）、`.home-motto`（打字机）、`[aria-hidden="true"]`、表单/代码/脚本。否则会出现文字被覆盖或重复动画。
 - **动画起始必须晚于 entry-frame 淡入**（约 0.55s 后），否则字符会在封面还黑着时播完，用户看不到。
 - JS 必须保留 `aria-label`、拆分失败回退原文；`prefers-reduced-motion` 直接 return。
+- **浅色主题要换底板**：`.home-motto-panel` 在 `html[data-theme='light']` 下改成浅色磨砂（白→淡蓝），文字用深蓝；不要把深色底板留到 light 主题，否则深色字会完全看不清。
 - 验证要按时间采样每个 `.entry-ch` 的 computed opacity（例如 420/840/1260/1680ms），不能只看最终全为 1。
 
 ## 验证
