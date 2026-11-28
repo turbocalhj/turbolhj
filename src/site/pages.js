@@ -1243,6 +1243,52 @@ export function notFoundPage(ctx) {
   });
 }
 
+export function accountPage(ctx) {
+  const content = `
+<section class="page-head account-head">
+  <p class="eyebrow">ACCOUNT / 账号中心</p>
+  <h1>个人中心<span class="dot">.</span></h1>
+  <p class="page-sub">管理你的头像、昵称、简介与登录密码。</p>
+</section>
+<div class="account-layout">
+  <section class="account-card account-profile-card">
+    <div class="account-profile-head">
+      <img class="account-avatar" id="account-avatar" src="${ctx.url('assets', 'avatar', 'default.svg')}" alt="账号头像" width="88" height="88">
+      <div>
+        <p class="eyebrow">SIGNED IN</p>
+        <h2 id="account-name">加载中…</h2>
+        <p class="account-email" id="account-email"></p>
+        <p class="account-joined" id="account-joined"></p>
+        <span class="account-role" id="account-role"></span>
+      </div>
+    </div>
+    <form class="account-form" id="profile-form">
+      <div class="account-field"><label for="account-name-input">昵称</label><input id="account-name-input" name="name" maxlength="32" autocomplete="nickname" required></div>
+      <div class="account-field"><label for="account-bio">简介</label><textarea id="account-bio" name="bio" maxlength="160" rows="3" placeholder="介绍一下自己…"></textarea></div>
+      <div class="account-actions"><button class="btn btn-primary" type="submit">保存资料</button><p class="account-msg" id="profile-msg" role="status" hidden></p></div>
+    </form>
+  </section>
+  <section class="account-card account-security-card">
+    <h2>账号安全</h2>
+    <p class="account-hint">修改密码后当前设备会保持登录，其他设备需要重新登录。</p>
+    <form class="account-form" id="password-form">
+      <div class="account-field"><label>当前密码</label><input name="currentPassword" type="password" minlength="8" autocomplete="current-password" required></div>
+      <div class="account-field"><label>新密码</label><input name="newPassword" type="password" minlength="8" autocomplete="new-password" required></div>
+      <div class="account-actions"><button class="btn btn-primary" type="submit">修改密码</button><p class="account-msg" id="password-msg" role="status" hidden></p></div>
+    </form>
+    <button class="account-logout" type="button" id="account-logout">退出登录</button>
+  </section>
+</div>`;
+  return renderPageWrap(ctx, {
+    title: '个人中心 · ' + ctx.profile.site.title,
+    desc: '管理账号资料、头像与密码。',
+    section: 'account',
+    bodyClass: 'page-account',
+    content,
+    noindex: true,
+  });
+}
+
 export function authPage(ctx, mode = 'login') {
   const isReg = mode === 'register';
   const content = `

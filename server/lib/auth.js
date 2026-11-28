@@ -50,7 +50,15 @@ function hash(password, salt) {
 }
 
 function publicUser(user) {
-  return { id: user.id, email: user.email, name: user.name, role: user.role, createdAt: user.createdAt };
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    avatar: user.avatar || '/assets/avatar/default.svg',
+    bio: user.bio || '',
+    role: user.role,
+    createdAt: user.createdAt,
+  };
 }
 
 export function findUser(email) {
@@ -61,7 +69,7 @@ export function countUsers() {
   return db.users.length;
 }
 
-export async function createUser({ email, password, name, role = 'user' }) {
+export async function createUser({ email, password, name, role = 'user', avatar = '/assets/avatar/default.svg', bio = '' }) {
   const normalized = String(email || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(normalized)) throw new Error('邮箱格式不正确');
   if (String(password || '').length < 8) throw new Error('密码至少 8 位');
@@ -71,6 +79,8 @@ export async function createUser({ email, password, name, role = 'user' }) {
     id: crypto.randomUUID(),
     email: normalized,
     name: String(name || '').trim().slice(0, 40) || normalized.split('@')[0],
+    avatar,
+    bio: String(bio || '').trim().slice(0, 160),
     role,
     salt,
     hash: await hash(password, salt),
@@ -101,12 +111,46 @@ export async function setPassword(userId, password) {
   save();
 }
 
+export async function updateProfile(userId, { name, bio }) {
+  const user = db.users.find((u) => u.id === userId);
+  if (!user) throw new Error('用户不存在');
+  if (name !== undefined) {
+    const next = String(name || '').trim().slice(0, 32);
+    if (next) user.name = next;
+  }
+  if (bio !== undefined) user.bio = String(bio || '').trim().slice(0, 160);
+  save();
+  return publicUser(user);
+}
+
+export async function changePassword(userId, currentPassword, nextPassword) {
+  const user = db.users.find((u) => u.id === userId);
+  if (!user) throw new Error('用户不存在');
+  const attempt = Buffer.from(await hash(String(currentPassword || ''), user.salt), 'hex');
+  const expected = Buffer.from(user.hash, 'hex');
+  if (attempt.length !== expected.length || !crypto.timingSafeEqual(attempt, expected)) {
+    throw new Error('当前密码不正确');
+  }
+  if (String(nextPassword || '').length < 8) throw new Error('新密码至少 8 位');
+  user.salt = crypto.randomBytes(16).toString('hex');
+  user.hash = await hash(nextPassword, user.salt);
+  user.sessionVersion += 1;
+  save();
+  return publicUser(user);
+}
+
 export async function ensureAdminByEnv() {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
   if (!email || !password) return null;
   if (findUser(email)) return null;
-  const user = await createUser({ email, password, name: '站长', role: 'admin' });
+  const user = await createUser({
+    email,
+    password,
+    name: process.env.ADMIN_NAME || '无根生',
+    avatar: '/assets/avatar/wugensheng.jpg',
+    role: 'admin',
+  });
   console.log(`[auth] 已根据环境变量创建管理员：${user.email}`);
   return user;
 }

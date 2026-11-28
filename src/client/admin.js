@@ -22,7 +22,7 @@
   api('/api/auth/me').then(({ user }) => {
     if (!user || user.role !== 'admin') { location.href = '/login.html?next=/admin.html'; return; }
     const box = $('#admin-user');
-    if (box) box.textContent = user.email;
+    if (box) box.textContent = user.name || user.email;
     boot();
   }).catch(() => {});
 
