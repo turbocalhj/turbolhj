@@ -1,0 +1,65 @@
+/* 说说页：时间线动态流 + 我的状态 / 待办侧栏，沿用全站设计令牌。 */
+
+.page-moments .moments-hero { padding: 26px 0 30px; }
+.page-moments .moments-hero .eyebrow { color: var(--accent-soft); letter-spacing: 0.24em; }
+.page-moments .moments-hero h1 {
+  display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap;
+  margin: 8px 0 0; font-weight: 800; line-height: 0.92;
+  font-size: clamp(56px, 11vw, 132px); letter-spacing: -0.04em;
+}
+.page-moments .moments-hero-cn { font-size: clamp(22px, 4vw, 40px); font-weight: 600; color: var(--accent-soft); letter-spacing: 0.12em; }
+.page-moments .moments-sub { margin-top: 14px; color: var(--muted); font-size: 14px; }
+
+.page-moments .moments-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 26px; align-items: start; }
+.page-moments .moments-feed { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.page-moments .moment-card {
+  padding: 18px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.page-moments .moment-card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+.page-moments .moment-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.page-moments .moment-author { display: flex; align-items: center; gap: 10px; }
+.page-moments .moment-avatar {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #0a4f86);
+  color: #06101f; font: 700 13px var(--font-mono); flex: none;
+}
+.page-moments .moment-name { font-weight: 600; font-size: 14px; }
+.page-moments .moment-meta { display: flex; align-items: center; gap: 10px; font: 11px var(--font-mono); color: var(--faint); }
+.page-moments .moment-id { color: var(--accent-soft); }
+.page-moments .moment-text { margin: 12px 0 0; font-size: 14.5px; line-height: 1.85; white-space: pre-wrap; }
+.page-moments .moment-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 12px; }
+.page-moments .moment-images img { display: block; width: 100%; border: 1px solid var(--line); border-radius: 10px; }
+.page-moments .moment-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.page-moments .moment-tag { padding: 2px 10px; border: 1px solid var(--line); border-radius: 99px; font-size: 11px; color: var(--muted); }
+
+.page-moments .moments-side { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 90px; }
+.page-moments .side-card { padding: 18px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.page-moments .side-card-title { margin-bottom: 12px; font-size: 14px; }
+.page-moments .status-online { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ok, #4fd1a5); }
+.page-moments .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
+.page-moments .status-dot.is-on { background: var(--ok, #4fd1a5); box-shadow: 0 0 8px rgba(79, 209, 165, 0.7); animation: moment-pulse 2.4s ease-in-out infinite; }
+.page-moments .status-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.page-moments .status-list > div { display: flex; gap: 10px; font-size: 13px; }
+.page-moments .status-list dt { flex: 0 0 34px; color: var(--faint); }
+.page-moments .status-list dd { margin: 0; color: var(--text); }
+.page-moments .todo-progress { margin-bottom: 10px; font: 11px var(--font-mono); color: var(--faint); }
+.page-moments .todo-list { display: flex; flex-direction: column; gap: 8px; list-style: none; }
+.page-moments .todo-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.6; }
+.page-moments .todo-box { flex: none; width: 14px; height: 14px; margin-top: 3px; border: 1px solid var(--line-strong); border-radius: 4px; }
+.page-moments .todo-list li.is-done { color: var(--faint); text-decoration: line-through; }
+.page-moments .todo-list li.is-done .todo-box { background: var(--accent); border-color: var(--accent); }
+.page-moments .about-card p { font-size: 12px; line-height: 1.8; color: var(--muted); }
+
+@keyframes moment-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+@media (max-width: 900px) {
+  .page-moments .moments-layout { grid-template-columns: minmax(0, 1fr); }
+  .page-moments .moments-side { position: static; }
+}
+@media (max-width: 560px) {
+  .page-moments .moment-card { padding: 16px; }
+  .page-moments .moment-meta { font-size: 10px; }
+  .page-moments .moment-images { grid-template-columns: minmax(0, 1fr); }
+}

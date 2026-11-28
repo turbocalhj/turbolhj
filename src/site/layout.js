@@ -52,6 +52,7 @@ const NAV = [
       { key: 'achievements', en: 'ACHIEVEMENTS', label: '游戏成就', file: 'achievements/index.html', desc: '高光截图 · 段位与记录' },
     ],
   },
+  { key: 'moments', en: 'MOMENTS', label: '说说', file: 'moments/index.html' },
   { key: 'updates', en: 'UPDATES', label: '更新', file: 'updates.html' },
 ];
 

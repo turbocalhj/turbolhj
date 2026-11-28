@@ -1278,6 +1278,73 @@ export function adminPage(ctx) {
   });
 }
 
+export function momentsPage(ctx) {
+  const data = ctx.moments || {};
+  const list = [...(data.moments || [])].sort((a, b) => b.id - a.id);
+  const author = data.author || { name: 'TURBO SPARK', initials: 'TS' };
+  const status = data.status || {};
+  const todos = data.todos || [];
+  const doneCount = todos.filter((t) => t.done).length;
+
+  const cards = list.map((m) => {
+    const images = (m.images || [])
+      .map((src) => `<img src="${ctx.url(src)}" alt="说说配图" loading="lazy" decoding="async">`)
+      .join('');
+    const tags = (m.tags || []).map((t) => `<span class="moment-tag">${escapeHtml(t)}</span>`).join('');
+    return `<article class="moment-card">
+  <header class="moment-head">
+    <div class="moment-author">
+      <span class="moment-avatar" aria-hidden="true">${escapeHtml(author.initials || 'TS')}</span>
+      <span class="moment-name">${escapeHtml(author.name)}</span>
+    </div>
+    <div class="moment-meta"><time>${escapeHtml(m.date)}</time><span class="moment-id">#${m.id}</span></div>
+  </header>
+  <p class="moment-text">${escapeHtml(m.text)}</p>
+  ${images ? `<div class="moment-images">${images}</div>` : ''}
+  ${tags ? `<div class="moment-tags">${tags}</div>` : ''}
+</article>`;
+  }).join('');
+
+  const todoItems = todos.map((t) => `<li class="${t.done ? 'is-done' : ''}"><span class="todo-box" aria-hidden="true"></span><span>${escapeHtml(t.text)}</span></li>`).join('');
+
+  const content = `
+<section class="moments-hero">
+  <p class="eyebrow">THIS IS MOMENT</p>
+  <h1>MOMENT<span class="moments-hero-cn">说说</span></h1>
+  <p class="moments-sub">一些碎碎念，随手记。</p>
+</section>
+<div class="moments-layout">
+  <main class="moments-feed">${cards}</main>
+  <aside class="moments-side">
+    <section class="side-card status-card">
+      <h3 class="side-card-title">我的状态</h3>
+      <p class="status-online"><span class="status-dot${status.online ? ' is-on' : ''}"></span>${escapeHtml(status.label || '在线')}</p>
+      <dl class="status-list">
+        <div><dt>心情</dt><dd>${escapeHtml(status.mood || '—')}</dd></div>
+        <div><dt>在做</dt><dd>${escapeHtml(status.doing || '—')}</dd></div>
+      </dl>
+    </section>
+    <section class="side-card todo-card">
+      <h3 class="side-card-title">待办 (${todos.length})</h3>
+      <p class="todo-progress">已完成 ${doneCount} / ${todos.length}</p>
+      <ul class="todo-list">${todoItems}</ul>
+    </section>
+    <section class="side-card about-card">
+      <h3 class="side-card-title">关于这里</h3>
+      <p>记录一些不想写成正式笔记的碎片：今天改了什么、学到什么、玩了什么。数据在 <code>data/moments.json</code>，改完重新构建即可。</p>
+    </section>
+  </aside>
+</div>`;
+
+  return renderPageWrap(ctx, {
+    title: '说说 · ' + ctx.profile.site.title,
+    desc: '一些碎碎念，随手记。',
+    section: 'moments',
+    bodyClass: 'page-moments',
+    content,
+  });
+}
+
 function renderPageWrap(ctx, opts) {
   return ctx.renderPage(opts);
 }
