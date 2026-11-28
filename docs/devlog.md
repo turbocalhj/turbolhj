@@ -3,6 +3,34 @@
 > 规则：每一次合并回 main 的功能/修复/重构，都在这里追加一条；写清「改了什么、为什么、怎么验证、影响面」。
 > 对外公告仍写在 `data/updates.json`（站点 `/updates.html`），本文件面向开发过程。
 
+## 2026-11-28 · 内容扩展：教程 / 成就 / 电竞 / 账号
+
+### 改动
+
+- 首页：新增三行简介「这里是 turbospark 的博客。 / 所念必至，所愿必成 / 这里会分享技术与生活~」，并在封面揭幕后逐行播放文字入场动画。
+- 学习教程：`data/tutorials.json` 120 条，首页 12 卡（4×3），`/tutorials/` 共 10 页、每页 12 条；`scripts/gen-tutorials.js` 可重建。
+- 游戏成就：新增 `/achievements/` 页面，4 个游戏筛选、12 张成就卡；图片目录 `src/static/achievements/`，数据 `data/achievements.json`；私密下拉新增「游戏成就」。
+- 电竞：接入 Liquipedia，新增 Apex 与守望先锋 2，32 名职业选手、15 张赛事海报、24 支战队；`scripts/fetch-liquipedia.js` 与 `scripts/enrich-esports.js`。
+- 账号：导航 GitHub 后新增「登录」，管理员登录后显示「后台」；`auth-nav.js` 读取 `/api/auth/me`；`npm run dev` 改为构建 + `server/index.js`（5173，含 API）。
+- 性能：构建时用 esbuild 压缩 CSS/JS，长列表 `content-visibility`，移动端降低流光 blur。
+
+### 原因
+
+- 用户希望参照 blog.ayeez.cn 的进入文字动画与教程卡片模块，并补齐账号、成就、电竞内容。
+- 电竞资料需要可复现的液体百科抓取流程；账号与后台沿用项目已有的零依赖认证实现。
+
+### 验证
+
+- `node build.js` 通过；`npm run check`：167 个 HTML、22,633 条链接全部可达。
+- 无头 Chrome：首页教程卡 12 + 三行简介 3；教程页 12 卡；成就页 12 卡/5 tab；电竞页 32 选手/15 海报/24 队伍；无 JS 异常、无横向溢出。
+- 账号：未登录时「登录」可见、「后台」隐藏；`/api/auth/me` 返回 `{"user":null}`。
+- Liquipedia 抓取：14 名选手成功取到真实字段，其余因 429 限流保留人工核对值；脚本可重复运行。
+
+### 影响面
+
+- 新增数据文件、脚本与图层；`app.css` 94K → 75K，`app.js` 13K；构建页面 167 个。
+- 电竞海报使用渐变占位与外链，不下载受版权保护的官方图片；成就图片由用户后续放入目录。
+
 ## 2026-11-27 · 通栏布局与 P3R 氛围层
 
 ### 改动
