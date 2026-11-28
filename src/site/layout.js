@@ -90,7 +90,18 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
     </div>`;
   }).join('') + `<a class="nav-link nav-ext" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span class="nav-cn">GitHub<span class="nav-ext-arrow" aria-hidden="true">↗</span></span></a>` +
   `<a class="nav-link nav-auth" href="${pageHref('login.html')}" data-auth-login><span class="nav-cn">登录</span></a>` +
-  `<a class="nav-link nav-auth nav-admin" href="${pageHref('admin.html')}" data-auth-admin hidden><span class="nav-cn">后台</span></a>`;
+  `<div class="nav-account" data-auth-account hidden>
+    <button class="nav-account-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+      <img class="nav-account-avatar" data-auth-avatar alt="" width="24" height="24">
+      <span class="nav-account-name" data-auth-name>账号</span>
+      <span class="nav-caret" aria-hidden="true"></span>
+    </button>
+    <div class="nav-account-menu" role="menu">
+      <a class="nav-account-item" role="menuitem" href="${pageHref('account.html')}">个人中心 <span>ACCOUNT</span></a>
+      <a class="nav-account-item" role="menuitem" href="${pageHref('admin.html')}" data-auth-admin-link>后台管理 <span>ADMIN</span></a>
+      <button class="nav-account-item nav-account-logout" type="button" role="menuitem" data-auth-logout>退出登录 <span>LOGOUT</span></button>
+    </div>
+  </div>`;
 
   const mobileNav = NAV.map((n) => {
     if (!n.children) {
@@ -100,7 +111,12 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
     return `<div class="nav-panel-group"><a class="nav-panel-k" href="${pageHref(n.file)}">${n.label} / ${n.en} ↗</a>${kids}</div>`;
   }).join('') + `<a class="nav-panel-link" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span>GitHub</span><em>↗</em></a>` +
   `<a class="nav-panel-link nav-auth" href="${pageHref('login.html')}" data-auth-login><span>登录</span><em>LOGIN</em></a>` +
-  `<a class="nav-panel-link nav-auth" href="${pageHref('admin.html')}" data-auth-admin hidden><span>后台</span><em>ADMIN</em></a>`;
+  `<div class="nav-panel-account" data-auth-account hidden>
+    <div class="nav-panel-user"><img class="nav-account-avatar" data-auth-avatar alt="" width="28" height="28"><span data-auth-name>账号</span></div>
+    <a class="nav-panel-sub" href="${pageHref('account.html')}"><b>个人中心</b><em>ACCOUNT</em></a>
+    <a class="nav-panel-sub" href="${pageHref('admin.html')}" data-auth-admin-link><b>后台管理</b><em>ADMIN</em></a>
+    <button class="nav-panel-sub nav-panel-logout" type="button" data-auth-logout><b>退出登录</b><em>LOGOUT</em></button>
+  </div>`;
 
   const tocHtml = toc && toc.length
     ? `<aside class="toc" aria-label="目录"><div class="toc-title">本页目录</div><nav class="toc-list">${toc

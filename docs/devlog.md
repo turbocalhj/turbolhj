@@ -3,6 +3,28 @@
 > 规则：每一次合并回 main 的功能/修复/重构，都在这里追加一条；写清「改了什么、为什么、怎么验证、影响面」。
 > 对外公告仍写在 `data/updates.json`（站点 `/updates.html`），本文件面向开发过程。
 
+## 2026-11-28 · 账号体系升级（头像菜单 + 个人中心）
+
+### 改动
+
+- 管理员显示名改为「无根生」，头像使用 `src/assets/avatar/wugensheng.jpg`；新增默认头像 `default.svg`。
+- 新增 `/account.html` 个人中心：头像、昵称、邮箱、加入时间、角色展示；昵称/简介编辑；当前密码 + 新密码修改；退出登录。
+- 账号接口：`GET/PUT /api/account/profile`、`POST /api/account/password`；`publicUser` 增加 avatar/bio，改密后重新签发会话；管理员环境变量初始化默认昵称「无根生」。
+- 导航登录后显示头像菜单（个人中心 / 后台管理 / 退出登录）；普通用户登录后默认进入 `/account.html`，管理员进入 `/admin.html`。
+
+### 原因
+
+- 用户要求账号功能达到大部分网站级别：头像身份、个人中心、资料编辑与密码管理。
+
+### 验证
+
+- `node build.js` 通过；`npm run check`：170 个 HTML、23,430 条链接全部可达。
+- 临时账号 API：注册、GET/PUT profile、修改密码全部成功；无头 Chrome 个人中心显示昵称/邮箱/加入时间/角色，导航头像菜单可展开，头像资源 `dist/assets/avatar/wugensheng.jpg` 存在。
+
+### 影响面
+
+- 新增账号中心页面/图层与 `/api/account/*` 接口；导航账号区改为头像菜单；`data/accounts.json` 为本地 gitignored 数据，管理员昵称/头像已更新。
+
 ## 2026-11-28 · 留言板与导航细节
 
 ### 改动

@@ -131,7 +131,7 @@ function readBody(req) {
 
 async function handleApi(req, res, url) {
   if (req.method === 'OPTIONS') return json(res, 204, {});
-  if (url.pathname.startsWith('/api/auth/') || url.pathname.startsWith('/api/admin/')) {
+  if (url.pathname.startsWith('/api/auth/') || url.pathname.startsWith('/api/admin/') || url.pathname.startsWith('/api/account/')) {
     return handleAccountApi(req, res, url);
   }
   if (url.pathname === '/api/health') {
@@ -337,6 +337,26 @@ async function handleAccountApi(req, res, url) {
     if (url.pathname === '/api/auth/logout' && req.method === 'POST') {
       auth.clearSession(res);
       return json(res, 200, { ok: true });
+    }
+
+    if (url.pathname === '/api/account/profile' && req.method === 'GET') {
+      return json(res, 200, { user: auth.requireUser(req) });
+    }
+
+    if (url.pathname === '/api/account/profile' && req.method === 'PUT') {
+      const user = auth.requireUser(req);
+      const body = await readBody(req);
+      const updated = await auth.updateProfile(user.id, { name: body.name, bio: body.bio });
+      return json(res, 200, { user: updated });
+    }
+
+    if (url.pathname === '/api/account/password' && req.method === 'POST') {
+      const user = auth.requireUser(req);
+      if (!auth.rateLimit(`pwd:${ip}`, 5, 60_000)) return json(res, 429, { error: '操作过于频繁' });
+      const body = await readBody(req);
+      const updated = await auth.changePassword(user.id, body.currentPassword, body.newPassword);
+      auth.issueSession(res, updated, req.headers['x-forwarded-proto'] === 'https');
+      return json(res, 200, { ok: true, user: updated });
     }
 
     const admin = auth.requireAdmin(req);

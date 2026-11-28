@@ -7,7 +7,7 @@ import { createEngine, renderPlainMarkdown, escapeHtml } from './src/core/markdo
 import { loadVault, createLinkIndex } from './src/core/vault.js';
 import { createRedactor, isPrivateNote } from './src/core/privacy.js';
 import { renderPage, makeUrl } from './src/site/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, tutorialsPage, achievementsPage, messagesPage, linksPage, acgPage, privatePage, updatesPage, momentsPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, tutorialsPage, achievementsPage, messagesPage, accountPage, linksPage, acgPage, privatePage, updatesPage, momentsPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -403,6 +403,7 @@ for (let i = 1; i <= tutorialTotalPages; i++) {
 }
 writeFile(path.join('achievements', 'index.html'), achievementsPage(ctx));
 writeFile(path.join('messages', 'index.html'), messagesPage(ctx));
+writeFile('account.html', accountPage(ctx), { noindex: true });
 writeFile(path.join('links', 'index.html'), linksPage(ctx));
 writeFile(path.join('moments', 'index.html'), momentsPage(ctx));
 writeFile(path.join('acg', 'index.html'), acgPage(ctx));

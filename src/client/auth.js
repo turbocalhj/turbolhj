@@ -27,7 +27,7 @@
       const payload = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(payload.error || '请求失败');
       const next = new URLSearchParams(location.search).get('next');
-      const target = next && next.startsWith('/') ? next : (payload.user && payload.user.role === 'admin' ? '/admin.html' : '/');
+      const target = next && next.startsWith('/') ? next : (payload.user && payload.user.role === 'admin' ? '/admin.html' : '/account.html');
       location.href = target;
     } catch (err) {
       show(err.message);

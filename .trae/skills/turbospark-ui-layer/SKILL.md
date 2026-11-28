@@ -19,7 +19,7 @@ description: 以「只加不减」的图层方式为 TURBO SPARK 增加视觉功
 | `base/` | 全站基础布局与性能：`wide-layout`、`perf` |
 | `effects/` | 动效与指针：`entry`、`text-reveal`、`motion`、`p3r-cursor`、`p3r-flow` |
 | `modules/` | 内容模块：`tutorials`、`achievements`、`esports-liquipedia` |
-| `pages/` | 页面专属：`acg`、`private`、`updates`、`index-table`、`messages`、`moments` |
+| `pages/` | 页面专属：`acg`、`private`、`updates`、`index-table`、`messages`、`moments`、`account` |
 | `account/` | 账号 UI：`auth-nav` |
 
 新图层必须放进对应分类；`build.js` 与 `layout.js` 递归扫描，`dist/assets/layers/<分类>/<文件>` 自动生成。

@@ -35,10 +35,11 @@ description: 为 TURBO SPARK 增加内容模块：学习教程分页、游戏成
 
 ## 账号导航与后台
 
-- `layout.js` 在 GitHub 后输出 `data-auth-login`（登录）与 `data-auth-admin`（后台，默认 `hidden`）。
-- `src/client/layers/account/auth-nav.js` 请求 `/api/auth/me`：管理员显示后台、隐藏登录；未登录保持默认；静态服务器无 API 时静默失败。
-- `server/index.js` 默认端口 5173，带 `/api/auth/*` 与 `/api/admin/*`；`npm run dev` 现在等于 build + server（含 API），纯静态用 `npm run dev:static`。
-- 登录/注册页已由 `authPage` 生成；后台页由 `adminPage` 生成，前端 `auth.js` / `admin.js` 处理表单与接口。
+- `layout.js` 输出 `data-auth-login`（登录）与登录后的 `data-auth-account` 头像块；`src/client/layers/account/auth-nav.js` 请求 `/api/auth/me`，显示头像菜单（个人中心 / 后台管理 / 退出登录），未登录保持登录入口。
+- 账号中心：`pages.js` 的 `accountPage(ctx)` → `/account.html`；`src/client/layers/pages/account.js/css` 负责展示头像、昵称、邮箱、加入时间、角色，编辑昵称/简介、修改密码、退出。
+- 账号接口：`GET/PUT /api/account/profile`、`POST /api/account/password`；`server/lib/auth.js` 的 `publicUser` 返回 `avatar`/`bio`，改密后会重新签发会话；管理员 `ensureAdminByEnv` 默认昵称「无根生」、头像 `/assets/avatar/wugensheng.jpg`。
+- `server/index.js` 默认端口 5173，带 `/api/auth/*`、`/api/account/*` 与 `/api/admin/*`；`npm run dev` 现在等于 build + server（含 API），纯静态用 `npm run dev:static`。
+- 登录/注册页由 `authPage` 生成；普通用户登录后默认进入 `/account.html`，管理员进入 `/admin.html`；后台页由 `adminPage` 生成。
 
 ## 留言板（messages）
 
