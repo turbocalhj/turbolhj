@@ -76,7 +76,9 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
         ${children}
       </div>
     </div>`;
-  }).join('') + `<a class="nav-link nav-ext" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span class="nav-cn">GitHub<span class="nav-ext-arrow" aria-hidden="true">↗</span></span></a>`;
+  }).join('') + `<a class="nav-link nav-ext" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span class="nav-cn">GitHub<span class="nav-ext-arrow" aria-hidden="true">↗</span></span></a>` +
+  `<a class="nav-link nav-auth" href="${pageHref('login.html')}" data-auth-login><span class="nav-cn">登录</span></a>` +
+  `<a class="nav-link nav-auth nav-admin" href="${pageHref('admin.html')}" data-auth-admin hidden><span class="nav-cn">后台</span></a>`;
 
   const mobileNav = NAV.map((n) => {
     if (!n.children) {
@@ -84,7 +86,9 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
     }
     const kids = n.children.map((c) => `<a class="nav-panel-sub" href="${pageHref(c.file)}"><b>${c.label}</b><em>${c.en}</em></a>`).join('');
     return `<div class="nav-panel-group"><a class="nav-panel-k" href="${pageHref(n.file)}">${n.label} / ${n.en} ↗</a>${kids}</div>`;
-  }).join('') + `<a class="nav-panel-link" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span>GitHub</span><em>↗</em></a>`;
+  }).join('') + `<a class="nav-panel-link" href="${escapeHtml(ctx.profile.github)}" target="_blank" rel="noopener"><span>GitHub</span><em>↗</em></a>` +
+  `<a class="nav-panel-link nav-auth" href="${pageHref('login.html')}" data-auth-login><span>登录</span><em>LOGIN</em></a>` +
+  `<a class="nav-panel-link nav-auth" href="${pageHref('admin.html')}" data-auth-admin hidden><span>后台</span><em>ADMIN</em></a>`;
 
   const tocHtml = toc && toc.length
     ? `<aside class="toc" aria-label="目录"><div class="toc-title">本页目录</div><nav class="toc-list">${toc

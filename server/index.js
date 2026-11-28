@@ -14,7 +14,7 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 const INDEX_FILE = path.join(DIST, 'assets', 'search-index.json');
 const INBOX = path.join(ROOT, 'data', 'inbox.jsonl');
-const PORT = Number(process.env.PORT || 8787);
+const PORT = Number(process.env.PORT || 5173);
 const HOST = process.env.HOST || '127.0.0.1';
 const MAX_BODY = 32 * 1024;
 
