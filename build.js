@@ -412,15 +412,24 @@ writeFile(path.join('assets', 'search-index.json'), JSON.stringify({
   notes: searchDocs,
   projects: projects.map((p) => ({ title: p.display, text: p.tagline, href: p.pageHref, category: p.category })),
 }));
-writeFile(path.join('assets', 'app.css'), fs.readFileSync(path.join(ROOT, 'src/client/app.css'), 'utf8'));
-writeFile(path.join('assets', 'app.js'), fs.readFileSync(path.join(ROOT, 'src/client/app.js'), 'utf8'));
+const minifyAsset = (file, loader) => esbuild.transformSync(
+  fs.readFileSync(path.join(ROOT, file), 'utf8'),
+  { loader, minify: true, legalComments: 'none' },
+).code;
+writeFile(path.join('assets', 'app.css'), minifyAsset('src/client/app.css', 'css'));
+writeFile(path.join('assets', 'app.js'), minifyAsset('src/client/app.js', 'js'));
 for (const name of ['auth.js', 'admin.js']) {
-  writeFile(path.join('assets', name), fs.readFileSync(path.join(ROOT, 'src/client', name), 'utf8'));
+  writeFile(path.join('assets', name), minifyAsset(`src/client/${name}`, 'js'));
 }
 const layersDir = path.join(ROOT, 'src/client/layers');
 if (fs.existsSync(layersDir)) {
   for (const name of fs.readdirSync(layersDir).sort()) {
-    writeFile(path.join('assets', 'layers', name), fs.readFileSync(path.join(layersDir, name), 'utf8'));
+    const ext = path.extname(name).slice(1);
+    const src = fs.readFileSync(path.join(layersDir, name), 'utf8');
+    const out = ext === 'css' || ext === 'js'
+      ? esbuild.transformSync(src, { loader: ext, minify: true, legalComments: 'none' }).code
+      : src;
+    writeFile(path.join('assets', 'layers', name), out);
   }
 }
 fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });

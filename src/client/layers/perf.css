@@ -1,0 +1,21 @@
+/* ==========================================================================
+   性能优化：长列表卡片延迟渲染；移动端降低流光滤镜开销。
+   只影响渲染成本，不改变布局与内容。
+   ========================================================================== */
+
+.tutorial-card,
+.ach-card,
+.poster-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+@media (max-width: 600px) {
+  .ts-flow-glow { filter: blur(18px); }
+  .ts-flow-beam { filter: blur(12px); }
+  .ts-flow-scan { opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-flow { opacity: 0.3; }
+}
