@@ -25,7 +25,9 @@ function cleanDist(dir) {
   while (stack.length) {
     const d = stack.pop();
     dirs.push(d);
-    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+    let entries;
+    try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch { continue; } // 目录被宿主环境的异步清理移除时跳过
+    for (const e of entries) {
       const abs = path.join(d, e.name);
       if (e.isDirectory()) stack.push(abs);
       else {

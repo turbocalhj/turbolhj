@@ -1,0 +1,74 @@
+{
+  "updated": "2026-11-28",
+  "note": "随手记的碎碎念。内容与日期都是示例，直接改这份 JSON 即可维护自己的动态。",
+  "author": {
+    "name": "TURBO SPARK",
+    "handle": "turbocalhj",
+    "initials": "TS"
+  },
+  "status": {
+    "online": true,
+    "label": "在线",
+    "mood": "美滋滋",
+    "doing": "给网站加「说说」页面"
+  },
+  "todos": [
+    { "text": "给搜索接入中文分词（Rust/WASM）", "done": false },
+    { "text": "补一条 GitHub Actions 自动部署", "done": false },
+    { "text": "整理 Go 短链的压测与限流报告", "done": false },
+    { "text": "复习 Flink 侧输出与事件时间窗口", "done": false },
+    { "text": "过一遍 React Server Components", "done": false },
+    { "text": "复习 Redis 持久化与过期策略", "done": false },
+    { "text": "把 PLM 对账 SQL 整理成模板", "done": false },
+    { "text": "构建期渲染改并行（worker_threads）", "done": false },
+    { "text": "整理 BOM 导出的 29 版踩坑记录", "done": false },
+    { "text": "CS2 Mirage 道具点位再过一遍", "done": false },
+    { "text": "P3R 二周目把羁绊补满", "done": false },
+    { "text": "看完 DDIA 的复制与分区两章", "done": false },
+    { "text": "给说说加按标签筛选", "done": true }
+  ],
+  "moments": [
+    {
+      "id": 6,
+      "date": "2026/11/28 20:30:45",
+      "text": "给网站加了「说说」这个入口。参考了阿叶的时间线布局：左边是动态流，右边是状态和待办，套回自己那套深蓝主题，意外地挺搭。",
+      "tags": ["建站"],
+      "images": []
+    },
+    {
+      "id": 5,
+      "date": "2026/11/24 22:14:09",
+      "text": "往知识库里补了 8 篇技术博客摘要，Go 的 done channel、PWA 缓存策略、Rust 编译 WASM 都在里面。双链零未解析的感觉很爽，比收藏夹吃灰强多了。",
+      "tags": ["知识库"],
+      "images": []
+    },
+    {
+      "id": 4,
+      "date": "2026/11/20 23:02:31",
+      "text": "游戏库和电竞页上线。筛选、排序、视图切换都做了，最喜欢的是游戏封面那层扫描线——没用一张真实封面图，全靠渐变和等宽字体撑起来的。",
+      "tags": ["建站", "前端"],
+      "images": ["assets/moments/sample.svg"]
+    },
+    {
+      "id": 3,
+      "date": "2026/11/15 21:48:12",
+      "text": "Mirage 的烟练了一晚上，总算不歪了。道具这东西就是肌肉记忆，跟写 SQL 一样，看着都会，上手就废。",
+      "tags": ["游戏"],
+      "images": []
+    },
+    {
+      "id": 2,
+      "date": "2026/11/09 19:26:50",
+      "text": "把 Go 短链的错误模型又梳理了一遍：统一错误 + 请求 ID + 优雅关闭，再读 Go Blog 那篇 pipelines，发现 context 就是 done channel 的标准答案。",
+      "tags": ["后端"],
+      "images": []
+    },
+    {
+      "id": 1,
+      "date": "2026/11/02 23:40:18",
+      "text": "徐州降温了。晚上煮了碗面，改 bug 改到十一点，最后发现是少了个逗号。冬天的第一碗面，献给一个逗号。",
+      "tags": ["生活"],
+      "images": []
+    }
+  ]
+}

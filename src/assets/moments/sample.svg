@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a2a4a"/>
+      <stop offset="1" stop-color="#050b17"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#029eeb" stroke-opacity="0.16"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <rect width="640" height="360" fill="url(#grid)"/>
+  <g stroke="#ffffff" stroke-opacity="0.05">
+    <path d="M0 8 H640 M0 16 H640 M0 24 H640 M0 32 H640 M0 40 H640 M0 48 H640 M0 56 H640 M0 64 H640 M0 72 H640 M0 80 H640 M0 88 H640 M0 96 H640 M0 104 H640 M0 112 H640 M0 120 H640 M0 128 H640 M0 136 H640 M0 144 H640 M0 152 H640 M0 160 H640 M0 168 H640 M0 176 H640 M0 184 H640 M0 192 H640 M0 200 H640 M0 208 H640 M0 216 H640 M0 224 H640 M0 232 H640 M0 240 H640 M0 248 H640 M0 256 H640 M0 264 H640 M0 272 H640 M0 280 H640 M0 288 H640 M0 296 H640 M0 304 H640 M0 312 H640 M0 320 H640 M0 328 H640 M0 336 H640 M0 344 H640 M0 352 H640"/>
+  </g>
+  <text x="320" y="188" text-anchor="middle" fill="#7fd4ff" font-family="monospace" font-size="52" font-weight="700" letter-spacing="-2">MOMENT</text>
+  <text x="320" y="224" text-anchor="middle" fill="#93a5c0" font-family="monospace" font-size="15" letter-spacing="2">说说配图占位 · REPLACE WITH YOUR PHOTO</text>
+</svg>
