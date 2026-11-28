@@ -37,6 +37,8 @@
 
   function removeCover() {
     if (cover.parentNode) cover.parentNode.removeChild(cover);
+    // 封面揭幕后再播放首页 hero 的逐行文字动画
+    if (body) body.classList.add('is-hero-in');
   }
 
   function markSeen() {
