@@ -27,11 +27,14 @@ export function makeUrl(base) {
 const NAV = [
   { key: 'home', en: 'HOME', label: '主页', file: 'index.html' },
   { key: 'projects', en: 'PROJECTS', label: '项目', file: 'projects/index.html' },
+  { key: 'knowledge', en: 'KNOWLEDGE', label: '知识库', file: 'knowledge/index.html' },
+  { key: 'archive', en: 'ARCHIVE', label: '档案库', file: 'archive.html' },
+  { key: 'links', en: 'LINKS', label: '友链', file: 'links/index.html' },
   { key: 'acg', en: 'ACG', label: 'ACG', file: 'acg/index.html' },
   {
     key: 'private',
-    en: 'PRIVATE',
-    label: '私密',
+    en: 'PERSONAL',
+    label: '个人',
     file: 'private.html',
     children: [
       { key: 'games', en: 'GAMES', label: '游戏库', file: 'games/index.html', desc: '游戏评分 · 游玩记录' },
@@ -39,11 +42,7 @@ const NAV = [
       { key: 'achievements', en: 'ACHIEVEMENTS', label: '游戏成就', file: 'achievements/index.html', desc: '高光截图 · 段位与记录' },
     ],
   },
-  { key: 'knowledge', en: 'KNOWLEDGE', label: '知识库', file: 'knowledge/index.html' },
-  { key: 'archive', en: 'ARCHIVE', label: '档案库', file: 'archive.html' },
   { key: 'updates', en: 'UPDATES', label: '更新', file: 'updates.html' },
-  { key: 'links', en: 'LINKS', label: '友链', file: 'links/index.html' },
-  { key: 'about', en: 'ABOUT', label: '关于', file: 'about.html' },
 ];
 
 const WAVES = `<svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
