@@ -172,8 +172,8 @@ export function reloadPage(ctx) {
       <p class="home-role">${escapeHtml(p.person.role)} · ${escapeHtml(p.person.location)}</p>
 
       <blockquote class="home-quote">
-        <p>把项目、技术记录与工程判断，收进一个可回溯的档案。</p>
-        <cite>${escapeHtml(p.site.description)}</cite>
+        <p>把项目、技术记录与工程判断，收进一个可回溯的档案</p>
+        <cite>${escapeHtml(String(p.site.description || '').replace(/[。.]\s*$/, ''))}<span class="home-quote-motto">Dirty Deeds Done Dirt Cheap</span></cite>
       </blockquote>
       <div class="home-actions">
         <a class="btn btn-primary" href="${ctx.url('archive.html')}">打开档案库 <span aria-hidden="true">→</span></a>
