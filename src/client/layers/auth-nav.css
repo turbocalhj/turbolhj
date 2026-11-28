@@ -1,0 +1,6 @@
+/* 导航账号状态：默认显示“登录”，管理员登录后显示“后台”。 */
+[data-auth-login][hidden],
+[data-auth-admin][hidden] { display: none !important; }
+
+.nav-auth .nav-cn { color: inherit; }
+.nav-auth:hover .nav-cn { color: var(--accent-soft); }
