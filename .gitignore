@@ -9,3 +9,7 @@ data/session.secret
 .env
 .env.local
 .worktrees/
+# 本地 IDE / 验证产物
+.arts/
+.security/
+.screenshots/
