@@ -40,6 +40,13 @@ description: 为 TURBO SPARK 增加内容模块：学习教程分页、游戏成
 - `server/index.js` 默认端口 5173，带 `/api/auth/*` 与 `/api/admin/*`；`npm run dev` 现在等于 build + server（含 API），纯静态用 `npm run dev:static`。
 - 登录/注册页已由 `authPage` 生成；后台页由 `adminPage` 生成，前端 `auth.js` / `admin.js` 处理表单与接口。
 
+## 留言板（messages）
+
+- 页面：`pages.js` 的 `messagesPage(ctx)`，`build.js` 写 `messages/index.html`；导航放在「个人」后。
+- 前端：`src/client/layers/pages/messages.js` 请求 `GET /api/messages?limit=100`、提交 `POST /api/messages`；纯 DOM + `textContent` 渲染防 XSS；含预览、字数统计、最新/最早排序。
+- 服务端：`server/index.js` 的 `/api/messages`，GET 只返回 `public:true` 的条目；POST 校验昵称/留言/邮箱/网址、蜜罐 `hp`、每 IP 5 次/分钟限流，写入 `data/inbox.jsonl`；后台收件箱继续可查看/删除。
+- 样式：`src/client/layers/pages/messages.css`，1000px 居中，SAY HELLO 标题 + 全站留言列表 + 留言区表单。
+
 ## 构建性能
 
 - `build.js` 用 `esbuild.transformSync` 压缩 `app.css`、`app.js`、`auth.js`、`admin.js` 与所有 layers CSS/JS。

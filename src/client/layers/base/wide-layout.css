@@ -16,10 +16,10 @@
     padding-right: clamp(24px, 3.2vw, 64px);
   }
 
-  .topbar-inner { gap: clamp(20px, 2.4vw, 44px); }
+  .topbar-inner { gap: clamp(16px, 2vw, 36px); }
 
-  .nav { gap: 8px; }
-  .nav-link { padding: 9px 13px; }
+  .nav { gap: 2px; }
+  .nav-link { padding: 8px 9px; }
 
   .page { width: min(1480px, calc(100% - 64px)); }
 
@@ -34,12 +34,12 @@
   .topbar-inner { gap: 16px; }
   .brand-sub { display: none; }
   .nav { gap: 2px; }
-  .nav-link { padding: 8px 7px; }
+  .nav-link { padding: 7px 6px; }
   .nav-cn { font-size: 12.5px; }
 }
 
-/* 超宽屏再把导航间距拉开，避免全部挤在右侧 */
+/* 超宽屏再把导航间距稍微拉开，避免全部挤在右侧 */
 @media (min-width: 1600px) {
-  .topbar-inner { gap: 56px; }
-  .nav { gap: 10px; }
+  .topbar-inner { gap: 40px; }
+  .nav { gap: 4px; }
 }

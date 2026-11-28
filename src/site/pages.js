@@ -924,6 +924,49 @@ export function achievementsPage(ctx) {
   });
 }
 
+export function messagesPage(ctx) {
+  const content = `
+<section class="page-head messages-head">
+  <p class="eyebrow">SAY HELLO / MESSAGES</p>
+  <h1>留言<span class="dot">.</span></h1>
+  <p class="page-sub">这里会把所有留言汇总到一起，欢迎在这里留言交流。昵称必填，邮箱不会公开，支持预览后再发送。</p>
+</section>
+<div class="messages-layout">
+  <section class="msg-panel msg-list-panel" aria-labelledby="msg-list-title">
+    <header class="msg-panel-head">
+      <div><h2 id="msg-list-title">全站留言</h2><p class="msg-count" id="msg-count">加载中…</p></div>
+      <div class="msg-tabs" role="group" aria-label="留言排序">
+        <button type="button" class="is-active" data-msg-sort="new" aria-pressed="true">最新</button>
+        <button type="button" data-msg-sort="old" aria-pressed="false">最早</button>
+      </div>
+    </header>
+    <div class="msg-list" id="msg-list" aria-live="polite"><p class="msg-empty">正在加载留言…</p></div>
+  </section>
+  <section class="msg-panel msg-form-panel" aria-labelledby="msg-form-title">
+    <header class="msg-panel-head"><div><h2 id="msg-form-title">留言区</h2><p>昵称必填，邮箱不会公开。支持预览后再发送。</p></div></header>
+    <form class="msg-form" id="message-form" novalidate>
+      <div class="msg-fields">
+        <label><span>昵称 <em>*</em></span><input name="name" maxlength="32" autocomplete="nickname" placeholder="怎么称呼你？" required></label>
+        <label><span>邮箱</span><input name="email" type="email" maxlength="120" autocomplete="email" placeholder="选填，不会公开"></label>
+        <label class="msg-field-full"><span>网址</span><input name="website" type="url" maxlength="200" autocomplete="url" placeholder="选填，https://"></label>
+      </div>
+      <label class="msg-textarea"><span>留言 <em>*</em><b id="msg-chars">0 / 500</b></span><textarea name="message" maxlength="500" rows="5" placeholder="想说什么都可以…" required></textarea></label>
+      <input class="msg-hp" name="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="msg-actions"><p class="msg-status" id="msg-status" role="status"></p><button type="button" class="msg-btn msg-btn-ghost" id="msg-preview">预览</button><button type="submit" class="msg-btn msg-btn-primary" id="msg-send">发送 <span aria-hidden="true">↗</span></button></div>
+      <div class="msg-preview-box" id="msg-preview-box" hidden></div>
+    </form>
+  </section>
+</div>`;
+
+  return renderPageWrap(ctx, {
+    title: '留言 · ' + ctx.profile.site.title,
+    desc: '留言板：欢迎在这里留言交流，记录想法与建议。',
+    section: 'messages',
+    bodyClass: 'page-messages',
+    content,
+  });
+}
+
 export function linksPage(ctx) {
   const groups = ctx.links?.groups || [];
   const total = groups.reduce((n, g) => n + (g.links?.length || 0), 0);

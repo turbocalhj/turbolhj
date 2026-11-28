@@ -1,0 +1,228 @@
+/* ==========================================================================
+   留言板：参考 blog.ayeez.cn 的 SAY HELLO / COMMENTS 布局
+   顶部标题 + “全站留言”列表 + “留言区”表单，内容区 1000px 居中。
+   ========================================================================== */
+
+.messages-head h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(40px, 5.2vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.messages-head .page-sub { max-width: 720px; }
+
+.messages-layout {
+  display: grid;
+  gap: 18px;
+  width: min(1000px, 100%);
+  margin: 0 auto;
+  padding-bottom: 88px;
+}
+
+.msg-panel {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(8, 18, 33, 0.72);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+  padding: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.msg-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.msg-panel-head h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.msg-panel-head p {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.msg-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(3, 8, 17, 0.4);
+}
+
+.msg-tabs button {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.msg-tabs button:hover { color: var(--accent-soft); }
+.msg-tabs button.is-active { background: rgba(2, 158, 235, 0.18); color: var(--accent-soft); }
+
+.msg-list {
+  display: grid;
+  gap: 0;
+  max-height: 560px;
+  overflow: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(127, 212, 255, 0.25) transparent;
+}
+
+.msg-item {
+  display: flex;
+  gap: 13px;
+  padding: 17px 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.msg-item:last-child { border-bottom: 0; }
+
+.msg-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(135deg, #1c5e9e, #0b2a4d);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.msg-body { min-width: 0; }
+.msg-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.msg-meta b { font-size: 13px; color: var(--text); }
+.msg-meta time { font-family: var(--font-mono); font-size: 9.5px; color: var(--faint); }
+.msg-site { font-family: var(--font-mono); font-size: 9.5px; color: var(--accent-soft); }
+.msg-text { margin: 7px 0 0; font-size: 13px; line-height: 1.8; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.msg-empty { padding: 34px 18px; text-align: center; font-size: 12.5px; color: var(--muted); }
+
+.msg-form { padding-top: 18px; }
+
+.msg-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.msg-fields label,
+.msg-textarea { display: grid; gap: 7px; }
+.msg-fields label span,
+.msg-textarea > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.msg-fields label em,
+.msg-textarea em { color: var(--accent-soft); font-style: normal; }
+.msg-textarea b { font-family: var(--font-mono); font-size: 9px; font-weight: 400; color: var(--faint); }
+.msg-field-full { grid-column: 1 / -1; }
+
+.msg-fields input,
+.msg-textarea textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(3, 8, 17, 0.52);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.msg-fields input:focus,
+.msg-textarea textarea:focus {
+  border-color: rgba(127, 212, 255, 0.65);
+  box-shadow: 0 0 0 3px rgba(2, 158, 235, 0.12);
+}
+
+.msg-textarea textarea { resize: vertical; min-height: 118px; }
+.msg-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.msg-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.msg-status { margin: 0 auto 0 0; font-size: 11.5px; color: var(--muted); }
+.msg-status.is-error { color: #ff8b8b; }
+.msg-status.is-ok { color: var(--accent-soft); }
+
+.msg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.msg-btn:hover { border-color: var(--accent-soft); color: var(--accent-soft); }
+.msg-btn-primary { border-color: rgba(2, 158, 235, 0.6); background: rgba(2, 158, 235, 0.22); color: #fff; }
+.msg-btn-primary:hover { background: rgba(2, 158, 235, 0.34); color: #fff; }
+.msg-btn:disabled { opacity: 0.5; cursor: wait; }
+
+.msg-preview-box {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: rgba(3, 8, 17, 0.34);
+}
+
+.msg-preview-box p { margin: 0; font-size: 12.5px; line-height: 1.8; color: var(--muted); white-space: pre-wrap; }
+
+html[data-theme='light'] .msg-panel { background: rgba(255, 255, 255, 0.72); box-shadow: 0 14px 34px rgba(8, 34, 58, 0.08); }
+html[data-theme='light'] .msg-tabs { background: rgba(240, 246, 252, 0.8); }
+html[data-theme='light'] .msg-fields input,
+html[data-theme='light'] .msg-textarea textarea { background: rgba(255, 255, 255, 0.82); }
+html[data-theme='light'] .msg-preview-box { background: rgba(240, 246, 252, 0.7); }
+
+@media (max-width: 700px) {
+  .msg-panel { padding: 18px; }
+  .msg-panel-head { flex-direction: column; gap: 10px; }
+  .msg-fields { grid-template-columns: minmax(0, 1fr); }
+  .msg-field-full { grid-column: auto; }
+  .msg-actions { flex-wrap: wrap; }
+  .msg-status { flex-basis: 100%; }
+}
