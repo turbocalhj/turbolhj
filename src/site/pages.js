@@ -1132,21 +1132,23 @@ export function updatesPage(ctx) {
 
   const tabs = ['全部', ...tags].map((tag, i) => {
     const count = tag === '全部' ? entries.length : entries.filter((e) => e.tag === tag).length;
-    return `<button type="button" class="upd-tab${i === 0 ? ' is-active' : ''}" data-upd-filter="${escapeHtml(tag === '全部' ? '*' : tag)}" aria-pressed="${i === 0}">${escapeHtml(tag)}<em>${count}</em></button>`;
+    return `<button type="button" class="log-tab${i === 0 ? ' is-active' : ''}" data-upd-filter="${escapeHtml(tag === '全部' ? '*' : tag)}" aria-pressed="${i === 0}">${escapeHtml(tag)}<em>${count}</em></button>`;
   }).join('');
 
   const rows = entries.map((e, i) => `
-<article class="upd-item" data-tag="${escapeHtml(e.tag || '')}">
-  <div class="upd-when">
-    <b>${escapeHtml(shortDate(e.date))}</b>
-    <span>${escapeHtml(yearOf(e.date))}</span>
-    <em>${String(i + 1).padStart(2, '0')}</em>
+<article class="log-item" data-tag="${escapeHtml(e.tag || '')}">
+  <div class="log-date">
+    <time datetime="${escapeHtml(e.date || '')}">${escapeHtml(e.date || '')}</time>
+    <span>${String(i + 1).padStart(2, '0')} / LOG</span>
   </div>
-  <div class="upd-body">
-    <p class="upd-tagline"><span class="upd-dot" aria-hidden="true"></span>${escapeHtml(e.tag || '更新')}</p>
-    <h2 class="upd-title">${escapeHtml(e.title || '')}</h2>
-    ${e.summary ? `<p class="upd-sum">${escapeHtml(e.summary)}</p>` : ''}
-    ${Array.isArray(e.bullets) && e.bullets.length ? `<ul class="upd-points">${e.bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>` : ''}
+  <div class="log-axis" aria-hidden="true"><i></i></div>
+  <div class="log-card">
+    <div class="log-card-head">
+      <h2>${escapeHtml(e.title || '')}</h2>
+      <div class="log-badges">${i === 0 ? '<span class="log-latest">最新</span>' : ''}<span class="log-tag">${escapeHtml(e.tag || '更新')}</span></div>
+    </div>
+    ${e.summary ? `<p class="log-sum">${escapeHtml(e.summary)}</p>` : ''}
+    ${Array.isArray(e.bullets) && e.bullets.length ? `<ul class="log-points">${e.bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>` : ''}
   </div>
 </article>`).join('');
 
@@ -1183,24 +1185,24 @@ export function updatesPage(ctx) {
   </div>`;
 
   const content = `
-<div class="upd-sheet">
-  <header class="upd-head">
-    <p class="upd-kicker">01 / UPDATE LOG</p>
-    <div class="upd-head-row">
-      <h1 class="upd-h1">更新公告<span>.</span></h1>
-      <div class="upd-stamp"><b>${entries.length}</b> 条记录<span>LAST UPDATE ${escapeHtml(latest ? String(latest.date || '').replace(/-/g, '.') : '—')}</span></div>
-    </div>
-    <p class="upd-sub">记录站点的功能、内容与体验改进。所有变更只做新增与修正，已发布的区块不删改。</p>
+<div class="log-page">
+  <header class="log-head">
+    <p class="log-kicker">SITE LOG / UPDATE HISTORY</p>
+    <h1>网站更新日志</h1>
+    <p class="log-sub">记录站点的功能、内容与体验改进。所有变更只做新增与修正，把每一次迭代都留在时间线里。</p>
+    <div class="log-meta"><span>${entries.length} 条记录</span><span>LAST UPDATE ${escapeHtml(latest ? String(latest.date || '').replace(/-/g, '.') : '—')}</span></div>
   </header>
-  <nav class="upd-tabs" aria-label="按类型筛选更新">${tabs}</nav>
-  <div class="upd-list">${rows}</div>
-  <p class="upd-noresult" hidden>这个分类下还没有记录。</p>
-  <section class="upd-now" aria-labelledby="upd-now-title">
-    <p class="upd-kicker">02 / NOW</p>
-    <div class="upd-head-row"><h2 class="upd-h2" id="upd-now-title">最近在做什么<span>.</span></h2><a class="upd-more" href="${ctx.url('games', 'index.html')}">去游戏库 <span aria-hidden="true">→</span></a></div>
+  <nav class="log-tabs" aria-label="按类型筛选更新">${tabs}</nav>
+  <div class="log-timeline">${rows}</div>
+  <p class="log-noresult" hidden>这个分类下还没有记录。</p>
+  <section class="log-now" aria-labelledby="log-now-title">
+    <div class="log-now-head">
+      <div><p class="log-kicker">02 / NOW</p><h2 id="log-now-title">最近在做什么</h2></div>
+      <a class="log-more" href="${ctx.url('games', 'index.html')}">去游戏库 <span aria-hidden="true">→</span></a>
+    </div>
     ${nowCards}
   </section>
-  <footer class="upd-quote">
+  <footer class="log-quote">
     <p>把项目、技术记录与工程判断，收进一个可回溯的档案。</p>
     <span>THE ARCHIVE CONTINUES · ${escapeHtml(yearOf(latest && latest.date))}</span>
   </footer>

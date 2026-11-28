@@ -1,13 +1,13 @@
-/* 更新公告页：按标签筛选条目。仅在存在 .upd-sheet 的页面执行。 */
+/* 更新公告页：按标签筛选条目。仅在存在 .log-page 的页面执行。 */
 (function () {
   'use strict';
 
-  var sheet = document.querySelector('.upd-sheet');
-  if (!sheet) return;
+  var page = document.querySelector('.log-page');
+  if (!page) return;
 
-  var tabs = Array.prototype.slice.call(sheet.querySelectorAll('[data-upd-filter]'));
-  var items = Array.prototype.slice.call(sheet.querySelectorAll('.upd-item'));
-  var empty = sheet.querySelector('.upd-noresult');
+  var tabs = Array.prototype.slice.call(page.querySelectorAll('[data-upd-filter]'));
+  var items = Array.prototype.slice.call(page.querySelectorAll('.log-item'));
+  var empty = page.querySelector('.log-noresult');
   if (!tabs.length || !items.length) return;
 
   function apply(filter) {

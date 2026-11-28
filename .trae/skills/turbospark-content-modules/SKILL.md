@@ -48,6 +48,12 @@ description: 为 TURBO SPARK 增加内容模块：学习教程分页、游戏成
 - 服务端：`server/index.js` 的 `/api/messages`，GET 只返回 `public:true` 的条目；POST 校验昵称/留言/邮箱/网址、蜜罐 `hp`、每 IP 5 次/分钟限流，写入 `data/inbox.jsonl`；后台收件箱继续可查看/删除。
 - 样式：`src/client/layers/pages/messages.css`，1000px 居中，SAY HELLO 标题 + 全站留言列表 + 留言区表单。
 
+## 更新日志（updates）
+
+- 页面：`pages.js` 的 `updatesPage(ctx)` → `updates.html`；采用 `.log-page` 垂直时间线：左侧日期（暖金色）、中间竖线、右侧卡片。
+- 卡片：标题 + 最新/分类标签 + 摘要 + 要点；数据来自 `data/updates.json`。
+- 交互：`src/client/layers/pages/updates.js` 按 `[data-upd-filter]` 过滤 `.log-item`；样式在 `pages/updates-log.css`。
+
 ## 构建性能
 
 - `build.js` 用 `esbuild.transformSync` 压缩 `app.css`、`app.js`、`auth.js`、`admin.js` 与所有 layers CSS/JS。
