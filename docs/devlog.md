@@ -3,6 +3,28 @@
 > 规则：每一次合并回 main 的功能/修复/重构，都在这里追加一条；写清「改了什么、为什么、怎么验证、影响面」。
 > 对外公告仍写在 `data/updates.json`（站点 `/updates.html`），本文件面向开发过程。
 
+## 2026-11-28 · 学习教程排版对齐参考站
+
+### 改动
+
+- 教程网格从 4 列 P3R 大卡改为 blog.ayeez.cn 首页文章卡样式：内容区最大 1000px 居中、3 列 × 4 行、列宽 320px、卡片间距 20px。
+- 卡片结构：封面 180px（分类色渐变 + 编号 + 分类标签）→ 标题 18px → 摘要 13px（最多 3 行）→ 底部难度/时长与箭头。
+- 新增 `src/client/layers/tutorials-reveal.js`：滚动到视口时按参考站 row-reveal 渐入，`prefers-reduced-motion` 时直接显示。
+- 首页与 `/tutorials/` 10 页共用同一套卡片与分页布局。
+
+### 原因
+
+- 用户明确要求学习教程排版参照 blog.ayeez.cn 首页下方文章列表；参考站 CSS 实际为 `grid-template-columns: repeat(3,1fr)`、`width:70%; max-width:1000px`、封面 `height:180px`、标题 18px、摘要 13px。
+
+### 验证
+
+- `node build.js` 通过；`npm run check`：167 个 HTML、22,299 条链接全部可达。
+- 1440 无头 Chrome：教程网格 `1000px`、`grid-template-columns: 320px 320px 320px`、卡片 `320×358`、封面 `316×180`、12 张卡片、`overflowX=0`；截图确认 3 列卡片与参考站结构一致。
+
+### 影响面
+
+- 仅教程相关样式、卡片模板与一个滚动渐入图层；其他页面不变。
+
 ## 2026-11-28 · 首页排版与逐字载入修正
 
 ### 改动
