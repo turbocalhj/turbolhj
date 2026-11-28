@@ -315,7 +315,7 @@ html[data-theme='light'] .nav-link.is-active::after { box-shadow: 0 0 10px rgba(
 
 /* ---------- 导航悬浮分组（私密：游戏库 / 电竞） ---------- */
 .nav-group { position: relative; display: flex; align-items: center; }
-.nav-caret { display: inline-block; margin-left: 4px; font-size: 8px; letter-spacing: 0; opacity: 0.55; transform: translateY(-1px); }
+.nav-caret { display: inline-block; width: 5px; height: 5px; margin-left: 6px; margin-bottom: 2px; border-right: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; transform: rotate(45deg); opacity: 0.55; }
 .nav-group.is-active .nav-trigger { color: var(--text); }
 .nav-group.is-active .nav-trigger::after {
   content: '';

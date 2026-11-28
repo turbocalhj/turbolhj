@@ -52,6 +52,7 @@ const NAV = [
       { key: 'achievements', en: 'ACHIEVEMENTS', label: '游戏成就', file: 'achievements/index.html', desc: '高光截图 · 段位与记录' },
     ],
   },
+  { key: 'messages', en: 'MESSAGES', label: '留言', file: 'messages/index.html' },
   { key: 'moments', en: 'MOMENTS', label: '说说', file: 'moments/index.html' },
   { key: 'updates', en: 'UPDATES', label: '更新', file: 'updates.html' },
 ];
@@ -81,7 +82,7 @@ export function renderPage({ ctx, title, desc, section, content, sidebar, toc, b
         <b>${c.label}</b><em>${c.en} · ${c.desc}</em><span class="nav-drop-arrow" aria-hidden="true">↗</span>
       </a>`).join('');
     return `<div class="nav-group${active ? ' is-active' : ''}">
-      <a class="nav-link nav-trigger" href="${pageHref(n.file)}"${n.key === section ? ' aria-current="page"' : ''} aria-haspopup="true"><span class="nav-cn">${n.label}<span class="nav-caret" aria-hidden="true">▾</span></span></a>
+      <a class="nav-link nav-trigger" href="${pageHref(n.file)}"${n.key === section ? ' aria-current="page"' : ''} aria-haspopup="true"><span class="nav-cn">${n.label}<span class="nav-caret" aria-hidden="true"></span></span></a>
       <div class="nav-drop" role="group" aria-label="${n.label}内容">
         <p class="nav-drop-kicker">${n.en} ARCHIVE</p>
         ${children}

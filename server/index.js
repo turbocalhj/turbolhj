@@ -153,6 +153,35 @@ async function handleApi(req, res, url) {
     const q = url.searchParams.get('q') || '';
     return json(res, 200, { q, results: search(q, url.searchParams.get('limit')) });
   }
+  if (url.pathname === '/api/messages') {
+    if (req.method === 'GET') {
+      const items = readInbox().filter((entry) => entry.public === true).slice(0, 100).map(publicMessage);
+      return json(res, 200, { messages: items });
+    }
+    if (req.method !== 'POST') return json(res, 405, { error: 'method not allowed' });
+    const ip = req.socket.remoteAddress || 'unknown';
+    if (!allow('message:' + ip, 5)) return json(res, 429, { error: '留言太频繁，请一分钟后再试。' });
+    let payload;
+    try { payload = await readBody(req); }
+    catch (err) { return json(res, 400, { error: err.message }); }
+    if (String(payload.hp || '').trim()) return json(res, 201, { ok: true });
+    const name = String(payload.name || '').trim().slice(0, 32);
+    const email = String(payload.email || '').trim().slice(0, 120);
+    const message = String(payload.message || '').trim().slice(0, 500);
+    let website = String(payload.website || '').trim().slice(0, 200);
+    if (!name || !message) return json(res, 400, { error: '昵称和留言是必填的。' });
+    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: '邮箱格式不正确。' });
+    if (website) {
+      if (!/^https?:\/\//i.test(website)) website = 'https://' + website;
+      try {
+        const parsed = new URL(website);
+        if (!/^https?:$/.test(parsed.protocol)) throw new Error('bad');
+        website = parsed.href;
+      } catch { return json(res, 400, { error: '网址格式不正确。' }); }
+    }
+    fs.appendFileSync(INBOX, `${JSON.stringify({ at: new Date().toISOString(), name, email, website, message, kind: 'message', public: true })}\n`);
+    return json(res, 201, { message: publicMessage(readInbox()[0]) });
+  }
   if (url.pathname === '/api/contact') {
     if (req.method !== 'POST') return json(res, 405, { error: 'method not allowed' });
     const ip = req.socket.remoteAddress || 'unknown';
@@ -190,6 +219,16 @@ function readInbox() {
       return { id: i + 1, ...entry };
     }).reverse();
   } catch { return []; }
+}
+
+function publicMessage(entry) {
+  return {
+    id: entry.id,
+    name: entry.name || '匿名',
+    website: entry.website || '',
+    message: entry.message || '',
+    at: entry.at || '',
+  };
 }
 
 function deleteInbox(id) {
