@@ -252,6 +252,94 @@ html.entry-open .entry-cover { display: block; }
 .entry-enter:hover .entry-enter-arrow,
 .entry-enter:focus-visible .entry-enter-arrow { transform: translate(2px, -2px); }
 
+/* ---------- 首页 hero 逐行文字载入（封面揭幕后触发） ---------- */
+
+.home-motto {
+  display: grid;
+  gap: 5px;
+  margin: 16px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.75;
+  letter-spacing: 0.08em;
+  color: rgba(206, 228, 250, 0.6);
+}
+
+.home-motto p { margin: 0; }
+.home-motto p:nth-child(2) {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--accent-soft);
+  text-shadow: 0 0 18px rgba(2, 158, 235, 0.45);
+}
+html[data-theme='light'] .home-motto { color: rgba(8, 34, 58, 0.62); }
+html[data-theme='light'] .home-motto p:nth-child(2) { color: var(--accent); }
+
+body.home.is-hero-in .home-intro > *:not(.home-motto) {
+  animation: ts-hero-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+body.home.is-hero-in .home-eyebrow { animation-delay: 0.04s; }
+body.home.is-hero-in .home-name { animation-delay: 0.12s; }
+body.home.is-hero-in .home-latin { animation-delay: 0.2s; }
+body.home.is-hero-in .home-role { animation-delay: 0.26s; }
+body.home.is-hero-in .home-quote { animation-delay: 0.4s; }
+body.home.is-hero-in .home-actions { animation-delay: 0.48s; }
+body.home.is-hero-in .home-stats { animation-delay: 0.56s; }
+
+body.home.is-hero-in .home-motto p {
+  animation: ts-hero-line 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+body.home.is-hero-in .home-motto p:nth-child(1) { animation-delay: 0.33s; }
+body.home.is-hero-in .home-motto p:nth-child(2) { animation-delay: 0.41s; }
+body.home.is-hero-in .home-motto p:nth-child(3) { animation-delay: 0.49s; }
+
+@keyframes ts-hero-in {
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes ts-hero-line {
+  from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.home.is-hero-in .home-intro > *,
+  body.home.is-hero-in .home-motto p { animation: none; }
+}
+
+/* ---------- 进入封面文字逐行动画 ---------- */
+
+.entry-cover.is-in .entry-tag,
+.entry-cover.is-in .entry-note {
+  animation: entry-fade-up 0.8s var(--ease) both;
+}
+.entry-cover.is-in .entry-tag { animation-delay: 0.18s; }
+.entry-cover.is-in .entry-note { animation-delay: 0.3s; }
+
+.entry-cover.is-in .entry-line {
+  animation: entry-line-in 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.entry-cover.is-in .entry-line:nth-child(2) { animation-delay: 0.14s; }
+
+.entry-cover.is-in .entry-index li {
+  animation: entry-fade-up 0.6s var(--ease) both;
+}
+.entry-cover.is-in .entry-index li:nth-child(1) { animation-delay: 0.38s; }
+.entry-cover.is-in .entry-index li:nth-child(2) { animation-delay: 0.45s; }
+.entry-cover.is-in .entry-index li:nth-child(3) { animation-delay: 0.52s; }
+.entry-cover.is-in .entry-index li:nth-child(4) { animation-delay: 0.59s; }
+
+@keyframes entry-line-in {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(0.35em); }
+  to { opacity: 1; clip-path: inset(0); transform: none; }
+}
+
+@keyframes entry-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
 /* ---------- 响应式：缩小字号，版式保持 ---------- */
 
 @media (max-width: 760px) {

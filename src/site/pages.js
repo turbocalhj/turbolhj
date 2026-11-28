@@ -152,6 +152,11 @@ export function reloadPage(ctx) {
       <h1 class="home-name">${escapeHtml(p.person.name)}</h1>
       <p class="home-latin">${escapeHtml(p.person.handle.toUpperCase())} <span>/</span> XUZHOU</p>
       <p class="home-role">${escapeHtml(p.person.role)} · ${escapeHtml(p.person.location)}</p>
+      <div class="home-motto" aria-label="博客简介">
+        <p>这里是 turbospark 的博客。</p>
+        <p>所念必至，所愿必成</p>
+        <p>这里会分享技术与生活~</p>
+      </div>
       <blockquote class="home-quote">
         <p>把项目、技术记录与工程判断，收进一个可回溯的档案。</p>
         <cite>${escapeHtml(p.site.description)}</cite>
