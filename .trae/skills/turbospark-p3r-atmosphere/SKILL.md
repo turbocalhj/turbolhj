@@ -22,11 +22,11 @@ description: 为 TURBO SPARK 增加 P3R 主题氛围层：通栏低留白布局�
 
 ## 准星光标（p3r-cursor.css/js）
 
-- JS 创建 `.ts-cursor`：4 个 `<i>` 组成四个 L 形角 + `<b>` 中心点；`html.ts-cursor-on` 负责 `cursor: none`。
-- 跟随用 rAF + lerp 0.32，`transform: translate3d(x,y,0) translate(-50%,-50%)`；缩放/旋转用独立的 `scale` / `rotate` 属性，避免覆盖 JS transform。
-- `is-hot`：缩放 1.45、旋转 45°、显示外圈；`is-down`：缩到 0.82。
+- 外层 `.ts-cursor` 必须是 0×0 的 `position: fixed` 定位点，只负责 `translate3d(clientX, clientY, 0)`；内层 `.ts-cursor-box` 为 36×36、`left: -18px; top: -18px`，缩放只作用于内层，中心永远等于鼠标坐标。
+- **禁止 rAF + lerp 跟随**：lerp 0.32 会明显滞后，用户会看到「鼠标在这里、准星在那里」。在 `pointermove` 中即时写 `transform`。
+- hover 只做 1.2 倍缩放，**不要旋转**；旋转会让四角框看起来位移。`is-hot` 只对真正的交互元素（`a` / `button` / `input` 等）生效，不要把 `.card` / `.panel` 这类大块内容算进去。
 - 输入框 / textarea / contenteditable 用 `cursor: auto` 例外；触摸与 reduced-motion 直接 return，不加 `ts-cursor-on`。
-- `pointermove` 需过滤 `pointerType`，只接受 mouse / pen；window blur 时移除可见态。
+- `pointermove` 需过滤 `pointerType`，只接受 mouse / pen；窗口失焦或移出视口时移除可见态。
 
 ## 动态流光（p3r-flow.css/js）
 
