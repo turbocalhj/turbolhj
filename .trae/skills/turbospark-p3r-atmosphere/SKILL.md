@@ -37,6 +37,13 @@ description: 为 TURBO SPARK 增加 P3R 主题氛围层：通栏低留白布局�
 - 首页不降透明度；`body:not(.section-home) .ts-flow` 收敛到 0.32；浅色主题 0.24 / 内页 0.12，光晕与光束用 `mix-blend-mode: multiply`。
 - 只动画 `transform` / `opacity`；reduced-motion 关闭动画，但保留可见的静态光晕（opacity 0.55），不能直接隐藏。
 
+## 文字载入（text-reveal.js）
+
+- 入口标题与 `.home-name` 按字符拆成 `<span class="entry-ch|hero-ch" style="--i:n">`，CSS 用 `animation-delay: calc(var(--i) * …)` 逐字浮入；三行简介在 `body.is-hero-in` 后逐字打字。
+- **动画起始必须晚于 entry-frame 淡入**（约 0.55s 后），否则字符会在封面还黑着时播完，用户看不到。
+- JS 必须保留 `aria-label`、拆分失败回退原文；`prefers-reduced-motion` 直接 return。
+- 验证要按时间采样每个 `.entry-ch` 的 computed opacity（例如 420/840/1260/1680ms），不能只看最终全为 1。
+
 ## 验证
 
 - `node build.js && npm run check`。
