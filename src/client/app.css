@@ -728,19 +728,31 @@ html[data-theme='light'] .eyebrow { color: var(--accent); }
 }
 
 .home-quote {
-  margin: 28px 0 0;
-  padding: 2px 0 2px 18px;
+  margin: 26px 0 0;
+  padding: 10px 0 10px 18px;
   border-left: 2px solid #029eeb;
-  max-width: 27em;
+  max-width: 30em;
+  background: linear-gradient(90deg, rgba(2, 158, 235, 0.07), transparent 72%);
 }
-.home-quote p { font-size: 16.5px; line-height: 1.85; color: rgba(236, 245, 255, 0.94); }
+.home-quote p { font-size: 16.5px; line-height: 1.85; letter-spacing: 0.01em; color: rgba(236, 245, 255, 0.94); }
 .home-quote cite {
   display: block;
-  margin-top: 8px;
+  margin-top: 10px;
   font-style: normal;
   font-size: 10.5px;
   letter-spacing: 0.12em;
   color: rgba(176, 205, 238, 0.5);
+}
+.home-quote-motto {
+  display: inline-block;
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(127, 212, 255, 0.35);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--accent-soft);
+  white-space: nowrap;
 }
 
 .home-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
