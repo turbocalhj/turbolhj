@@ -39,7 +39,8 @@ description: 为 TURBO SPARK 增加 P3R 主题氛围层：通栏低留白布局�
 
 ## 文字载入（text-reveal.js）
 
-- 入口标题与 `.home-name` 按字符拆成 `<span class="entry-ch|hero-ch" style="--i:n">`，CSS 用 `animation-delay: calc(var(--i) * …)` 逐字浮入；三行简介在 `body.is-hero-in` 后逐字打字。
+- 入口标题、首页 `.home-name` 与 `.home-hero` 内全部文本节点按字符拆成 `<span class="entry-ch|hero-ch" style="--i:n">`；英文单词用 `.hero-word` 包裹防止断词，CSS 用 `animation-delay: calc(var(--i) * …)` 逐字浮入；三行简介单独逐字打字。
+- **排除动态/非正文内容**：`.home-clock`（时间由 app.js 更新，不能拆）、`.home-motto`（打字机）、`[aria-hidden="true"]`、表单/代码/脚本。否则会出现文字被覆盖或重复动画。
 - **动画起始必须晚于 entry-frame 淡入**（约 0.55s 后），否则字符会在封面还黑着时播完，用户看不到。
 - JS 必须保留 `aria-label`、拆分失败回退原文；`prefers-reduced-motion` 直接 return。
 - 验证要按时间采样每个 `.entry-ch` 的 computed opacity（例如 420/840/1260/1680ms），不能只看最终全为 1。
