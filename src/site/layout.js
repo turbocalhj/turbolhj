@@ -2,9 +2,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { escapeHtml } from '../core/markdown.js';
 
-// 增量层：src/client/layers 下的 css/js 会自动挂到每个公开页面，用于并行开发与后续叠加效果
+// 增量层：src/client/layers 下按 base / effects / modules / pages / account 分类，递归自动挂载
 const LAYER_DIR = path.join(import.meta.dirname, '..', 'client', 'layers');
-const LAYER_FILES = fs.existsSync(LAYER_DIR) ? fs.readdirSync(LAYER_DIR).sort() : [];
+function listLayerFiles(dir, prefix = '') {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .flatMap((entry) => {
+      const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+      if (entry.isDirectory()) return listLayerFiles(path.join(dir, entry.name), rel);
+      return /\.(css|js)$/.test(entry.name) ? [rel] : [];
+    });
+}
+const LAYER_FILES = listLayerFiles(LAYER_DIR);
 const LAYER_CSS = LAYER_FILES.filter((f) => f.endsWith('.css'));
 const LAYER_JS = LAYER_FILES.filter((f) => f.endsWith('.js'));
 
@@ -135,7 +145,7 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd).replace(
 <link rel="icon" href="${url('assets', 'p3r', 'favicon.ico')}" sizes="any">
 <link rel="preload" as="image" href="${url('assets', 'global-bg.jpg')}?v=${assetVersion('src/assets/global-bg.jpg')}" fetchpriority="high">
 <link rel="stylesheet" href="${url('assets', 'app.css')}?v=${assetVersion('src/client/app.css')}">
-${layers ? LAYER_CSS.map((f) => `<link rel="stylesheet" href="${url('assets', 'layers', f)}?v=${assetVersion('src/client/layers/' + f)}">`).join('\n') : ''}
+${layers ? LAYER_CSS.map((f) => `<link rel="stylesheet" href="${url('assets', 'layers', ...f.split('/'))}?v=${assetVersion('src/client/layers/' + f)}">`).join('\n') : ''}
 <link rel="preload" href="${url('assets', 'fonts', 'Urbanist-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${url('assets', 'fonts', 'NotoSansSC-subset.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="${url('manifest.webmanifest')}">
@@ -216,7 +226,7 @@ ${section === 'games' || section === 'esports' ? '<canvas class="hero-particles"
 </div>
 <button class="back-to-top" id="back-to-top" type="button" aria-label="回到顶部">↑</button>
 <script src="${url('assets', 'app.js')}?v=${assetVersion('src/client/app.js')}" defer></script>
-${layers ? LAYER_JS.map((f) => `<script src="${url('assets', 'layers', f)}?v=${assetVersion('src/client/layers/' + f)}" defer></script>`).join('\n') : ''}
+${layers ? LAYER_JS.map((f) => `<script src="${url('assets', 'layers', ...f.split('/'))}?v=${assetVersion('src/client/layers/' + f)}" defer></script>`).join('\n') : ''}
 ${scripts.map((s) => `<script src="${s}" defer></script>`).join('\n')}
 </body>
 </html>`;

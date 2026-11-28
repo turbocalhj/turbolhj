@@ -30,7 +30,7 @@ description: 维护 TURBO SPARK 的内容模型与构建数据管线：profile/g
    - `writeFile(path.join('xxx','index.html'), xxxPage(ctx));`
    - 详情页循环 `writeFile(path.join('xxx', slug + '.html'), ...)`。
 4. `layout.js` 的 `NAV` 加条目；首页需要露出时在 `reloadPage` 加区块。
-5. 新样式进 `src/client/layers/`（见 `turbospark-ui-layer`）。
+5. 新样式进 `src/client/layers/<分类>/`（基础/效果/模块/页面/账号，见 `turbospark-ui-layer`）。
 6. 跑 `npm run check`，确认内链/锚点/资产。
 
 ## Obsidian 笔记管线

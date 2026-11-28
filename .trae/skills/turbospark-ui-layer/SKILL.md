@@ -7,10 +7,22 @@ description: 以「只加不减」的图层方式为 TURBO SPARK 增加视觉功
 
 ## 核心原则
 
-1. **只加不减**：新功能优先进 `src/client/layers/` 的新 CSS/JS，不改旧区块；确需改基座（layout/app.css/pages.js）时保持旧结构和旧内容。
-2. 图层文件**自动注入全站**：`build.js` 复制 `src/client/layers/`，`layout.js` 自动输出 `LAYER_CSS/LAYER_JS`。JS 必须先判断元素存在再执行。
+1. **只加不减**：新功能优先进 `src/client/layers/<分类>/` 的新 CSS/JS，不改旧区块；确需改基座（layout/app.css/pages.js）时保持旧结构和旧内容。
+2. 图层文件**自动注入全站**：`build.js` 与 `layout.js` 递归扫描 `src/client/layers/`（含子目录），自动输出 `LAYER_CSS/LAYER_JS` 并写为 `assets/layers/<分类>/<文件>`。JS 必须先判断元素存在再执行。
 3. 沿用现有设计语言：深海军蓝 `--bg`、电蓝 `--accent`、Urbanist + Noto Sans SC + JetBrains Mono、纸感浅色主题；不要引入第二套色板或 UI 框架。
 4. 全部尊重 `prefers-reduced-motion`；交互要能键盘操作（focus-within、Escape、aria）。
+
+## 目录分类（layers）
+
+| 目录 | 放什么 |
+| --- | --- |
+| `base/` | 全站基础布局与性能：`wide-layout`、`perf` |
+| `effects/` | 动效与指针：`entry`、`text-reveal`、`motion`、`p3r-cursor`、`p3r-flow` |
+| `modules/` | 内容模块：`tutorials`、`achievements`、`esports-liquipedia` |
+| `pages/` | 页面专属：`acg`、`private`、`updates`、`index-table` |
+| `account/` | 账号 UI：`auth-nav` |
+
+新图层必须放进对应分类；`build.js` 与 `layout.js` 递归扫描，`dist/assets/layers/<分类>/<文件>` 自动生成。
 
 ## 主题系统
 
@@ -50,7 +62,7 @@ description: 以「只加不减」的图层方式为 TURBO SPARK 增加视觉功
 ## 开发步骤
 
 1. 开分支：`git switch -c feat/<name>`。
-2. 建图层：`src/client/layers/<name>.css`（必要时 `.js`），类名统一前缀。
+2. 建图层：`src/client/layers/<分类>/<name>.css`（必要时 `.js`），类名统一前缀。
 3. 需要新页面时：
    - `src/site/pages.js` 加 `xxxPage(ctx)`，调用 `renderPageWrap`，传 `section/bodyClass/noindex`；
    - `build.js` 引入并 `writeFile('xxx/index.html', xxxPage(ctx))`；
