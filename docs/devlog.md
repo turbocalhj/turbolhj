@@ -3,6 +3,27 @@
 > 规则：每一次合并回 main 的功能/修复/重构，都在这里追加一条；写清「改了什么、为什么、怎么验证、影响面」。
 > 对外公告仍写在 `data/updates.json`（站点 `/updates.html`），本文件面向开发过程。
 
+## 2026-11-28 · 主页 hero 全文字逐字载入
+
+### 改动
+
+- `src/client/layers/effects/text-reveal.js` 的拆分范围从 `.home-name` 扩展到 `.home-hero` 内全部文本节点，共生成 237 个 `.hero-ch` 与 22 个 `.hero-word`；英文单词整体包裹，避免逐字断词。
+- 排除 `.home-clock`（时间由 app.js 动态更新）、`.home-motto`（独立打字机）、`[aria-hidden="true"]`、表单/代码/脚本；移除旧的 `.home-intro > *` 整块 fade，统一由逐字动画驱动。
+- `entry.css` 补充 `ts-char-in` 关键帧并调整 hero 字符延迟为 `--i * 9ms`。
+
+### 原因
+
+- 用户要求主页图中的所有文字都和进入封面一样逐字载入。
+
+### 验证
+
+- `node build.js` 通过；`npm run check`：168 个 HTML、22,672 条链接全部可达。
+- 无头 Chrome：hero 237 字符、22 个单词组；首字符 0→0.84→1、中间字符 0→0.51→1、末字符约 2.2s 才开始；`.home-clock`/`.home-motto` 内均为 0 个拆分字符；按钮与统计文本完整；`overflowX=0`。
+
+### 影响面
+
+- 只影响首页 hero 文字动画；页面结构与样式不变。
+
 ## 2026-11-28 · layers 目录按领域规范化
 
 ### 改动

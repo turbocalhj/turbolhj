@@ -311,9 +311,16 @@ html[data-theme='light'] .home-motto p:nth-child(2) { color: var(--accent); }
 .entry-ch,
 .hero-ch { display: inline-block; }
 
+.hero-word { display: inline-block; white-space: nowrap; }
+
 body.home.is-hero-in .hero-ch {
-  animation: ts-char-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--i) * 0.05s + 0.1s);
+  animation: ts-char-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 0.009s + 0.08s);
+}
+
+@keyframes ts-char-in {
+  from { opacity: 0; transform: translateY(0.55em); filter: blur(2px); }
+  to { opacity: 1; transform: none; filter: none; }
 }
 
 /* 三行简介的打字机光标 */
@@ -327,25 +334,6 @@ body.home.is-hero-in .hero-ch {
 
 @keyframes ts-caret { 50% { opacity: 0; } }
 
-body.home.is-hero-in .home-intro > *:not(.home-motto) {
-  animation: ts-hero-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-body.home.is-hero-in .home-eyebrow { animation-delay: 0.04s; }
-body.home.is-hero-in .home-name { animation-delay: 0.12s; }
-body.home.is-hero-in .home-latin { animation-delay: 0.2s; }
-body.home.is-hero-in .home-role { animation-delay: 0.26s; }
-body.home.is-hero-in .home-quote { animation-delay: 0.4s; }
-body.home.is-hero-in .home-actions { animation-delay: 0.48s; }
-body.home.is-hero-in .home-stats { animation-delay: 0.56s; }
-
-@keyframes ts-hero-in {
-  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
-  to { opacity: 1; transform: none; filter: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.home.is-hero-in .home-intro > * { animation: none; }
-}
 
 /* ---------- 进入封面文字逐行动画 ---------- */
 
