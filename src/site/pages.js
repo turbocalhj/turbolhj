@@ -168,11 +168,7 @@ export function reloadPage(ctx) {
       <h1 class="home-name">${escapeHtml(p.person.name)}</h1>
       <p class="home-latin">${escapeHtml(p.person.handle.toUpperCase())} <span>/</span> XUZHOU</p>
       <p class="home-role">${escapeHtml(p.person.role)} · ${escapeHtml(p.person.location)}</p>
-      <div class="home-motto" aria-label="博客简介">
-        <p>这里是 turbospark 的博客。</p>
-        <p>所念必至，所愿必成</p>
-        <p>这里会分享技术与生活~</p>
-      </div>
+
       <blockquote class="home-quote">
         <p>把项目、技术记录与工程判断，收进一个可回溯的档案。</p>
         <cite>${escapeHtml(p.site.description)}</cite>
@@ -187,6 +183,11 @@ export function reloadPage(ctx) {
         <span><b>${stats.wikiLinks.toLocaleString('en')}</b> 条双链</span><i aria-hidden="true"></i>
         <span><b>${stats.commits}</b> 次提交</span>
       </p>
+    </div>
+    <div class="home-motto home-motto-panel" aria-label="博客简介">
+      <p>这里是 turbospark 的博客。</p>
+      <p>所念必至，所愿必成</p>
+      <p>这里会分享技术与生活~</p>
     </div>
     <aside class="home-side" aria-label="站点状态与入口">
       <div class="glass home-clock">
@@ -205,16 +206,6 @@ export function reloadPage(ctx) {
   </div>
 </section>
 
-<section class="home-section home-tutorials" id="tutorials">
-  <div class="home-section-head">
-    <div>
-      <p class="eyebrow">STUDY / 学习教程</p>
-      <h2>学习教程</h2>
-    </div>
-    <a class="home-section-more" href="${ctx.url('tutorials', 'index.html')}">全部 ${(ctx.tutorials && ctx.tutorials.items ? ctx.tutorials.items.length : 0)} 篇 <span aria-hidden="true">→</span></a>
-  </div>
-  <div class="tutorial-grid">${tutorialItems.map(tutorialCard).join('')}</div>
-</section>
 
 <section class="home-now" aria-label="最近状态">
   <div class="home-now-col">
@@ -258,6 +249,17 @@ export function reloadPage(ctx) {
     <a class="home-section-more" href="${ctx.url('knowledge', 'index.html')}">${stats.notes} 篇技术记录 <span aria-hidden="true">→</span></a>
   </header>
   <div class="home-kb-grid">${kbCards}</div>
+</section>
+
+<section class="home-section home-tutorials" id="tutorials">
+  <div class="home-section-head">
+    <div>
+      <p class="eyebrow">STUDY / 学习教程</p>
+      <h2>学习教程</h2>
+    </div>
+    <a class="home-section-more" href="${ctx.url('tutorials', 'index.html')}">全部 ${(ctx.tutorials && ctx.tutorials.items ? ctx.tutorials.items.length : 0)} 篇 <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="tutorial-grid">${tutorialItems.map(tutorialCard).join('')}</div>
 </section>
 
 <section class="home-cta">

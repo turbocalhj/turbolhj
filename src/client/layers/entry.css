@@ -262,7 +262,8 @@ html.entry-open .entry-cover { display: block; }
   font-size: 11.5px;
   line-height: 1.75;
   letter-spacing: 0.08em;
-  color: rgba(206, 228, 250, 0.6);
+  color: rgba(232, 242, 255, 0.84);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
 }
 
 .home-motto p { margin: 0; }
@@ -275,6 +276,57 @@ html.entry-open .entry-cover { display: block; }
 html[data-theme='light'] .home-motto { color: rgba(8, 34, 58, 0.62); }
 html[data-theme='light'] .home-motto p:nth-child(2) { color: var(--accent); }
 
+/* hero 左侧空白处的三行简介 */
+.home-motto-panel {
+  position: absolute;
+  left: clamp(20px, 3vw, 56px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(300px, 26vw);
+  margin: 0;
+  padding: 14px 16px;
+  z-index: 2;
+  border-left: 1px solid rgba(127, 212, 255, 0.42);
+  border-radius: 0 8px 8px 0;
+  background: linear-gradient(135deg, rgba(4, 9, 18, 0.76), rgba(4, 9, 18, 0.44));
+  backdrop-filter: blur(6px);
+}
+
+@media (max-width: 1100px) {
+  .home-motto-panel { left: 20px; width: min(240px, 24vw); }
+}
+
+@media (max-width: 900px) {
+  .home-motto-panel {
+    position: static;
+    grid-column: 1;
+    width: auto;
+    transform: none;
+    margin: 18px 0 0;
+    padding: 0 24px;
+  }
+}
+
+/* 逐字载入：每个字符从下方浮入 */
+.entry-ch,
+.hero-ch { display: inline-block; }
+
+body.home.is-hero-in .hero-ch {
+  animation: ts-char-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 0.05s + 0.1s);
+}
+
+/* 三行简介的打字机光标 */
+.home-motto p.is-typing::after {
+  content: '▌';
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--accent-soft);
+  animation: ts-caret 0.9s steps(1) infinite;
+}
+
+@keyframes ts-caret { 50% { opacity: 0; } }
+
 body.home.is-hero-in .home-intro > *:not(.home-motto) {
   animation: ts-hero-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -286,26 +338,13 @@ body.home.is-hero-in .home-quote { animation-delay: 0.4s; }
 body.home.is-hero-in .home-actions { animation-delay: 0.48s; }
 body.home.is-hero-in .home-stats { animation-delay: 0.56s; }
 
-body.home.is-hero-in .home-motto p {
-  animation: ts-hero-line 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-body.home.is-hero-in .home-motto p:nth-child(1) { animation-delay: 0.33s; }
-body.home.is-hero-in .home-motto p:nth-child(2) { animation-delay: 0.41s; }
-body.home.is-hero-in .home-motto p:nth-child(3) { animation-delay: 0.49s; }
-
 @keyframes ts-hero-in {
   from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
   to { opacity: 1; transform: none; filter: none; }
 }
 
-@keyframes ts-hero-line {
-  from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
-  to { opacity: 1; transform: none; filter: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  body.home.is-hero-in .home-intro > *,
-  body.home.is-hero-in .home-motto p { animation: none; }
+  body.home.is-hero-in .home-intro > * { animation: none; }
 }
 
 /* ---------- 进入封面文字逐行动画 ---------- */
@@ -317,10 +356,10 @@ body.home.is-hero-in .home-motto p:nth-child(3) { animation-delay: 0.49s; }
 .entry-cover.is-in .entry-tag { animation-delay: 0.18s; }
 .entry-cover.is-in .entry-note { animation-delay: 0.3s; }
 
-.entry-cover.is-in .entry-line {
-  animation: entry-line-in 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+.entry-cover.is-in .entry-ch {
+  animation: entry-char-in 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 0.07s + 0.55s);
 }
-.entry-cover.is-in .entry-line:nth-child(2) { animation-delay: 0.14s; }
 
 .entry-cover.is-in .entry-index li {
   animation: entry-fade-up 0.6s var(--ease) both;
@@ -330,9 +369,9 @@ body.home.is-hero-in .home-motto p:nth-child(3) { animation-delay: 0.49s; }
 .entry-cover.is-in .entry-index li:nth-child(3) { animation-delay: 0.52s; }
 .entry-cover.is-in .entry-index li:nth-child(4) { animation-delay: 0.59s; }
 
-@keyframes entry-line-in {
-  from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(0.35em); }
-  to { opacity: 1; clip-path: inset(0); transform: none; }
+@keyframes entry-char-in {
+  from { opacity: 0; transform: translateY(0.65em) rotate(2deg); filter: blur(3px); }
+  to { opacity: 1; transform: none; filter: none; }
 }
 
 @keyframes entry-fade-up {
