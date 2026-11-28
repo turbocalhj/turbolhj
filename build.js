@@ -7,7 +7,7 @@ import { createEngine, renderPlainMarkdown, escapeHtml } from './src/core/markdo
 import { loadVault, createLinkIndex } from './src/core/vault.js';
 import { createRedactor, isPrivateNote } from './src/core/privacy.js';
 import { renderPage, makeUrl } from './src/site/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, linksPage, acgPage, privatePage, updatesPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, tutorialsPage, linksPage, acgPage, privatePage, updatesPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -52,6 +52,7 @@ const esportsData = readJson('data/esports.json', { titles: [], events: [], team
 const linksData = readJson('data/links.json', { groups: [] });
 const updatesData = readJson('data/updates.json', { updated: '', entries: [] });
 const acgData = readJson('data/acg.json', { items: [] });
+const tutorialsData = readJson('data/tutorials.json', { pageSize: 12, items: [] });
 
 function readJson(rel, fallback) {
   try {
@@ -341,6 +342,7 @@ ctx.games = gamesData.games || [];
 ctx.esports = esportsData;
 ctx.updates = updatesData;
 ctx.acg = acgData;
+ctx.tutorials = tutorialsData;
 ctx.links = linksData;
 ctx.featuredProjects = projects
   .filter((p) => p.featured)
@@ -377,6 +379,12 @@ for (const pr of projects) writeFile(path.join('projects', pr.slug) + '.html', p
 writeFile(path.join('games', 'index.html'), gamesPage(ctx));
 for (const g of ctx.games) writeFile(path.join('games', g.slug) + '.html', gameDetailPage(ctx, g));
 writeFile(path.join('esports', 'index.html'), esportsPage(ctx));
+const tutorialPageSize = Number(tutorialsData.pageSize) || 12;
+const tutorialTotalPages = Math.max(1, Math.ceil((tutorialsData.items || []).length / tutorialPageSize));
+for (let i = 1; i <= tutorialTotalPages; i++) {
+  const rel = i === 1 ? path.join('tutorials', 'index.html') : path.join('tutorials', 'page', `${i}.html`);
+  writeFile(rel, tutorialsPage(ctx, i));
+}
 writeFile(path.join('links', 'index.html'), linksPage(ctx));
 writeFile(path.join('acg', 'index.html'), acgPage(ctx));
 writeFile('private.html', privatePage(ctx));

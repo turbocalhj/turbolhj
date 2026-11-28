@@ -1,0 +1,188 @@
+/* ==========================================================================
+   学习教程：首页 3×4 卡片与 /tutorials/ 10 页分页。
+   沿用 P3R 卡片语言，分类色只作为封面渐变，不引入额外字体。
+   ========================================================================== */
+
+.home-section-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--accent-soft);
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.home-section-more:hover { color: #fff; }
+html[data-theme='light'] .home-section-more:hover { color: var(--accent); }
+
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.tutorial-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(8, 18, 33, 0.62);
+  overflow: hidden;
+  transition: transform 0.24s var(--ease), border-color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.tutorial-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(127, 212, 255, 0.42);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32), 0 0 24px rgba(2, 158, 235, 0.1);
+}
+
+html[data-theme='light'] .tutorial-card {
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 10px 28px rgba(8, 34, 58, 0.06);
+}
+
+.tutorial-cover {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 92px;
+  padding: 14px 16px;
+  background:
+    radial-gradient(120% 130% at 12% 8%, color-mix(in srgb, var(--tc) 72%, transparent), transparent 62%),
+    linear-gradient(135deg, color-mix(in srgb, var(--tc) 30%, #071120), #071120 78%);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.tutorial-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 4px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.tutorial-no {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+
+.tutorial-cat {
+  position: relative;
+  z-index: 1;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(3, 8, 17, 0.38);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.82);
+  text-transform: uppercase;
+}
+
+.tutorial-body {
+  display: grid;
+  gap: 7px;
+  padding: 14px 16px 16px;
+  min-width: 0;
+}
+
+.tutorial-meta {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  color: rgba(176, 205, 238, 0.46);
+}
+
+.tutorial-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tutorial-sum {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tutorial-arrow {
+  font-size: 12px;
+  color: var(--accent-soft);
+  transition: transform 0.2s ease;
+}
+
+.tutorial-card:hover .tutorial-arrow { transform: translateX(4px); }
+
+/* 教程归档页 */
+.tutorials-head { max-width: 880px; }
+.tutorial-band { padding-bottom: 80px; }
+
+.tutorial-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 34px;
+}
+
+.pager-nums { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+
+.pager-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.pager-num:hover { border-color: var(--accent-soft); color: var(--accent-soft); }
+.pager-num.is-active { border-color: var(--accent); background: rgba(2, 158, 235, 0.16); color: var(--accent-soft); }
+.pager-prev, .pager-next { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.pager-prev.is-disabled, .pager-next.is-disabled { opacity: 0.35; }
+
+@media (max-width: 1200px) {
+  .tutorial-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .tutorial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .tutorial-grid { grid-template-columns: minmax(0, 1fr); }
+  .tutorial-cover { min-height: 78px; }
+  .tutorial-no { font-size: 24px; }
+}

@@ -1,0 +1,1207 @@
+{
+  "updated": "2026-11-28",
+  "note": "学习教程占位内容：20 个方向 × 6 个阶段，共 120 条，按每页 12 条分为 10 页。",
+  "pageSize": 12,
+  "items": [
+    {
+      "id": "html-01",
+      "category": "HTML",
+      "color": "#e8792f",
+      "title": "HTML · 核心概念与最小可运行示例",
+      "summary": "围绕 HTML 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML"
+    },
+    {
+      "id": "html-02",
+      "category": "HTML",
+      "color": "#e8792f",
+      "title": "HTML · 常用语法速查与练习路径",
+      "summary": "围绕 HTML 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML"
+    },
+    {
+      "id": "html-03",
+      "category": "HTML",
+      "color": "#e8792f",
+      "title": "HTML · 关键机制与常见坑位拆解",
+      "summary": "围绕 HTML 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML"
+    },
+    {
+      "id": "html-04",
+      "category": "HTML",
+      "color": "#e8792f",
+      "title": "HTML · 真实项目中的组合用法",
+      "summary": "围绕 HTML 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML"
+    },
+    {
+      "id": "html-05",
+      "category": "HTML",
+      "color": "#e8792f",
+      "title": "HTML · 从需求到落地的完整案例",
+      "summary": "围绕 HTML 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML"
+    },
+    {
+      "id": "html-06",
+      "category": "HTML",
+      "color": "#e8792f",
+      "title": "HTML · 调试思路、性能与排查清单",
+      "summary": "围绕 HTML 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTML"
+    },
+    {
+      "id": "css-01",
+      "category": "CSS",
+      "color": "#2f6fe8",
+      "title": "CSS · 核心概念与最小可运行示例",
+      "summary": "围绕 CSS 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
+    },
+    {
+      "id": "css-02",
+      "category": "CSS",
+      "color": "#2f6fe8",
+      "title": "CSS · 常用语法速查与练习路径",
+      "summary": "围绕 CSS 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
+    },
+    {
+      "id": "css-03",
+      "category": "CSS",
+      "color": "#2f6fe8",
+      "title": "CSS · 关键机制与常见坑位拆解",
+      "summary": "围绕 CSS 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
+    },
+    {
+      "id": "css-04",
+      "category": "CSS",
+      "color": "#2f6fe8",
+      "title": "CSS · 真实项目中的组合用法",
+      "summary": "围绕 CSS 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
+    },
+    {
+      "id": "css-05",
+      "category": "CSS",
+      "color": "#2f6fe8",
+      "title": "CSS · 从需求到落地的完整案例",
+      "summary": "围绕 CSS 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
+    },
+    {
+      "id": "css-06",
+      "category": "CSS",
+      "color": "#2f6fe8",
+      "title": "CSS · 调试思路、性能与排查清单",
+      "summary": "围绕 CSS 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
+    },
+    {
+      "id": "js-01",
+      "category": "JavaScript",
+      "color": "#e8c22f",
+      "title": "JavaScript · 核心概念与最小可运行示例",
+      "summary": "围绕 JavaScript 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+    },
+    {
+      "id": "js-02",
+      "category": "JavaScript",
+      "color": "#e8c22f",
+      "title": "JavaScript · 常用语法速查与练习路径",
+      "summary": "围绕 JavaScript 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+    },
+    {
+      "id": "js-03",
+      "category": "JavaScript",
+      "color": "#e8c22f",
+      "title": "JavaScript · 关键机制与常见坑位拆解",
+      "summary": "围绕 JavaScript 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+    },
+    {
+      "id": "js-04",
+      "category": "JavaScript",
+      "color": "#e8c22f",
+      "title": "JavaScript · 真实项目中的组合用法",
+      "summary": "围绕 JavaScript 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+    },
+    {
+      "id": "js-05",
+      "category": "JavaScript",
+      "color": "#e8c22f",
+      "title": "JavaScript · 从需求到落地的完整案例",
+      "summary": "围绕 JavaScript 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+    },
+    {
+      "id": "js-06",
+      "category": "JavaScript",
+      "color": "#e8c22f",
+      "title": "JavaScript · 调试思路、性能与排查清单",
+      "summary": "围绕 JavaScript 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+    },
+    {
+      "id": "ts-01",
+      "category": "TypeScript",
+      "color": "#3178c6",
+      "title": "TypeScript · 核心概念与最小可运行示例",
+      "summary": "围绕 TypeScript 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://www.typescriptlang.org/zh/docs/"
+    },
+    {
+      "id": "ts-02",
+      "category": "TypeScript",
+      "color": "#3178c6",
+      "title": "TypeScript · 常用语法速查与练习路径",
+      "summary": "围绕 TypeScript 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://www.typescriptlang.org/zh/docs/"
+    },
+    {
+      "id": "ts-03",
+      "category": "TypeScript",
+      "color": "#3178c6",
+      "title": "TypeScript · 关键机制与常见坑位拆解",
+      "summary": "围绕 TypeScript 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://www.typescriptlang.org/zh/docs/"
+    },
+    {
+      "id": "ts-04",
+      "category": "TypeScript",
+      "color": "#3178c6",
+      "title": "TypeScript · 真实项目中的组合用法",
+      "summary": "围绕 TypeScript 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://www.typescriptlang.org/zh/docs/"
+    },
+    {
+      "id": "ts-05",
+      "category": "TypeScript",
+      "color": "#3178c6",
+      "title": "TypeScript · 从需求到落地的完整案例",
+      "summary": "围绕 TypeScript 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://www.typescriptlang.org/zh/docs/"
+    },
+    {
+      "id": "ts-06",
+      "category": "TypeScript",
+      "color": "#3178c6",
+      "title": "TypeScript · 调试思路、性能与排查清单",
+      "summary": "围绕 TypeScript 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://www.typescriptlang.org/zh/docs/"
+    },
+    {
+      "id": "react-01",
+      "category": "React",
+      "color": "#61dafb",
+      "title": "React · 核心概念与最小可运行示例",
+      "summary": "围绕 React 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://zh-hans.react.dev/learn"
+    },
+    {
+      "id": "react-02",
+      "category": "React",
+      "color": "#61dafb",
+      "title": "React · 常用语法速查与练习路径",
+      "summary": "围绕 React 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://zh-hans.react.dev/learn"
+    },
+    {
+      "id": "react-03",
+      "category": "React",
+      "color": "#61dafb",
+      "title": "React · 关键机制与常见坑位拆解",
+      "summary": "围绕 React 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://zh-hans.react.dev/learn"
+    },
+    {
+      "id": "react-04",
+      "category": "React",
+      "color": "#61dafb",
+      "title": "React · 真实项目中的组合用法",
+      "summary": "围绕 React 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://zh-hans.react.dev/learn"
+    },
+    {
+      "id": "react-05",
+      "category": "React",
+      "color": "#61dafb",
+      "title": "React · 从需求到落地的完整案例",
+      "summary": "围绕 React 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://zh-hans.react.dev/learn"
+    },
+    {
+      "id": "react-06",
+      "category": "React",
+      "color": "#61dafb",
+      "title": "React · 调试思路、性能与排查清单",
+      "summary": "围绕 React 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://zh-hans.react.dev/learn"
+    },
+    {
+      "id": "vue-01",
+      "category": "Vue",
+      "color": "#42b883",
+      "title": "Vue · 核心概念与最小可运行示例",
+      "summary": "围绕 Vue 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://cn.vuejs.org/guide/"
+    },
+    {
+      "id": "vue-02",
+      "category": "Vue",
+      "color": "#42b883",
+      "title": "Vue · 常用语法速查与练习路径",
+      "summary": "围绕 Vue 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://cn.vuejs.org/guide/"
+    },
+    {
+      "id": "vue-03",
+      "category": "Vue",
+      "color": "#42b883",
+      "title": "Vue · 关键机制与常见坑位拆解",
+      "summary": "围绕 Vue 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://cn.vuejs.org/guide/"
+    },
+    {
+      "id": "vue-04",
+      "category": "Vue",
+      "color": "#42b883",
+      "title": "Vue · 真实项目中的组合用法",
+      "summary": "围绕 Vue 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://cn.vuejs.org/guide/"
+    },
+    {
+      "id": "vue-05",
+      "category": "Vue",
+      "color": "#42b883",
+      "title": "Vue · 从需求到落地的完整案例",
+      "summary": "围绕 Vue 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://cn.vuejs.org/guide/"
+    },
+    {
+      "id": "vue-06",
+      "category": "Vue",
+      "color": "#42b883",
+      "title": "Vue · 调试思路、性能与排查清单",
+      "summary": "围绕 Vue 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://cn.vuejs.org/guide/"
+    },
+    {
+      "id": "node-01",
+      "category": "Node.js",
+      "color": "#539e43",
+      "title": "Node.js · 核心概念与最小可运行示例",
+      "summary": "围绕 Node.js 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://nodejs.org/zh-cn/learn"
+    },
+    {
+      "id": "node-02",
+      "category": "Node.js",
+      "color": "#539e43",
+      "title": "Node.js · 常用语法速查与练习路径",
+      "summary": "围绕 Node.js 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://nodejs.org/zh-cn/learn"
+    },
+    {
+      "id": "node-03",
+      "category": "Node.js",
+      "color": "#539e43",
+      "title": "Node.js · 关键机制与常见坑位拆解",
+      "summary": "围绕 Node.js 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://nodejs.org/zh-cn/learn"
+    },
+    {
+      "id": "node-04",
+      "category": "Node.js",
+      "color": "#539e43",
+      "title": "Node.js · 真实项目中的组合用法",
+      "summary": "围绕 Node.js 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://nodejs.org/zh-cn/learn"
+    },
+    {
+      "id": "node-05",
+      "category": "Node.js",
+      "color": "#539e43",
+      "title": "Node.js · 从需求到落地的完整案例",
+      "summary": "围绕 Node.js 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://nodejs.org/zh-cn/learn"
+    },
+    {
+      "id": "node-06",
+      "category": "Node.js",
+      "color": "#539e43",
+      "title": "Node.js · 调试思路、性能与排查清单",
+      "summary": "围绕 Node.js 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://nodejs.org/zh-cn/learn"
+    },
+    {
+      "id": "git-01",
+      "category": "Git",
+      "color": "#f05033",
+      "title": "Git · 核心概念与最小可运行示例",
+      "summary": "围绕 Git 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://git-scm.com/book/zh/v2"
+    },
+    {
+      "id": "git-02",
+      "category": "Git",
+      "color": "#f05033",
+      "title": "Git · 常用语法速查与练习路径",
+      "summary": "围绕 Git 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://git-scm.com/book/zh/v2"
+    },
+    {
+      "id": "git-03",
+      "category": "Git",
+      "color": "#f05033",
+      "title": "Git · 关键机制与常见坑位拆解",
+      "summary": "围绕 Git 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://git-scm.com/book/zh/v2"
+    },
+    {
+      "id": "git-04",
+      "category": "Git",
+      "color": "#f05033",
+      "title": "Git · 真实项目中的组合用法",
+      "summary": "围绕 Git 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://git-scm.com/book/zh/v2"
+    },
+    {
+      "id": "git-05",
+      "category": "Git",
+      "color": "#f05033",
+      "title": "Git · 从需求到落地的完整案例",
+      "summary": "围绕 Git 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://git-scm.com/book/zh/v2"
+    },
+    {
+      "id": "git-06",
+      "category": "Git",
+      "color": "#f05033",
+      "title": "Git · 调试思路、性能与排查清单",
+      "summary": "围绕 Git 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://git-scm.com/book/zh/v2"
+    },
+    {
+      "id": "docker-01",
+      "category": "Docker",
+      "color": "#2496ed",
+      "title": "Docker · 核心概念与最小可运行示例",
+      "summary": "围绕 Docker 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://docs.docker.com/get-started/"
+    },
+    {
+      "id": "docker-02",
+      "category": "Docker",
+      "color": "#2496ed",
+      "title": "Docker · 常用语法速查与练习路径",
+      "summary": "围绕 Docker 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://docs.docker.com/get-started/"
+    },
+    {
+      "id": "docker-03",
+      "category": "Docker",
+      "color": "#2496ed",
+      "title": "Docker · 关键机制与常见坑位拆解",
+      "summary": "围绕 Docker 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://docs.docker.com/get-started/"
+    },
+    {
+      "id": "docker-04",
+      "category": "Docker",
+      "color": "#2496ed",
+      "title": "Docker · 真实项目中的组合用法",
+      "summary": "围绕 Docker 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://docs.docker.com/get-started/"
+    },
+    {
+      "id": "docker-05",
+      "category": "Docker",
+      "color": "#2496ed",
+      "title": "Docker · 从需求到落地的完整案例",
+      "summary": "围绕 Docker 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://docs.docker.com/get-started/"
+    },
+    {
+      "id": "docker-06",
+      "category": "Docker",
+      "color": "#2496ed",
+      "title": "Docker · 调试思路、性能与排查清单",
+      "summary": "围绕 Docker 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://docs.docker.com/get-started/"
+    },
+    {
+      "id": "linux-01",
+      "category": "Linux",
+      "color": "#f0b429",
+      "title": "Linux · 核心概念与最小可运行示例",
+      "summary": "围绕 Linux 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://linuxcommand.org/"
+    },
+    {
+      "id": "linux-02",
+      "category": "Linux",
+      "color": "#f0b429",
+      "title": "Linux · 常用语法速查与练习路径",
+      "summary": "围绕 Linux 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://linuxcommand.org/"
+    },
+    {
+      "id": "linux-03",
+      "category": "Linux",
+      "color": "#f0b429",
+      "title": "Linux · 关键机制与常见坑位拆解",
+      "summary": "围绕 Linux 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://linuxcommand.org/"
+    },
+    {
+      "id": "linux-04",
+      "category": "Linux",
+      "color": "#f0b429",
+      "title": "Linux · 真实项目中的组合用法",
+      "summary": "围绕 Linux 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://linuxcommand.org/"
+    },
+    {
+      "id": "linux-05",
+      "category": "Linux",
+      "color": "#f0b429",
+      "title": "Linux · 从需求到落地的完整案例",
+      "summary": "围绕 Linux 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://linuxcommand.org/"
+    },
+    {
+      "id": "linux-06",
+      "category": "Linux",
+      "color": "#f0b429",
+      "title": "Linux · 调试思路、性能与排查清单",
+      "summary": "围绕 Linux 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://linuxcommand.org/"
+    },
+    {
+      "id": "mysql-01",
+      "category": "MySQL",
+      "color": "#00758f",
+      "title": "MySQL · 核心概念与最小可运行示例",
+      "summary": "围绕 MySQL 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://dev.mysql.com/doc/"
+    },
+    {
+      "id": "mysql-02",
+      "category": "MySQL",
+      "color": "#00758f",
+      "title": "MySQL · 常用语法速查与练习路径",
+      "summary": "围绕 MySQL 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://dev.mysql.com/doc/"
+    },
+    {
+      "id": "mysql-03",
+      "category": "MySQL",
+      "color": "#00758f",
+      "title": "MySQL · 关键机制与常见坑位拆解",
+      "summary": "围绕 MySQL 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://dev.mysql.com/doc/"
+    },
+    {
+      "id": "mysql-04",
+      "category": "MySQL",
+      "color": "#00758f",
+      "title": "MySQL · 真实项目中的组合用法",
+      "summary": "围绕 MySQL 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://dev.mysql.com/doc/"
+    },
+    {
+      "id": "mysql-05",
+      "category": "MySQL",
+      "color": "#00758f",
+      "title": "MySQL · 从需求到落地的完整案例",
+      "summary": "围绕 MySQL 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://dev.mysql.com/doc/"
+    },
+    {
+      "id": "mysql-06",
+      "category": "MySQL",
+      "color": "#00758f",
+      "title": "MySQL · 调试思路、性能与排查清单",
+      "summary": "围绕 MySQL 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://dev.mysql.com/doc/"
+    },
+    {
+      "id": "redis-01",
+      "category": "Redis",
+      "color": "#d82c20",
+      "title": "Redis · 核心概念与最小可运行示例",
+      "summary": "围绕 Redis 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://redis.io/docs/latest/"
+    },
+    {
+      "id": "redis-02",
+      "category": "Redis",
+      "color": "#d82c20",
+      "title": "Redis · 常用语法速查与练习路径",
+      "summary": "围绕 Redis 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://redis.io/docs/latest/"
+    },
+    {
+      "id": "redis-03",
+      "category": "Redis",
+      "color": "#d82c20",
+      "title": "Redis · 关键机制与常见坑位拆解",
+      "summary": "围绕 Redis 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://redis.io/docs/latest/"
+    },
+    {
+      "id": "redis-04",
+      "category": "Redis",
+      "color": "#d82c20",
+      "title": "Redis · 真实项目中的组合用法",
+      "summary": "围绕 Redis 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://redis.io/docs/latest/"
+    },
+    {
+      "id": "redis-05",
+      "category": "Redis",
+      "color": "#d82c20",
+      "title": "Redis · 从需求到落地的完整案例",
+      "summary": "围绕 Redis 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://redis.io/docs/latest/"
+    },
+    {
+      "id": "redis-06",
+      "category": "Redis",
+      "color": "#d82c20",
+      "title": "Redis · 调试思路、性能与排查清单",
+      "summary": "围绕 Redis 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://redis.io/docs/latest/"
+    },
+    {
+      "id": "http-01",
+      "category": "HTTP",
+      "color": "#7fd4ff",
+      "title": "HTTP · 核心概念与最小可运行示例",
+      "summary": "围绕 HTTP 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP"
+    },
+    {
+      "id": "http-02",
+      "category": "HTTP",
+      "color": "#7fd4ff",
+      "title": "HTTP · 常用语法速查与练习路径",
+      "summary": "围绕 HTTP 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP"
+    },
+    {
+      "id": "http-03",
+      "category": "HTTP",
+      "color": "#7fd4ff",
+      "title": "HTTP · 关键机制与常见坑位拆解",
+      "summary": "围绕 HTTP 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP"
+    },
+    {
+      "id": "http-04",
+      "category": "HTTP",
+      "color": "#7fd4ff",
+      "title": "HTTP · 真实项目中的组合用法",
+      "summary": "围绕 HTTP 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP"
+    },
+    {
+      "id": "http-05",
+      "category": "HTTP",
+      "color": "#7fd4ff",
+      "title": "HTTP · 从需求到落地的完整案例",
+      "summary": "围绕 HTTP 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP"
+    },
+    {
+      "id": "http-06",
+      "category": "HTTP",
+      "color": "#7fd4ff",
+      "title": "HTTP · 调试思路、性能与排查清单",
+      "summary": "围绕 HTTP 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/HTTP"
+    },
+    {
+      "id": "algo-01",
+      "category": "算法",
+      "color": "#8e6cf0",
+      "title": "算法 · 核心概念与最小可运行示例",
+      "summary": "围绕 算法 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://oi-wiki.org/"
+    },
+    {
+      "id": "algo-02",
+      "category": "算法",
+      "color": "#8e6cf0",
+      "title": "算法 · 常用语法速查与练习路径",
+      "summary": "围绕 算法 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://oi-wiki.org/"
+    },
+    {
+      "id": "algo-03",
+      "category": "算法",
+      "color": "#8e6cf0",
+      "title": "算法 · 关键机制与常见坑位拆解",
+      "summary": "围绕 算法 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://oi-wiki.org/"
+    },
+    {
+      "id": "algo-04",
+      "category": "算法",
+      "color": "#8e6cf0",
+      "title": "算法 · 真实项目中的组合用法",
+      "summary": "围绕 算法 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://oi-wiki.org/"
+    },
+    {
+      "id": "algo-05",
+      "category": "算法",
+      "color": "#8e6cf0",
+      "title": "算法 · 从需求到落地的完整案例",
+      "summary": "围绕 算法 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://oi-wiki.org/"
+    },
+    {
+      "id": "algo-06",
+      "category": "算法",
+      "color": "#8e6cf0",
+      "title": "算法 · 调试思路、性能与排查清单",
+      "summary": "围绕 算法 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://oi-wiki.org/"
+    },
+    {
+      "id": "perf-01",
+      "category": "性能优化",
+      "color": "#f25c8a",
+      "title": "性能优化 · 核心概念与最小可运行示例",
+      "summary": "围绕 性能优化 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://web.dev/learn/performance"
+    },
+    {
+      "id": "perf-02",
+      "category": "性能优化",
+      "color": "#f25c8a",
+      "title": "性能优化 · 常用语法速查与练习路径",
+      "summary": "围绕 性能优化 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://web.dev/learn/performance"
+    },
+    {
+      "id": "perf-03",
+      "category": "性能优化",
+      "color": "#f25c8a",
+      "title": "性能优化 · 关键机制与常见坑位拆解",
+      "summary": "围绕 性能优化 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://web.dev/learn/performance"
+    },
+    {
+      "id": "perf-04",
+      "category": "性能优化",
+      "color": "#f25c8a",
+      "title": "性能优化 · 真实项目中的组合用法",
+      "summary": "围绕 性能优化 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://web.dev/learn/performance"
+    },
+    {
+      "id": "perf-05",
+      "category": "性能优化",
+      "color": "#f25c8a",
+      "title": "性能优化 · 从需求到落地的完整案例",
+      "summary": "围绕 性能优化 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://web.dev/learn/performance"
+    },
+    {
+      "id": "perf-06",
+      "category": "性能优化",
+      "color": "#f25c8a",
+      "title": "性能优化 · 调试思路、性能与排查清单",
+      "summary": "围绕 性能优化 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://web.dev/learn/performance"
+    },
+    {
+      "id": "security-01",
+      "category": "Web 安全",
+      "color": "#e05252",
+      "title": "Web 安全 · 核心概念与最小可运行示例",
+      "summary": "围绕 Web 安全 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/Security"
+    },
+    {
+      "id": "security-02",
+      "category": "Web 安全",
+      "color": "#e05252",
+      "title": "Web 安全 · 常用语法速查与练习路径",
+      "summary": "围绕 Web 安全 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/Security"
+    },
+    {
+      "id": "security-03",
+      "category": "Web 安全",
+      "color": "#e05252",
+      "title": "Web 安全 · 关键机制与常见坑位拆解",
+      "summary": "围绕 Web 安全 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/Security"
+    },
+    {
+      "id": "security-04",
+      "category": "Web 安全",
+      "color": "#e05252",
+      "title": "Web 安全 · 真实项目中的组合用法",
+      "summary": "围绕 Web 安全 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/Security"
+    },
+    {
+      "id": "security-05",
+      "category": "Web 安全",
+      "color": "#e05252",
+      "title": "Web 安全 · 从需求到落地的完整案例",
+      "summary": "围绕 Web 安全 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/Security"
+    },
+    {
+      "id": "security-06",
+      "category": "Web 安全",
+      "color": "#e05252",
+      "title": "Web 安全 · 调试思路、性能与排查清单",
+      "summary": "围绕 Web 安全 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://developer.mozilla.org/zh-CN/docs/Web/Security"
+    },
+    {
+      "id": "test-01",
+      "category": "测试",
+      "color": "#4caf50",
+      "title": "测试 · 核心概念与最小可运行示例",
+      "summary": "围绕 测试 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://vitest.dev/guide/"
+    },
+    {
+      "id": "test-02",
+      "category": "测试",
+      "color": "#4caf50",
+      "title": "测试 · 常用语法速查与练习路径",
+      "summary": "围绕 测试 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://vitest.dev/guide/"
+    },
+    {
+      "id": "test-03",
+      "category": "测试",
+      "color": "#4caf50",
+      "title": "测试 · 关键机制与常见坑位拆解",
+      "summary": "围绕 测试 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://vitest.dev/guide/"
+    },
+    {
+      "id": "test-04",
+      "category": "测试",
+      "color": "#4caf50",
+      "title": "测试 · 真实项目中的组合用法",
+      "summary": "围绕 测试 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://vitest.dev/guide/"
+    },
+    {
+      "id": "test-05",
+      "category": "测试",
+      "color": "#4caf50",
+      "title": "测试 · 从需求到落地的完整案例",
+      "summary": "围绕 测试 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://vitest.dev/guide/"
+    },
+    {
+      "id": "test-06",
+      "category": "测试",
+      "color": "#4caf50",
+      "title": "测试 · 调试思路、性能与排查清单",
+      "summary": "围绕 测试 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://vitest.dev/guide/"
+    },
+    {
+      "id": "build-01",
+      "category": "工程化",
+      "color": "#c8a45c",
+      "title": "工程化 · 核心概念与最小可运行示例",
+      "summary": "围绕 工程化 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://esbuild.github.io/"
+    },
+    {
+      "id": "build-02",
+      "category": "工程化",
+      "color": "#c8a45c",
+      "title": "工程化 · 常用语法速查与练习路径",
+      "summary": "围绕 工程化 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://esbuild.github.io/"
+    },
+    {
+      "id": "build-03",
+      "category": "工程化",
+      "color": "#c8a45c",
+      "title": "工程化 · 关键机制与常见坑位拆解",
+      "summary": "围绕 工程化 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://esbuild.github.io/"
+    },
+    {
+      "id": "build-04",
+      "category": "工程化",
+      "color": "#c8a45c",
+      "title": "工程化 · 真实项目中的组合用法",
+      "summary": "围绕 工程化 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://esbuild.github.io/"
+    },
+    {
+      "id": "build-05",
+      "category": "工程化",
+      "color": "#c8a45c",
+      "title": "工程化 · 从需求到落地的完整案例",
+      "summary": "围绕 工程化 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://esbuild.github.io/"
+    },
+    {
+      "id": "build-06",
+      "category": "工程化",
+      "color": "#c8a45c",
+      "title": "工程化 · 调试思路、性能与排查清单",
+      "summary": "围绕 工程化 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://esbuild.github.io/"
+    },
+    {
+      "id": "deploy-01",
+      "category": "部署",
+      "color": "#00a8a8",
+      "title": "部署 · 核心概念与最小可运行示例",
+      "summary": "围绕 部署 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://docs.github.com/zh/actions"
+    },
+    {
+      "id": "deploy-02",
+      "category": "部署",
+      "color": "#00a8a8",
+      "title": "部署 · 常用语法速查与练习路径",
+      "summary": "围绕 部署 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://docs.github.com/zh/actions"
+    },
+    {
+      "id": "deploy-03",
+      "category": "部署",
+      "color": "#00a8a8",
+      "title": "部署 · 关键机制与常见坑位拆解",
+      "summary": "围绕 部署 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://docs.github.com/zh/actions"
+    },
+    {
+      "id": "deploy-04",
+      "category": "部署",
+      "color": "#00a8a8",
+      "title": "部署 · 真实项目中的组合用法",
+      "summary": "围绕 部署 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://docs.github.com/zh/actions"
+    },
+    {
+      "id": "deploy-05",
+      "category": "部署",
+      "color": "#00a8a8",
+      "title": "部署 · 从需求到落地的完整案例",
+      "summary": "围绕 部署 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://docs.github.com/zh/actions"
+    },
+    {
+      "id": "deploy-06",
+      "category": "部署",
+      "color": "#00a8a8",
+      "title": "部署 · 调试思路、性能与排查清单",
+      "summary": "围绕 部署 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://docs.github.com/zh/actions"
+    },
+    {
+      "id": "arch-01",
+      "category": "架构",
+      "color": "#a86ee0",
+      "title": "架构 · 核心概念与最小可运行示例",
+      "summary": "围绕 架构 的核心概念与最小可运行示例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 25,
+      "url": "https://martinfowler.com/architecture/"
+    },
+    {
+      "id": "arch-02",
+      "category": "架构",
+      "color": "#a86ee0",
+      "title": "架构 · 常用语法速查与练习路径",
+      "summary": "围绕 架构 的常用语法速查与练习路径，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "入门",
+      "minutes": 35,
+      "url": "https://martinfowler.com/architecture/"
+    },
+    {
+      "id": "arch-03",
+      "category": "架构",
+      "color": "#a86ee0",
+      "title": "架构 · 关键机制与常见坑位拆解",
+      "summary": "围绕 架构 的关键机制与常见坑位拆解，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 45,
+      "url": "https://martinfowler.com/architecture/"
+    },
+    {
+      "id": "arch-04",
+      "category": "架构",
+      "color": "#a86ee0",
+      "title": "架构 · 真实项目中的组合用法",
+      "summary": "围绕 架构 的真实项目中的组合用法，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "进阶",
+      "minutes": 55,
+      "url": "https://martinfowler.com/architecture/"
+    },
+    {
+      "id": "arch-05",
+      "category": "架构",
+      "color": "#a86ee0",
+      "title": "架构 · 从需求到落地的完整案例",
+      "summary": "围绕 架构 的从需求到落地的完整案例，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "实战",
+      "minutes": 70,
+      "url": "https://martinfowler.com/architecture/"
+    },
+    {
+      "id": "arch-06",
+      "category": "架构",
+      "color": "#a86ee0",
+      "title": "架构 · 调试思路、性能与排查清单",
+      "summary": "围绕 架构 的调试思路、性能与排查清单，用一页篇幅整理概念、示例与自测问题，适合按顺序过一遍。",
+      "level": "排错",
+      "minutes": 40,
+      "url": "https://martinfowler.com/architecture/"
+    }
+  ]
+}
