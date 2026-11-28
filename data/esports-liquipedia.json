@@ -1,0 +1,504 @@
+{
+  "updated": "2026-11-28",
+  "source": "Liquipedia (liquipedia.net) — 公开 Infobox 字段，按 1.2s 间隔抓取",
+  "titles": [
+    {
+      "key": "apex",
+      "name": "Apex Legends",
+      "short": "APEX",
+      "color": "#da2929"
+    },
+    {
+      "key": "ow",
+      "name": "Overwatch 2",
+      "short": "OW2",
+      "color": "#f99e1a"
+    },
+    {
+      "key": "valorant",
+      "name": "VALORANT",
+      "short": "VAL",
+      "color": "#ff4655"
+    },
+    {
+      "key": "cs2",
+      "name": "Counter-Strike 2",
+      "short": "CS2",
+      "color": "#d99b34"
+    }
+  ],
+  "players": [
+    {
+      "id": "ImperialHal",
+      "game": "apex",
+      "name": "Phillip Dosen",
+      "country": "United States",
+      "team": "TSM",
+      "role": "IGL",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/ImperialHal"
+    },
+    {
+      "id": "Reps",
+      "game": "apex",
+      "name": "Jordan Wolfe",
+      "country": "United States",
+      "team": "TSM",
+      "role": "Support",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/Reps"
+    },
+    {
+      "id": "Verhulst",
+      "game": "apex",
+      "name": "Evan Verhulst",
+      "country": "United States",
+      "team": "TSM",
+      "role": "Fragger",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/Verhulst"
+    },
+    {
+      "id": "Genburten",
+      "game": "apex",
+      "name": "Noyan Ozkose",
+      "country": "Australia",
+      "team": "DarkZero",
+      "role": "Fragger",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/Genburten"
+    },
+    {
+      "id": "Zer0",
+      "game": "apex",
+      "name": "Rhys Perry",
+      "country": "Australia",
+      "team": "DarkZero",
+      "role": "IGL",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/Zer0"
+    },
+    {
+      "id": "Sharky",
+      "game": "apex",
+      "name": "Rick Wirth",
+      "country": "Australia",
+      "team": "DarkZero",
+      "role": "Support",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/Sharky"
+    },
+    {
+      "id": "Sweetdreams",
+      "game": "apex",
+      "name": "Christopher Sexton",
+      "country": "United States",
+      "team": "NRG",
+      "role": "IGL",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/Sweetdreams"
+    },
+    {
+      "id": "Nafen",
+      "game": "apex",
+      "name": "Nathan Nguyen",
+      "country": "United States",
+      "team": "NRG",
+      "role": "Fragger",
+      "title": "apex",
+      "url": "https://liquipedia.net/apexlegends/Nafen"
+    },
+    {
+      "id": "Proper",
+      "game": "ow",
+      "name": "김동현",
+      "country": "South Korea",
+      "team": "ZETA DIVISION",
+      "role": "DPS",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Proper"
+    },
+    {
+      "id": "Fleta",
+      "game": "ow",
+      "name": "김병선",
+      "country": "South Korea",
+      "team": "T1",
+      "role": "Coach,DPS",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Fleta"
+    },
+    {
+      "id": "Lip",
+      "game": "ow",
+      "name": "Lee Jae-won",
+      "country": "韩国",
+      "team": "Shanghai Dragons",
+      "role": "DPS",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Lip"
+    },
+    {
+      "id": "Leave",
+      "game": "ow",
+      "name": "Huang Xin",
+      "country": "中国",
+      "team": "Chengdu Hunters",
+      "role": "DPS",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Leave"
+    },
+    {
+      "id": "Guxue",
+      "game": "ow",
+      "name": "Xu Qiuhang",
+      "country": "中国",
+      "team": "Hangzhou Spark",
+      "role": "Tank",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Guxue"
+    },
+    {
+      "id": "Shu",
+      "game": "ow",
+      "name": "김진서",
+      "country": "South Korea",
+      "team": "ZETA DIVISION",
+      "role": "Support",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Shu"
+    },
+    {
+      "id": "Chiyo",
+      "game": "ow",
+      "name": "Kim Min-hyung",
+      "country": "韩国",
+      "team": "Atlanta Reign",
+      "role": "Support",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Chiyo"
+    },
+    {
+      "id": "Hanbin",
+      "game": "ow",
+      "name": "Choi Han-bin",
+      "country": "韩国",
+      "team": "Dallas Fuel",
+      "role": "Tank",
+      "title": "ow",
+      "url": "https://liquipedia.net/overwatch/Hanbin"
+    },
+    {
+      "id": "TenZ",
+      "game": "valorant",
+      "name": "Tyson Ngo",
+      "country": "加拿大",
+      "team": "Sentinels",
+      "role": "Duelist",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/TenZ"
+    },
+    {
+      "id": "Boaster",
+      "game": "valorant",
+      "name": "Jake Howlett",
+      "country": "英国",
+      "team": "Fnatic",
+      "role": "IGL",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/Boaster"
+    },
+    {
+      "id": "Derke",
+      "game": "valorant",
+      "name": "Nikita Sirmitev",
+      "country": "芬兰",
+      "team": "Fnatic",
+      "role": "Duelist",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/Derke"
+    },
+    {
+      "id": "ZmjjKK",
+      "game": "valorant",
+      "name": "Zheng Yongkang",
+      "country": "中国",
+      "team": "EDward Gaming",
+      "role": "Duelist",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/ZmjjKK"
+    },
+    {
+      "id": "CHICHOO",
+      "game": "valorant",
+      "name": "Wan Shunzhi",
+      "country": "中国",
+      "team": "EDward Gaming",
+      "role": "Sentinel",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/CHICHOO"
+    },
+    {
+      "id": "aspas",
+      "game": "valorant",
+      "name": "Erick Santos",
+      "country": "巴西",
+      "team": "LOUD",
+      "role": "Duelist",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/aspas"
+    },
+    {
+      "id": "Less",
+      "game": "valorant",
+      "name": "Felipe de Loyola",
+      "country": "巴西",
+      "team": "LOUD",
+      "role": "Sentinel",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/Less"
+    },
+    {
+      "id": "f0rsakeN",
+      "game": "valorant",
+      "name": "Jason Susanto",
+      "country": "印度尼西亚",
+      "team": "Paper Rex",
+      "role": "Flex",
+      "title": "valorant",
+      "url": "https://liquipedia.net/valorant/f0rsakeN"
+    },
+    {
+      "id": "s1mple",
+      "game": "cs2",
+      "name": "Oleksandr Kostyliev",
+      "country": "乌克兰",
+      "team": "Natus Vincere",
+      "role": "AWPer",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/s1mple"
+    },
+    {
+      "id": "ZywOo",
+      "game": "cs2",
+      "name": "Mathieu Herbaut",
+      "country": "法国",
+      "team": "Team Vitality",
+      "role": "AWPer",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/ZywOo"
+    },
+    {
+      "id": "donk",
+      "game": "cs2",
+      "name": "Danil Kryshkovets",
+      "country": "俄罗斯",
+      "team": "Team Spirit",
+      "role": "Rifler",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/donk"
+    },
+    {
+      "id": "NiKo",
+      "game": "cs2",
+      "name": "Nikola Kovac",
+      "country": "波黑",
+      "team": "G2 Esports",
+      "role": "Rifler",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/NiKo"
+    },
+    {
+      "id": "m0NESY",
+      "game": "cs2",
+      "name": "Ilya Osipov",
+      "country": "俄罗斯",
+      "team": "G2 Esports",
+      "role": "AWPer",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/m0NESY"
+    },
+    {
+      "id": "device",
+      "game": "cs2",
+      "name": "Nicolai Reedtz",
+      "country": "丹麦",
+      "team": "Astralis",
+      "role": "AWPer",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/device"
+    },
+    {
+      "id": "ropz",
+      "game": "cs2",
+      "name": "Robin Kool",
+      "country": "爱沙尼亚",
+      "team": "FaZe Clan",
+      "role": "Rifler",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/ropz"
+    },
+    {
+      "id": "Twistzz",
+      "game": "cs2",
+      "name": "Russel Van Dulken",
+      "country": "加拿大",
+      "team": "FaZe Clan",
+      "role": "Rifler",
+      "title": "cs2",
+      "url": "https://liquipedia.net/counterstrike/Twistzz"
+    }
+  ],
+  "posters": [
+    {
+      "game": "apex",
+      "title": "apex",
+      "name": "ALGS 世界锦标赛",
+      "en": "ALGS Championship",
+      "year": "2025",
+      "url": "https://liquipedia.net/apexlegends/ALGS_Championship/2025",
+      "tag": "OFFICIAL EVENT",
+      "color": "#da2929"
+    },
+    {
+      "game": "apex",
+      "title": "apex",
+      "name": "ALGS 季前赛",
+      "en": "ALGS Split 2 Playoffs",
+      "year": "2025",
+      "url": "https://liquipedia.net/apexlegends/ALGS/Split_2/2025",
+      "tag": "PLAYOFFS",
+      "color": "#e85d3d"
+    },
+    {
+      "game": "apex",
+      "title": "apex",
+      "name": "ALGS 第四年决赛",
+      "en": "ALGS Year 4 Championship",
+      "year": "2024",
+      "url": "https://liquipedia.net/apexlegends/ALGS_Championship/2024",
+      "tag": "GRAND FINAL",
+      "color": "#b51f1f"
+    },
+    {
+      "game": "ow",
+      "title": "ow",
+      "name": "守望先锋冠军系列赛",
+      "en": "Overwatch Champions Series",
+      "year": "2025",
+      "url": "https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025",
+      "tag": "OWCS",
+      "color": "#f99e1a"
+    },
+    {
+      "game": "ow",
+      "title": "ow",
+      "name": "OWCS Major",
+      "en": "OWCS Major",
+      "year": "2025",
+      "url": "https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/Major",
+      "tag": "MAJOR",
+      "color": "#ffb84d"
+    },
+    {
+      "game": "ow",
+      "title": "ow",
+      "name": "守望先锋联赛总决赛",
+      "en": "Overwatch League Grand Finals",
+      "year": "2023",
+      "url": "https://liquipedia.net/overwatch/Overwatch_League/2023/Grand_Finals",
+      "tag": "GRAND FINALS",
+      "color": "#d97a00"
+    },
+    {
+      "game": "valorant",
+      "title": "valorant",
+      "name": "VCT 全球冠军赛",
+      "en": "VCT Champions",
+      "year": "2025",
+      "url": "https://liquipedia.net/valorant/VCT/2025/Champions",
+      "tag": "CHAMPIONS",
+      "color": "#ff4655"
+    },
+    {
+      "game": "valorant",
+      "title": "valorant",
+      "name": "VCT 多伦多大师赛",
+      "en": "VCT Masters Toronto",
+      "year": "2025",
+      "url": "https://liquipedia.net/valorant/VCT/2025/Masters/Toronto",
+      "tag": "MASTERS",
+      "color": "#ff6b78"
+    },
+    {
+      "game": "valorant",
+      "title": "valorant",
+      "name": "VCT 马德里大师赛",
+      "en": "VCT Masters Madrid",
+      "year": "2024",
+      "url": "https://liquipedia.net/valorant/VCT/2024/Masters/Madrid",
+      "tag": "MASTERS",
+      "color": "#c4303d"
+    },
+    {
+      "game": "valorant",
+      "title": "valorant",
+      "name": "VCT 太平洋联赛",
+      "en": "VCT Pacific",
+      "year": "2025",
+      "url": "https://liquipedia.net/valorant/VCT/2025/Pacific",
+      "tag": "LEAGUE",
+      "color": "#e03a4a"
+    },
+    {
+      "game": "cs2",
+      "title": "cs2",
+      "name": "PGL 哥本哈根 Major",
+      "en": "PGL Major Copenhagen",
+      "year": "2024",
+      "url": "https://liquipedia.net/counterstrike/PGL/2024/Copenhagen",
+      "tag": "MAJOR",
+      "color": "#d99b34"
+    },
+    {
+      "game": "cs2",
+      "title": "cs2",
+      "name": "BLAST Premier 世界总决赛",
+      "en": "BLAST Premier World Final",
+      "year": "2024",
+      "url": "https://liquipedia.net/counterstrike/BLAST/Premier/2024/World_Final",
+      "tag": "WORLD FINAL",
+      "color": "#f0b429"
+    },
+    {
+      "game": "cs2",
+      "title": "cs2",
+      "name": "IEM 卡托维兹",
+      "en": "IEM Katowice",
+      "year": "2025",
+      "url": "https://liquipedia.net/counterstrike/IEM/Katowice/2025",
+      "tag": "IEM",
+      "color": "#c98b1f"
+    },
+    {
+      "game": "cs2",
+      "title": "cs2",
+      "name": "ESL Pro League",
+      "en": "ESL Pro League Season 21",
+      "year": "2025",
+      "url": "https://liquipedia.net/counterstrike/ESL/Pro_League/Season_21",
+      "tag": "ESL",
+      "color": "#b87a12"
+    },
+    {
+      "game": "cs2",
+      "title": "cs2",
+      "name": "PGL 布达佩斯 Major",
+      "en": "PGL Major Budapest",
+      "year": "2025",
+      "url": "https://liquipedia.net/counterstrike/PGL/2025/Budapest",
+      "tag": "MAJOR",
+      "color": "#e0a83c"
+    }
+  ]
+}
