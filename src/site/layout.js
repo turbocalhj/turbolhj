@@ -36,6 +36,7 @@ const NAV = [
     children: [
       { key: 'games', en: 'GAMES', label: '游戏库', file: 'games/index.html', desc: '游戏评分 · 游玩记录' },
       { key: 'esports', en: 'ESPORTS', label: '电竞', file: 'esports/index.html', desc: '赛事体系 · 战队与里程碑' },
+      { key: 'achievements', en: 'ACHIEVEMENTS', label: '游戏成就', file: 'achievements/index.html', desc: '高光截图 · 段位与记录' },
     ],
   },
   { key: 'knowledge', en: 'KNOWLEDGE', label: '知识库', file: 'knowledge/index.html' },

@@ -874,6 +874,50 @@ export function esportsPage(ctx) {
   });
 }
 
+export function achievementsPage(ctx) {
+  const a = ctx.achievements || { games: [], items: [] };
+  const games = Array.isArray(a.games) ? a.games : [];
+  const items = Array.isArray(a.items) ? a.items : [];
+  const gameMap = new Map(games.map((g) => [g.key, g]));
+  const tabs = [`<button type="button" class="ach-tab is-active" data-ach-tab="all" aria-pressed="true">全部 <em>${items.length}</em></button>`]
+    .concat(games.map((g) => `<button type="button" class="ach-tab" data-ach-tab="${escapeHtml(g.key)}" aria-pressed="false">${escapeHtml(g.name)} <em>${items.filter((i) => i.game === g.key).length}</em></button>`))
+    .join('');
+  const cards = items.map((it) => {
+    const g = gameMap.get(it.game) || { name: it.game, short: it.game, color: '#029eeb' };
+    return `<article class="ach-card" data-game="${escapeHtml(it.game)}">
+      <div class="ach-cover" style="--ac:${escapeHtml(g.color || '#029eeb')}">
+        ${it.image ? `<img src="${escapeHtml(it.image)}" alt="${escapeHtml(it.title)}" loading="lazy" decoding="async">` : `<span class="ach-placeholder"><b>${escapeHtml(g.short || g.name)}</b><em>GAME ACHIEVEMENT</em></span>`}
+        <span class="ach-rarity">${escapeHtml(it.rarity || '记录')}</span>
+      </div>
+      <div class="ach-body">
+        <p class="ach-game">${escapeHtml(g.name)} · ${escapeHtml(it.date || '')}</p>
+        <h2>${escapeHtml(it.title)}</h2>
+        <p>${escapeHtml(it.desc || '')}</p>
+      </div>
+    </article>`;
+  }).join('');
+
+  const content = `
+<section class="page-head ach-head">
+  <p class="eyebrow">ACHIEVEMENTS / 游戏成就</p>
+  <h1>成就<span class="dot">.</span></h1>
+  <p class="page-sub">游戏里的高光、段位与赛季记录。共 ${items.length} 条，按游戏筛选；图片放入 src/static/achievements/ 即可替换占位封面。</p>
+</section>
+<section class="ach-band">
+  <nav class="ach-tabs" aria-label="按游戏筛选">${tabs}</nav>
+  <div class="ach-grid">${cards}</div>
+  ${items.length ? '' : '<p class="ach-empty">还没有成就记录。把截图放进 src/static/achievements/，并在 data/achievements.json 里加入条目。</p>'}
+</section>`;
+
+  return renderPageWrap(ctx, {
+    title: '游戏成就 · ' + ctx.profile.site.title,
+    desc: '游戏成就与截图记录：Apex、Overwatch、VALORANT 与 CS2。',
+    section: 'achievements',
+    bodyClass: 'page-achievements',
+    content,
+  });
+}
+
 export function linksPage(ctx) {
   const groups = ctx.links?.groups || [];
   const total = groups.reduce((n, g) => n + (g.links?.length || 0), 0);

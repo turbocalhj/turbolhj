@@ -1,0 +1,24 @@
+{
+  "updated": "2026-11-28",
+  "note": "游戏成就与截图。图片放到 src/static/achievements/，在 items 的 image 填 assets/achievements/文件名；留空则显示渐变占位。",
+  "games": [
+    { "key": "apex", "name": "Apex Legends", "short": "APEX", "color": "#da2929" },
+    { "key": "ow", "name": "Overwatch 2", "short": "OW2", "color": "#f99e1a" },
+    { "key": "valorant", "name": "VALORANT", "short": "VAL", "color": "#ff4655" },
+    { "key": "cs2", "name": "Counter-Strike 2", "short": "CS2", "color": "#d99b34" }
+  ],
+  "items": [
+    { "game": "apex", "title": "单排上钻", "date": "2025-08-12", "rarity": "史诗", "desc": "一个人从白银一路打到钻石，过程比结果更值得记录。", "image": "" },
+    { "game": "apex", "title": "千场三连鸡", "date": "2025-06-03", "rarity": "传说", "desc": "连续三局吃鸡，最后一次只剩一丝血完成翻盘。", "image": "" },
+    { "game": "apex", "title": "竞技场大师", "date": "2024-12-21", "rarity": "稀有", "desc": "赛季末冲上竞技场大师，主玩支援位。", "image": "" },
+    { "game": "ow", "title": "支援位白金", "date": "2025-09-18", "rarity": "记录", "desc": "从青铜单排到白金，安娜与雾子胜率最高。", "image": "" },
+    { "game": "ow", "title": "全场最佳", "date": "2025-07-06", "rarity": "史诗", "desc": "雾子一记铃铛反打，配合队友完成团灭。", "image": "" },
+    { "game": "ow", "title": "赛季百小时", "date": "2025-03-30", "rarity": "记录", "desc": "一个赛季累计游玩超过一百小时，主要练辅助位。", "image": "" },
+    { "game": "valorant", "title": "不朽段位", "date": "2025-10-02", "rarity": "史诗", "desc": "单排冲上不朽一，主玩烟位与哨位。", "image": "" },
+    { "game": "valorant", "title": "五杀时刻", "date": "2025-05-14", "rarity": "传说", "desc": "残局一打五完成五杀，至今仍是个人最佳回合。", "image": "" },
+    { "game": "valorant", "title": "完美架点", "date": "2024-11-09", "rarity": "稀有", "desc": "一张图连续守住三次关键局，靠预瞄和道具拿分。", "image": "" },
+    { "game": "cs2", "title": "大地球", "date": "2025-09-01", "rarity": "史诗", "desc": "CS2 定级赛十场全胜，第一次摸到大地球段位。", "image": "" },
+    { "game": "cs2", "title": "残局 1v5", "date": "2025-04-22", "rarity": "传说", "desc": "Mirage 残局一打五，靠脚步声与道具完成拆包。", "image": "" },
+    { "game": "cs2", "title": "十连胜", "date": "2024-10-17", "rarity": "记录", "desc": "和朋友五排打出一波十连胜，配合与沟通最舒服的一晚。", "image": "" }
+  ]
+}
