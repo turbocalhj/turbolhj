@@ -7,7 +7,7 @@ import { createEngine, renderPlainMarkdown, escapeHtml } from './src/core/markdo
 import { loadVault, createLinkIndex } from './src/core/vault.js';
 import { createRedactor, isPrivateNote } from './src/core/privacy.js';
 import { renderPage, makeUrl } from './src/site/layout.js';
-import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, tutorialsPage, achievementsPage, linksPage, acgPage, privatePage, updatesPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
+import { reloadPage, archivePage, knowledgePage, notePage, projectsPage, projectPage, aboutPage, folderPage, gamesPage, gameDetailPage, esportsPage, tutorialsPage, achievementsPage, linksPage, acgPage, privatePage, updatesPage, momentsPage, authPage, adminPage, notFoundPage, noteUrl, MAINLINE, PROJECT_FOLDERS } from './src/site/pages.js';
 
 const ROOT = import.meta.dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -51,6 +51,7 @@ const gamesData = readJson('data/games.json', { updated: '', games: [] });
 const esportsData = readJson('data/esports.json', { titles: [], events: [], teams: [], milestones: [] });
 const liquipediaData = readJson('data/esports-liquipedia.json', { titles: [], players: [], posters: [] });
 const linksData = readJson('data/links.json', { groups: [] });
+const momentsData = readJson('data/moments.json', { author: {}, status: {}, todos: [], moments: [] });
 const updatesData = readJson('data/updates.json', { updated: '', entries: [] });
 const acgData = readJson('data/acg.json', { items: [] });
 const tutorialsData = readJson('data/tutorials.json', { pageSize: 12, items: [] });
@@ -356,6 +357,7 @@ ctx.acg = acgData;
 ctx.tutorials = tutorialsData;
 ctx.achievements = achievementsData;
 ctx.links = linksData;
+ctx.moments = momentsData;
 ctx.featuredProjects = projects
   .filter((p) => p.featured)
   .sort((a, b) => a.featuredRank - b.featuredRank);
@@ -399,6 +401,7 @@ for (let i = 1; i <= tutorialTotalPages; i++) {
 }
 writeFile(path.join('achievements', 'index.html'), achievementsPage(ctx));
 writeFile(path.join('links', 'index.html'), linksPage(ctx));
+writeFile(path.join('moments', 'index.html'), momentsPage(ctx));
 writeFile(path.join('acg', 'index.html'), acgPage(ctx));
 writeFile('private.html', privatePage(ctx));
 writeFile('updates.html', updatesPage(ctx));
@@ -422,14 +425,23 @@ for (const name of ['auth.js', 'admin.js']) {
   writeFile(path.join('assets', name), minifyAsset(`src/client/${name}`, 'js'));
 }
 const layersDir = path.join(ROOT, 'src/client/layers');
+function listLayerFiles(dir, prefix = '') {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) out.push(...listLayerFiles(path.join(dir, entry.name), rel));
+    else out.push(rel);
+  }
+  return out;
+}
 if (fs.existsSync(layersDir)) {
-  for (const name of fs.readdirSync(layersDir).sort()) {
-    const ext = path.extname(name).slice(1);
-    const src = fs.readFileSync(path.join(layersDir, name), 'utf8');
+  for (const rel of listLayerFiles(layersDir)) {
+    const ext = path.extname(rel).slice(1);
+    const src = fs.readFileSync(path.join(layersDir, rel), 'utf8');
     const out = ext === 'css' || ext === 'js'
       ? esbuild.transformSync(src, { loader: ext, minify: true, legalComments: 'none' }).code
       : src;
-    writeFile(path.join('assets', 'layers', name), out);
+    writeFile(path.join('assets', 'layers', rel), out);
   }
 }
 fs.cpSync(path.join(ROOT, 'src/assets'), path.join(DIST, 'assets'), { recursive: true });

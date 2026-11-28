@@ -7,7 +7,7 @@ description: 为 TURBO SPARK 增加 P3R 主题氛围层：通栏低留白布局�
 
 ## 原则
 
-1. 三项能力全部作为 `src/client/layers/*` 新增文件，构建时自动注入全站；不改 `app.css` / `layout.js` / `pages.js`。
+1. 三项能力全部作为 `src/client/layers/effects/*` 新增文件，构建时自动注入全站；不改 `app.css` / `layout.js` / `pages.js`。
 2. 颜色只取现有令牌 `--accent` / `--accent-soft`，不引入第二套色板。
 3. 装饰层绝不接管点击、输入或焦点；输入框、文本域保留原生光标。
 4. 准星必须同时满足 `(hover: hover) and (pointer: fine)` 且非 `prefers-reduced-motion`；触摸设备不隐藏原生指针。

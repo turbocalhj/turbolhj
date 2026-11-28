@@ -3,6 +3,32 @@
 > 规则：每一次合并回 main 的功能/修复/重构，都在这里追加一条；写清「改了什么、为什么、怎么验证、影响面」。
 > 对外公告仍写在 `data/updates.json`（站点 `/updates.html`），本文件面向开发过程。
 
+## 2026-11-28 · layers 目录按领域规范化
+
+### 改动
+
+- `src/client/layers/` 的 24 个平铺文件按领域拆为 5 个目录：
+  - `base/`：`wide-layout`、`perf`
+  - `effects/`：`entry`、`text-reveal`、`motion`、`p3r-cursor`、`p3r-flow`
+  - `modules/`：`tutorials`、`tutorials-reveal`、`achievements`、`esports-liquipedia`
+  - `pages/`：`acg`、`index-table`、`private`、`updates`
+  - `account/`：`auth-nav`
+- `build.js` 与 `src/site/layout.js` 改为递归扫描，构建输出 `dist/assets/layers/<分类>/<文件>`，页面注入路径同步为嵌套路径。
+- 同步更新 `turbospark-ui-layer`、`turbospark-content-modules`、`turbospark-p3r-atmosphere`、`turbospark-content-pipeline` 四个 skill 的目录规范。
+
+### 原因
+
+- 24 个图层文件平铺在一起难以判断归属与维护；按项目 `core/site/client/islands` 的领域分组方式统一整理。
+
+### 验证
+
+- `node build.js` 通过；`npm run check`：167 个 HTML、22,299 条链接全部可达。
+- `dist/assets/layers` 下 5 个目录、24 个资源全部生成；页面引用的 24 个 `assets/layers/**` URL 全部 HTTP 200。
+
+### 影响面
+
+- 只改图层文件位置与加载方式，类名、样式和行为不变；后续新图层必须放进对应分类。
+
 ## 2026-11-28 · 学习教程排版对齐参考站
 
 ### 改动
