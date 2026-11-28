@@ -89,15 +89,17 @@ export function buildSidebar(ctx, currentId) {
  */
 function tutorialCard(t, i) {
   return `<a class="tutorial-card" href="${escapeHtml(t.url || '#')}" target="_blank" rel="noopener">
-    <span class="tutorial-cover" style="--tc:${escapeHtml(t.color || '#029eeb')}">
-      <span class="tutorial-no">${String(i + 1).padStart(2, '0')}</span>
+    <span class="tutorial-cover" style="--tc:${escapeHtml(t.color || '#029eeb')}" data-cat="${escapeHtml(t.category || '')}">
       <span class="tutorial-cat">${escapeHtml(t.category || '')}</span>
+      <span class="tutorial-no">${String(i + 1).padStart(2, '0')}</span>
     </span>
     <span class="tutorial-body">
-      <span class="tutorial-meta">${escapeHtml(t.level || '')} · ${Number(t.minutes) || 0} MIN</span>
       <b class="tutorial-title">${escapeHtml(t.title || '')}</b>
       <span class="tutorial-sum">${escapeHtml(t.summary || '')}</span>
-      <span class="tutorial-arrow" aria-hidden="true">→</span>
+      <span class="tutorial-foot">
+        <span>${escapeHtml(t.level || '')} · ${Number(t.minutes) || 0} MIN</span>
+        <span class="tutorial-arrow" aria-hidden="true">→</span>
+      </span>
     </span>
   </a>`;
 }

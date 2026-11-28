@@ -9,8 +9,8 @@ description: 为 TURBO SPARK 增加内容模块：学习教程分页、游戏成
 
 - 数据：`data/tutorials.json`，`pageSize: 12`；`scripts/gen-tutorials.js` 可重建 120 条（20 方向 × 6 阶段）。
 - 页面：`pages.js` 的 `tutorialsPage(ctx, page)`；`build.js` 生成 `tutorials/index.html` 与 `tutorials/page/2..10.html`。
-- 首页：`reloadPage` 渲染 `.home-tutorials` 区块，取前 12 条，4 列 × 3 行。
-- 样式：`src/client/layers/tutorials.css`；卡片用分类色 `--tc` 渐变封面，不依赖图片。
+- 首页：`reloadPage` 渲染 `.home-tutorials` 区块，取前 12 条，参照 blog.ayeez.cn：3 列 × 4 行、最大 1000px 居中。
+- 样式：`tutorials.css` 卡片 = 封面 180px + 标题 18px + 摘要 13px + 底部难度/时长；分类色 `--tc` 渐变封面；`tutorials-reveal.js` 负责滚动渐入（reduced-motion 时直接显示）。
 
 ## 游戏成就（achievements）
 
