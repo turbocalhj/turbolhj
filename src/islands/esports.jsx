@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 
-export default function EsportsBoard({ titles, events, teams, milestones }) {
+export default function EsportsBoard({ titles = [], events = [], teams = [], milestones = [], players = [], posters = [] }) {
   const [active, setActive] = useState('all');
   const titleMap = useMemo(() => new Map(titles.map((t) => [t.key, t])), [titles]);
 
   const filteredEvents = active === 'all' ? events : events.filter((e) => e.title === active);
   const filteredTeams = active === 'all' ? teams : teams.filter((t) => t.title === active);
+  const filteredPlayers = active === 'all' ? players : players.filter((p) => p.title === active);
+  const filteredPosters = active === 'all' ? posters : posters.filter((p) => p.title === active);
 
   const colorOf = (key) => titleMap.get(key)?.color || '#7fd4ff';
   const nameOf = (key) => titleMap.get(key)?.short || key;
@@ -54,7 +56,7 @@ export default function EsportsBoard({ titles, events, teams, milestones }) {
       </div>
       <div className="team-grid">
         {filteredTeams.map((t) => (
-          <article className="team-card" key={t.name} style={{ '--team-color': t.color }}>
+          <article className="team-card" key={`${t.title}-${t.name}`} style={{ '--team-color': t.color }}>
             <span className="team-emblem">{t.short}</span>
             <div className="team-body">
               <h3>{t.name}</h3>
@@ -62,6 +64,41 @@ export default function EsportsBoard({ titles, events, teams, milestones }) {
               <p className="team-desc">{t.desc}</p>
             </div>
           </article>
+        ))}
+      </div>
+
+      <div className="esports-section-head">
+        <div><span className="eyebrow">PLAYERS / 职业选手</span><h2>选手档案</h2></div>
+        <span className="esports-count">{filteredPlayers.length} 名选手 · LIQUIPEDIA</span>
+      </div>
+      <div className="player-grid">
+        {filteredPlayers.map((p) => (
+          <a className="player-card" key={`${p.game}-${p.id}`} href={p.url} target="_blank" rel="noopener" style={{ '--title-color': colorOf(p.title) }}>
+            <span className="player-avatar" aria-hidden="true">{p.id.slice(0, 2).toUpperCase()}</span>
+            <span className="player-body">
+              <b>{p.id}</b>
+              <em>{p.name}</em>
+              <span>{p.team} · {p.role}</span>
+              <small>{p.country}</small>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div className="esports-section-head">
+        <div><span className="eyebrow">POSTERS / 官方视觉</span><h2>赛事海报</h2></div>
+        <span className="esports-count">{filteredPosters.length} 张 · LIQUIPEDIA</span>
+      </div>
+      <div className="poster-grid">
+        {filteredPosters.map((p) => (
+          <a className="poster-card" key={`${p.title}-${p.en}-${p.year}`} href={p.url} target="_blank" rel="noopener" style={{ '--title-color': colorOf(p.title) }}>
+            <span className="poster-art">
+              <span className="poster-year">{p.year}</span>
+              <b>{p.en}</b>
+              <em>{p.tag}</em>
+            </span>
+            <span className="poster-meta"><b>{p.name}</b><span>{nameOf(p.title)} · LIQUIPEDIA ↗</span></span>
+          </a>
         ))}
       </div>
 

@@ -852,11 +852,13 @@ export function esportsPage(ctx) {
 <section class="page-head esports-hero">
   <p class="eyebrow">ESPORTS / 电竞观察</p>
   <h1>电竞百科</h1>
-  <p class="page-sub">赛事体系、值得关注的战队与几个记得住的瞬间。不是资料库，是一份带观点的观赛记录。</p>
+  <p class="page-sub">赛事体系、值得关注的战队、职业选手与赛事海报。数据整理自 Liquipedia，按项目筛选浏览。</p>
   <div class="game-hero-stats">
     <span><b>${e.titles.length}</b> 个项目</span>
     <span><b>${e.events.length}</b> 项赛事</span>
     <span><b>${e.teams.length}</b> 支队伍</span>
+    <span><b>${(e.players || []).length}</b> 名选手</span>
+    <span><b>${(e.posters || []).length}</b> 张海报</span>
   </div>
 </section>
 <section class="esports-band">

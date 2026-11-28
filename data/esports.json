@@ -2,10 +2,42 @@
   "updated": "2026-11-20",
   "note": "电竞观察笔记：赛事体系与战队信息为公开资料，观赛记录为主观整理。",
   "titles": [
-    { "key": "lol", "name": "英雄联盟", "short": "LOL", "color": "#c8a45c" },
-    { "key": "cs2", "name": "反恐精英 2", "short": "CS2", "color": "#d99b34" },
-    { "key": "dota2", "name": "Dota 2", "short": "DOTA", "color": "#b23b30" },
-    { "key": "valorant", "name": "无畏契约", "short": "VAL", "color": "#ff4655" }
+    {
+      "key": "lol",
+      "name": "英雄联盟",
+      "short": "LOL",
+      "color": "#c8a45c"
+    },
+    {
+      "key": "cs2",
+      "name": "反恐精英 2",
+      "short": "CS2",
+      "color": "#d99b34"
+    },
+    {
+      "key": "dota2",
+      "name": "Dota 2",
+      "short": "DOTA",
+      "color": "#b23b30"
+    },
+    {
+      "key": "valorant",
+      "name": "无畏契约",
+      "short": "VAL",
+      "color": "#ff4655"
+    },
+    {
+      "key": "apex",
+      "name": "Apex 英雄",
+      "short": "APEX",
+      "color": "#da2929"
+    },
+    {
+      "key": "ow",
+      "name": "守望先锋 2",
+      "short": "OW2",
+      "color": "#f99e1a"
+    }
   ],
   "events": [
     {
@@ -80,19 +112,223 @@
     }
   ],
   "teams": [
-    { "name": "T1", "title": "lol", "region": "LCK · 韩国", "short": "T1", "color": "#e02b2b", "desc": "英雄联盟历史上成绩最稳定的俱乐部之一，以强烈的团队标签著称。" },
-    { "name": "Gen.G", "title": "lol", "region": "LCK · 韩国", "short": "GEN", "color": "#c8a45c", "desc": "跨项目运营的韩国俱乐部，英雄联盟与 VALORANT 均有争冠实力。" },
-    { "name": "Bilibili Gaming", "title": "lol", "region": "LPL · 中国", "short": "BLG", "color": "#4a9de0", "desc": "LPL 赛区的代表性队伍之一，近年在国际赛事中表现活跃。" },
-    { "name": "G2 Esports", "title": "cs2", "region": "LEC · 欧洲", "short": "G2", "color": "#e8e8e8", "desc": "多项目综合俱乐部，CS2 与英雄联盟两条线都有长期竞争力。" },
-    { "name": "NAVI", "title": "cs2", "region": "欧洲", "short": "NAVI", "color": "#e8c22f", "desc": "CS 历史上最具辨识度的队伍之一，以鲜明的队服和打法闻名。" },
-    { "name": "Team Spirit", "title": "dota2", "region": "东欧", "short": "TS", "color": "#4b6ecb", "desc": "Dota 2 顶级俱乐部，多次在国际邀请赛上取得好成绩。" },
-    { "name": "Team Liquid", "title": "dota2", "region": "国际", "short": "TL", "color": "#2f8fd8", "desc": "总部位于荷兰的多项目俱乐部，Dota 2 是其传统强项。" },
-    { "name": "Fnatic", "title": "valorant", "region": "EMEA · 欧洲", "short": "FNC", "color": "#e8791d", "desc": "老牌综合电竞俱乐部，VALORANT 与英雄联盟均有深厚积累。" }
+    {
+      "name": "T1",
+      "title": "lol",
+      "region": "LCK · 韩国",
+      "short": "T1",
+      "color": "#e02b2b",
+      "desc": "英雄联盟历史上成绩最稳定的俱乐部之一，以强烈的团队标签著称。"
+    },
+    {
+      "name": "Gen.G",
+      "title": "lol",
+      "region": "LCK · 韩国",
+      "short": "GEN",
+      "color": "#c8a45c",
+      "desc": "跨项目运营的韩国俱乐部，英雄联盟与 VALORANT 均有争冠实力。"
+    },
+    {
+      "name": "Bilibili Gaming",
+      "title": "lol",
+      "region": "LPL · 中国",
+      "short": "BLG",
+      "color": "#4a9de0",
+      "desc": "LPL 赛区的代表性队伍之一，近年在国际赛事中表现活跃。"
+    },
+    {
+      "name": "G2 Esports",
+      "title": "cs2",
+      "region": "LEC · 欧洲",
+      "short": "G2",
+      "color": "#e8e8e8",
+      "desc": "多项目综合俱乐部，CS2 与英雄联盟两条线都有长期竞争力。"
+    },
+    {
+      "name": "NAVI",
+      "title": "cs2",
+      "region": "欧洲",
+      "short": "NAVI",
+      "color": "#e8c22f",
+      "desc": "CS 历史上最具辨识度的队伍之一，以鲜明的队服和打法闻名。"
+    },
+    {
+      "name": "Team Spirit",
+      "title": "dota2",
+      "region": "东欧",
+      "short": "TS",
+      "color": "#4b6ecb",
+      "desc": "Dota 2 顶级俱乐部，多次在国际邀请赛上取得好成绩。"
+    },
+    {
+      "name": "Team Liquid",
+      "title": "dota2",
+      "region": "国际",
+      "short": "TL",
+      "color": "#2f8fd8",
+      "desc": "总部位于荷兰的多项目俱乐部，Dota 2 是其传统强项。"
+    },
+    {
+      "name": "Fnatic",
+      "title": "valorant",
+      "region": "EMEA · 欧洲",
+      "short": "FNC",
+      "color": "#e8791d",
+      "desc": "老牌综合电竞俱乐部，VALORANT 与英雄联盟均有深厚积累。"
+    },
+    {
+      "name": "TSM",
+      "title": "apex",
+      "region": "北美",
+      "short": "TSM",
+      "color": "#e02b2b",
+      "desc": "北美老牌俱乐部，Apex 分部长期活跃于 ALGS 顶级赛事。"
+    },
+    {
+      "name": "DarkZero",
+      "title": "apex",
+      "region": "亚太",
+      "short": "DZ",
+      "color": "#7a5cff",
+      "desc": "亚太赛区的强势队伍，以稳定的三人协同著称。"
+    },
+    {
+      "name": "NRG",
+      "title": "apex",
+      "region": "北美",
+      "short": "NRG",
+      "color": "#00b36b",
+      "desc": "跨项目综合俱乐部，Apex 分部常年出现在世界赛舞台。"
+    },
+    {
+      "name": "Alliance",
+      "title": "apex",
+      "region": "欧洲",
+      "short": "ALL",
+      "color": "#f5c400",
+      "desc": "欧洲老牌俱乐部，Apex 与多项目并行运营。"
+    },
+    {
+      "name": "Atlanta Reign",
+      "title": "ow",
+      "region": "北美",
+      "short": "ATL",
+      "color": "#c8102e",
+      "desc": "OWCS 北美赛区代表队伍之一，输出位实力突出。"
+    },
+    {
+      "name": "Shanghai Dragons",
+      "title": "ow",
+      "region": "中国",
+      "short": "SHD",
+      "color": "#d71920",
+      "desc": "守望先锋联赛历史上最具辨识度的中国队伍之一。"
+    },
+    {
+      "name": "Dallas Fuel",
+      "title": "ow",
+      "region": "北美",
+      "short": "DAL",
+      "color": "#0a2e5c",
+      "desc": "OWL 创始队伍，2022 赛季总冠军。"
+    },
+    {
+      "name": "Hangzhou Spark",
+      "title": "ow",
+      "region": "中国",
+      "short": "HZS",
+      "color": "#00a3e0",
+      "desc": "以粉色视觉与年轻阵容被记住的中国队伍。"
+    },
+    {
+      "name": "Sentinels",
+      "title": "valorant",
+      "region": "北美",
+      "short": "SEN",
+      "color": "#d3222a",
+      "desc": "VALORANT 早期最具影响力的北美俱乐部之一。"
+    },
+    {
+      "name": "EDward Gaming",
+      "title": "valorant",
+      "region": "中国",
+      "short": "EDG",
+      "color": "#0b1e3a",
+      "desc": "CN 赛区代表队伍，2024 年全球冠军赛夺冠。"
+    },
+    {
+      "name": "Paper Rex",
+      "title": "valorant",
+      "region": "东南亚",
+      "short": "PRX",
+      "color": "#f15a29",
+      "desc": "以激进打法闻名的东南亚队伍，风格极具观赏性。"
+    },
+    {
+      "name": "LOUD",
+      "title": "valorant",
+      "region": "巴西",
+      "short": "LOUD",
+      "color": "#00a650",
+      "desc": "巴西电竞豪门，2022 年 VALORANT 全球冠军。"
+    },
+    {
+      "name": "Team Vitality",
+      "title": "cs2",
+      "region": "欧洲",
+      "short": "VIT",
+      "color": "#ffe500",
+      "desc": "CS2 顶级强队，ZywOo 领衔的法国核心。"
+    },
+    {
+      "name": "FaZe Clan",
+      "title": "cs2",
+      "region": "国际",
+      "short": "FAZE",
+      "color": "#e4002b",
+      "desc": "国际纵队代表，Major 冠军与长期争冠者。"
+    },
+    {
+      "name": "MOUZ",
+      "title": "cs2",
+      "region": "欧洲",
+      "short": "MOUZ",
+      "color": "#e30613",
+      "desc": "以青训与年轻阵容著称的欧洲俱乐部。"
+    },
+    {
+      "name": "Astralis",
+      "title": "cs2",
+      "region": "丹麦",
+      "short": "AST",
+      "color": "#e4002b",
+      "desc": "CS 历史上最成功的俱乐部之一，四届 Major 冠军。"
+    }
   ],
   "milestones": [
-    { "year": "2018", "title": "LPL 首冠", "desc": "iG 拿下英雄联盟全球总决赛冠军，LPL 赛区第一次捧起召唤师杯。", "titleKey": "lol" },
-    { "year": "2021", "title": "EDG 夺冠", "desc": "EDward Gaming 赢得 S11 全球总决赛，成为 LPL 赛区的又一个里程碑。", "titleKey": "lol" },
-    { "year": "2023", "title": "CS 进入新纪元", "desc": "Counter-Strike 2 正式上线，Source 2 引擎带来道具与地图机制的全面更新。", "titleKey": "cs2" },
-    { "year": "2024", "title": "综合赛事升温", "desc": "跨项目综合型电竞赛事体系进一步成熟，俱乐部积分成为新的竞争维度。", "titleKey": "lol" }
+    {
+      "year": "2018",
+      "title": "LPL 首冠",
+      "desc": "iG 拿下英雄联盟全球总决赛冠军，LPL 赛区第一次捧起召唤师杯。",
+      "titleKey": "lol"
+    },
+    {
+      "year": "2021",
+      "title": "EDG 夺冠",
+      "desc": "EDward Gaming 赢得 S11 全球总决赛，成为 LPL 赛区的又一个里程碑。",
+      "titleKey": "lol"
+    },
+    {
+      "year": "2023",
+      "title": "CS 进入新纪元",
+      "desc": "Counter-Strike 2 正式上线，Source 2 引擎带来道具与地图机制的全面更新。",
+      "titleKey": "cs2"
+    },
+    {
+      "year": "2024",
+      "title": "综合赛事升温",
+      "desc": "跨项目综合型电竞赛事体系进一步成熟，俱乐部积分成为新的竞争维度。",
+      "titleKey": "lol"
+    }
   ]
 }

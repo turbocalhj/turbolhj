@@ -49,6 +49,7 @@ const ghRepos = readJson('data/github.json', []);
 const ghExtra = readJson('data/github-extra.json', { repos: {} });
 const gamesData = readJson('data/games.json', { updated: '', games: [] });
 const esportsData = readJson('data/esports.json', { titles: [], events: [], teams: [], milestones: [] });
+const liquipediaData = readJson('data/esports-liquipedia.json', { titles: [], players: [], posters: [] });
 const linksData = readJson('data/links.json', { groups: [] });
 const updatesData = readJson('data/updates.json', { updated: '', entries: [] });
 const acgData = readJson('data/acg.json', { items: [] });
@@ -340,7 +341,16 @@ for (const wp of profile.localProjects || []) {
 stats.commits = projects.reduce((a, p) => a + (p.commitCount || 0), 0);
 ctx.projects = projects;
 ctx.games = gamesData.games || [];
-ctx.esports = esportsData;
+const mergedTitles = [...(esportsData.titles || [])];
+for (const t of (liquipediaData.titles || [])) {
+  if (!mergedTitles.some((x) => x.key === t.key)) mergedTitles.push(t);
+}
+ctx.esports = {
+  ...esportsData,
+  titles: mergedTitles,
+  players: liquipediaData.players || [],
+  posters: liquipediaData.posters || [],
+};
 ctx.updates = updatesData;
 ctx.acg = acgData;
 ctx.tutorials = tutorialsData;
