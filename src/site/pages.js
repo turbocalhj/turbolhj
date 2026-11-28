@@ -87,10 +87,26 @@ export function buildSidebar(ctx, currentId) {
  * 首页：官方 P3R 主视觉作全屏壁纸，左侧身份与引言，右侧时钟与玻璃入口。
  * 不放跑马灯、入场动画和指针特效，只保留克制的 hover 过渡。
  */
+function tutorialCard(t, i) {
+  return `<a class="tutorial-card" href="${escapeHtml(t.url || '#')}" target="_blank" rel="noopener">
+    <span class="tutorial-cover" style="--tc:${escapeHtml(t.color || '#029eeb')}">
+      <span class="tutorial-no">${String(i + 1).padStart(2, '0')}</span>
+      <span class="tutorial-cat">${escapeHtml(t.category || '')}</span>
+    </span>
+    <span class="tutorial-body">
+      <span class="tutorial-meta">${escapeHtml(t.level || '')} · ${Number(t.minutes) || 0} MIN</span>
+      <b class="tutorial-title">${escapeHtml(t.title || '')}</b>
+      <span class="tutorial-sum">${escapeHtml(t.summary || '')}</span>
+      <span class="tutorial-arrow" aria-hidden="true">→</span>
+    </span>
+  </a>`;
+}
+
 export function reloadPage(ctx) {
   const p = ctx.profile;
   const stats = ctx.stats;
   const featured = ctx.featuredProjects.slice(0, 3);
+  const tutorialItems = (ctx.tutorials && Array.isArray(ctx.tutorials.items) ? ctx.tutorials.items : []).slice(0, 12);
   const totalProjects = ctx.projects.length;
   const techFolders = ctx.folders
     .filter((f) => f.key !== '根目录' && !isProjectFolder(f.key))
@@ -187,6 +203,17 @@ export function reloadPage(ctx) {
       </nav>
     </aside>
   </div>
+</section>
+
+<section class="home-section home-tutorials" id="tutorials">
+  <div class="home-section-head">
+    <div>
+      <p class="eyebrow">STUDY / 学习教程</p>
+      <h2>学习教程</h2>
+    </div>
+    <a class="home-section-more" href="${ctx.url('tutorials', 'index.html')}">全部 ${(ctx.tutorials && ctx.tutorials.items ? ctx.tutorials.items.length : 0)} 篇 <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="tutorial-grid">${tutorialItems.map(tutorialCard).join('')}</div>
 </section>
 
 <section class="home-now" aria-label="最近状态">
@@ -780,6 +807,40 @@ ${relatedHtml}`;
     desc: game.desc,
     section: 'games',
     bodyClass: 'page-game-detail',
+    content,
+  });
+}
+
+export function tutorialsPage(ctx, page = 1) {
+  const all = ctx.tutorials && Array.isArray(ctx.tutorials.items) ? ctx.tutorials.items : [];
+  const size = Number(ctx.tutorials && ctx.tutorials.pageSize) || 12;
+  const total = Math.max(1, Math.ceil(all.length / size));
+  const current = Math.min(Math.max(1, Number(page) || 1), total);
+  const start = (current - 1) * size;
+  const items = all.slice(start, start + size);
+  const pageHref = (n) => (n === 1 ? ctx.url('tutorials', 'index.html') : ctx.url('tutorials', 'page', n + '.html'));
+  const nums = Array.from({ length: total }, (_, i) => `<a class="pager-num${i + 1 === current ? ' is-active' : ''}" href="${pageHref(i + 1)}"${i + 1 === current ? ' aria-current="page"' : ''}>${i + 1}</a>`).join('');
+
+  const content = `
+<section class="page-head tutorials-head">
+  <p class="eyebrow">STUDY / 学习教程</p>
+  <h1>学习教程<span class="dot">.</span></h1>
+  <p class="page-sub">按方向整理的学习路线，共 ${all.length} 篇，每页 ${size} 篇。内容为占位示例，后续可替换为真实教程。</p>
+</section>
+<section class="tutorial-band">
+  <div class="tutorial-grid">${items.map((t, i) => tutorialCard(t, start + i)).join('')}</div>
+  <nav class="pager tutorial-pager" aria-label="教程分页">
+    ${current > 1 ? `<a class="pager-prev" href="${pageHref(current - 1)}">← 上一页</a>` : '<span class="pager-prev is-disabled">← 上一页</span>'}
+    <span class="pager-nums">${nums}</span>
+    ${current < total ? `<a class="pager-next" href="${pageHref(current + 1)}">下一页 →</a>` : '<span class="pager-next is-disabled">下一页 →</span>'}
+  </nav>
+</section>`;
+
+  return renderPageWrap(ctx, {
+    title: '学习教程 · ' + ctx.profile.site.title,
+    desc: '按 HTML、CSS、JavaScript、Node、Docker 等技术方向整理的学习教程。',
+    section: 'tutorials',
+    bodyClass: 'page-tutorials',
     content,
   });
 }
